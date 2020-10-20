@@ -3,10 +3,15 @@ plugins {
     id 'application'
     id 'idea'
     id "com.github.johnrengelman.shadow" version "6.1.0"
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
 group 'KR-Checkers'
 version '1.0-SNAPSHOT'
+
+javafx {
+    modules = ['javafx.fxml', 'javafx.controls']
+}
 
 repositories {
     mavenCentral()
@@ -19,4 +24,4 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-mainClassName = 'Main.java'
+mainClassName = 'fx.controllers.Main'
