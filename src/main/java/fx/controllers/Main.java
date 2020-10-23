@@ -32,7 +32,9 @@
          Scene s = new Scene(loader.load());
 
          primaryStage.setScene(s);
-         primaryStage.setResizable(true);
+         primaryStage.setResizable(false);
+         primaryStage.setHeight(1000);
+         primaryStage.setWidth(1900);
          primaryStage.show();
 
          Pane mainPane = (Pane) s.lookup("#pane");
