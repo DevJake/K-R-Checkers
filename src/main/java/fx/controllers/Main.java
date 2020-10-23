@@ -8,22 +8,37 @@
 
  package fx.controllers;
 
+ import ent.Board;
+ import err.BoardSpacingException;
  import javafx.application.Application;
  import javafx.fxml.FXMLLoader;
  import javafx.scene.Scene;
- import javafx.scene.control.Label;
  import javafx.scene.layout.BorderPane;
- import javafx.scene.layout.HBox;
  import javafx.scene.layout.Pane;
- import javafx.scene.layout.Priority;
  import javafx.stage.Stage;
+ import util.PrintUtil;
 
  import java.io.IOException;
 
  public class Main extends Application {
+     public static Board mainBoard;
+
+     static {
+         try {
+             mainBoard = new Board.Builder().build();
+         } catch (BoardSpacingException e) {
+             e.printStackTrace();
+         }
+     }
 
      public static void main(String[] args) throws IOException {
-         launch(args);
+//         launch(args);
+
+         System.out.println(mainBoard.toString());
+
+         PrintUtil.asFormatted(mainBoard);
+
+         System.out.println(mainBoard.getTotalPieces());
      }
 
      @Override
