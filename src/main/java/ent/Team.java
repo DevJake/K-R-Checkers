@@ -9,17 +9,34 @@
 package ent;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Team {
     private final UUID id;
     private String name;
     private Color colour;
+    private ArrayList<Piece> capturedPieces = new ArrayList<>();
+    private ArrayList<Piece> ownedPieces = new ArrayList<>();
 
-    public Team(String name, Color colour) {
+    public Team(String name, Color colour, ArrayList<Piece> ownedPieces) {
         this.name = name;
         this.colour = colour;
         this.id = UUID.randomUUID();
+        this.ownedPieces = ownedPieces;
+    }
+
+    public ArrayList<Piece> getOwnedPieces() {
+        return ownedPieces;
+    }
+
+    public ArrayList<Piece> getCapturedPieces() {
+        return capturedPieces;
+    }
+
+    public void capturePiece(Piece piece){
+        this.capturedPieces.add(piece);
+        piece.setCapturedBy(this);
     }
 
     public UUID getId() {

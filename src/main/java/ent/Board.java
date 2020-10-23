@@ -50,6 +50,7 @@ public class Board {
 
     /**
      * Returns how many uncaptured pieces currently remain on the board
+     *
      * @return Int - How many uncaptured pieces remain on the board.
      */
     public int getTotalPieces() { //TODO Unit test
@@ -112,7 +113,9 @@ public class Board {
                 boolean flip = false;
                 for (int j = 0; j < width; j++) {
                     if (!flip)
-                        inner.add(new Piece(j + i % 2, i, Piece.Type.MAN, new Team("Team 1", Color.BLACK)));
+                        inner.add(
+                                new Piece(j + i % 2, i, Piece.Type.MAN,
+                                        new Team("Team 1", Color.BLACK, new ArrayList<>())));
                     //TODO Unit test this
                     //TODO add team-adding logic and team-assignment logic
                     //TODO add in 'spacing' parameter support
