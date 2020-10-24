@@ -107,7 +107,8 @@ public class Board {
             on the board to be indexed by an (x,y) pair.
              */
 
-
+            //This code initialises the new Board instance to the specified dimensions, along with Teams information
+            // and individual Pieces in the correct conditions
             for (int i = 0; i < height; i++) {
                 ArrayList<Piece> inner = new ArrayList<>();
                 boolean flip = false;
