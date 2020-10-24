@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class Comms {
     private static final ArrayList<String> queue = new ArrayList<>();
     private static final int port = 8000;
-    private static final string address = "127.0.0.1";
+    private static final String address = "127.0.0.1";
     private static int queueThreshold = 1;
     /*How many entries in the queue must be present before transmitting as many as possible. In CONTINUOUS mode, this
      will act as a 'burst' threshold. In PONG mode, this will simply act as a standard FIFO queue. */
