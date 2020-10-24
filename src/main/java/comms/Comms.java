@@ -8,6 +8,9 @@
 
 package comms;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 
 /*
@@ -21,6 +24,8 @@ public class Comms {
     /*How many entries in the queue must be present before transmitting as many as possible. In CONTINUOUS mode, this
      will act as a 'burst' threshold. In PONG mode, this will simply act as a standard FIFO queue. */
 
+    private static ServerSocket socket;
+
     public static int getQueueThreshold() {
         return queueThreshold;
     }
@@ -32,15 +37,17 @@ public class Comms {
     /*
         Launch the server instance, and begin listening
          */
-    public static void boot() {
-
+    public static void boot() throws IOException {
+        socket = new ServerSocket(port, 0, InetAddress.getByName(address));
     }
 
     /*
     Terminate the server instance; terminate listening for incoming traffic
      */
-    public static void terminate() {
-
+    public static void terminate() throws IOException {
+        if (socket != null) {
+            socket.close();
+        }
     }
 
     public enum Mode {
@@ -59,10 +66,6 @@ public class Comms {
     Decodes information from inbound transfers.
      */
     public class Decoder {
-
-    }
-
-    private class SocketInstance {
 
     }
 }
