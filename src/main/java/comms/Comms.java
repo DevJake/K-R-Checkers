@@ -8,6 +8,9 @@
 
 package comms;
 
+import ent.Board;
+import ent.Piece;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -58,8 +61,27 @@ public class Comms {
     /*
     Encodes information for outbound transfers.
      */
-    public class Encoder {
+    public static class Encoder {
 
+        public static EncodedMessage encode(String input) {
+
+        }
+
+        public static EncodedMessage encode(Board input) {
+
+        }
+
+        public static EncodedMessage encode(Piece piece) {
+
+        }
+
+        private class EncodedMessage {
+            private final String message;
+
+            EncodedMessage(String message) {
+                this.message = message;
+            }
+        }
     }
 
     /*
