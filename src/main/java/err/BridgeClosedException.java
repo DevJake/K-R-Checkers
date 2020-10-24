@@ -6,9 +6,9 @@
  * Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
  */
 
-public class Main {
-    public static void main(String[] args){
-        System.out.println("Java!");
+package err;
 
+public class BridgeClosedException extends RuntimeException {
+    public BridgeClosedException(String message) {
     }
 }
