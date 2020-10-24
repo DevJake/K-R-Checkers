@@ -13,7 +13,7 @@ import err.BoardSpacingException;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Board {
+public class Board extends Entity {
     private final ArrayList<ArrayList<Piece>> board;
     private final Color evenTiles;
     private final Color oddTiles;

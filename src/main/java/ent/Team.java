@@ -12,7 +12,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Team {
+public class Team extends Entity {
     private final UUID id;
     private String name;
     private Color colour;

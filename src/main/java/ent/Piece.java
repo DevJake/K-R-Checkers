@@ -10,7 +10,7 @@ package ent;
 
 import java.awt.*;
 
-public class Piece {
+public class Piece extends Entity {
     private final int x;
     private final int y;
     private Type type = Type.MAN;

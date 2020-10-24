@@ -6,10 +6,7 @@
  * Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
  */
 
-package util;
+package ent;
 
-/**
- * A socket structure for communication to and from the Python backend. TODO
- */
-public class Comms {
+public class Entity {
 }
