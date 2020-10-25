@@ -8,9 +8,9 @@
 
 package event;
 
+import err.UnregisteredEventException;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class Event {
@@ -21,16 +21,20 @@ public class Event {
     }
 
     public static class Manager {
-        private static final Map<Event, ArrayList<EventListener>> listeners = new HashMap<>();
+        private static final ArrayList<EventListener> listeners = new ArrayList<>();
 
         public static void fire(Event e) {
-            //I would've used a switch statement, but Java doesn't like performing switches with classes
-            if (e instanceof BridgeMessageReceiveEvent) {
-                listeners.getOrDefault(e, new ArrayList<>()).forEach(l -> l.onBridgeMessageReceived((BridgeMessageReceiveEvent) e));
-            } else if (e instanceof BridgeMessageSendEvent) {
-                listeners.getOrDefault(e, new ArrayList<>()).forEach(l -> l.onBridgeMessageSend((BridgeMessageSendEvent) e));
-            }
-        }
+            listeners.forEach(l -> {
+                //I would've used a switch statement, but Java doesn't like performing switches with classes
+                if (e instanceof BridgeMessageReceiveEvent) {
+                    l.onBridgeMessageReceived((BridgeMessageReceiveEvent) e);
+                } else if (e instanceof BridgeMessageSendEvent) {
+                    l.onBridgeMessageSend((BridgeMessageSendEvent) e);
+                } else {
+                    throw new UnregisteredEventException("An Event type has been fired, but is not handled in the " +
+                            "Manager! Event: " + e.getClass());
+                }
+            });
 
         public static void registerListener(EventListener listener, Event... events) {
             for (Event event : events) {
