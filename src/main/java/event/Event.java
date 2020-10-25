@@ -36,15 +36,10 @@ public class Event {
                 }
             });
 
-        public static void registerListener(EventListener listener, Event... events) {
-            for (Event event : events) {
-                if (!listeners.containsKey(event))
-                    listeners.get(event).add(listener);
-                else
-                    listeners.put(event, new ArrayList<>(1) {{
-                        add(listener);
-                    }});
-            }
+        }
+
+        public static void registerListener(EventListener listener) {
+            listeners.add(listener);
         }
     }
 }
