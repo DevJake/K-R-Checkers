@@ -10,10 +10,16 @@ package event;
 
 public class EventListener {
     public void onBridgeMessageReceived(BridgeMessageReceiveEvent event) {
-
     }
 
     public void onBridgeMessageSend(BridgeMessageSendEvent event) {
-
     }
+
+    public void onPlayerMakeMove(PlayerMakeMoveEvent event) {
+    }
+
+    public void onAIPlayMove(AIPlayMoveEvent event) {
+    }
+
+    public void onBoardUpdate(BoardUpdateEvent event){}
 }
