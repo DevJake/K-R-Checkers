@@ -8,8 +8,12 @@
 
 package event;
 
-public interface EventListener {
-    void onBridgeMessageReceived(BridgeMessageReceiveEvent event);
+public class EventListener {
+    public void onBridgeMessageReceived(BridgeMessageReceiveEvent event) {
 
-    void onBridgeMessageSend(BridgeMessageSendEvent event);
+    }
+
+    public void onBridgeMessageSend(BridgeMessageSendEvent event) {
+
+    }
 }
