@@ -12,10 +12,14 @@ import event.BridgeMessageReceiveEvent;
 import event.BridgeMessageSendEvent;
 import event.EventListener;
 
-public abstract class BridgeListener implements EventListener {
-    public void BridgeMessageSend(BridgeMessageSendEvent event) {
+public class BridgeListener extends EventListener {
+    @Override
+    public void onBridgeMessageReceived(BridgeMessageReceiveEvent event) {
+        System.out.println("Received new message via The Bridge!! :: " + event.getMessage().getMessage());
     }
 
-    public void BridgeMessageReceive(BridgeMessageReceiveEvent event) {
+    @Override
+    public void onBridgeMessageSend(BridgeMessageSendEvent event) {
+
     }
 }
