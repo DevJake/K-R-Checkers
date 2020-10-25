@@ -12,13 +12,13 @@ import comms.Message;
 import event.Event;
 
 public abstract class Protocol<E extends Event> {
-    private final String header;
-    private final String footer;
     private final Class<E> eventClass;
+    private String header = "";
+    private String footer = "";
 
     public Protocol(String header, String footer, Class<E> eventClass) {
-        this.header = header;
-        this.footer = footer;
+        this.header = header.isEmpty() ? eventClass.getName() : header;
+        this.footer = footer.isEmpty() ? eventClass.getName() : footer;
         this.eventClass = eventClass;
 
         ProtocolManager.registerProtocol(this);
