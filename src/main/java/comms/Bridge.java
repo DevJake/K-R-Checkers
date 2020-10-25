@@ -9,17 +9,21 @@
 package comms;
 
 import err.BridgeClosedException;
+import event.BridgeMessageReceiveEvent;
 import event.BridgeMessageSendEvent;
 import event.Event;
-import event.EventListener;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -50,17 +54,13 @@ public class Bridge {
         Bridge.refreshTimer = refreshTimer;
     }
 
-    public enum Mode {
-        CONTINUOUS, //Allows for continuously sending packets
-        PONG //Must receive a response for sending the next packet //TODO impl.
-    }
-
     /*
         Launch the server instance, and begin listening
          */
     public static void open() throws IOException {
         inboundSocket = new ServerSocket(port);
         outboundSocket = new Socket(InetAddress.getLocalHost(), 5000);
+        beginListening();
     }
 
     public static int getPort() {
@@ -96,10 +96,6 @@ public class Bridge {
         }
     }
 
-    public static void registerListener(BridgeListener listener) {
-        Event.Manager.registerListener(listener);
-    }
-
     public static void send(Message message) throws IOException {
         if (!isOpen()) throw new BridgeClosedException("The Bridge has not been opened!");
 
@@ -124,7 +120,38 @@ public class Bridge {
     }
 
     public static boolean isOpen() {
-        return outboundSocket != null;
+        return outboundSocket != null && inboundSocket != null;
+    }
+
+    private static void beginListening() {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(() -> {
+            if (!isOpen()) return;
+
+            try {
+                Socket accept = inboundSocket.accept();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(accept.getInputStream()));
+                Event.Manager.fire(
+                        new BridgeMessageReceiveEvent(
+                                new MessageEncoder(bufferedReader.readLine())
+                                        .setState(Message.State.INBOUND)
+                                        .encode()));
+                //TODO add MessageDecoder class; remove #setState method
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, 0, refreshTimer, TimeUnit.MILLISECONDS);
+
+//        while (true) {
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(accept.getInputStream()));
+//            System.out.println(bufferedReader.readLine());
+//            accept = x.accept();
+//        }
+    }
+
+    public enum Mode {
+        CONTINUOUS, //Allows for continuously sending packets
+        PONG //Must receive a response for sending the next packet //TODO impl.
     }
 
 //    /*
