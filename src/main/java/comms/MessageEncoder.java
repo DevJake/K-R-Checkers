@@ -8,7 +8,8 @@
 
 package comms;
 
-import ent.Entity;
+import comms.protocol.ProtocolManager;
+import event.Event;
 
 import java.util.UUID;
 
@@ -16,44 +17,16 @@ import java.util.UUID;
 Encodes information for outbound transfers.
  */
 public class MessageEncoder {
-    private Message.State state = Message.State.OUTBOUND;
-    private String message;
+    private final Message.State state = Message.State.OUTBOUND;
+    private final Message message;
     private UUID responseCode;
 
-    public MessageEncoder(String message) {
-        this.message = message;
-    }
-
-    public MessageEncoder(Entity entity) {
-        setMessage(entity);
-    }
-
-    public Message.State getState() {
-        return state;
-    }
-
-    public MessageEncoder setState(Message.State state) {
-        this.state = state;
-        return this;
-    }
-
-    public MessageEncoder setResponseCode(UUID responseCode) {
-        this.responseCode = responseCode;
-        return this;
-    }
-
-    public MessageEncoder setMessage(String input) {
-        //TODO
-        return this;
-    }
-
-    public MessageEncoder setMessage(Entity input) {
-        //TODO
-        return this;
+    public <E extends Event> MessageEncoder(E event) {
+        this.message = ProtocolManager.getProtocolFor(event).encode(event);
     }
 
     public Message encode() {
-        return new Message(message, responseCode, state);
+        return message;
     }
 
 }
