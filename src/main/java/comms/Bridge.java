@@ -10,6 +10,8 @@ package comms;
 
 import err.BridgeClosedException;
 import event.BridgeMessageSendEvent;
+import event.Event;
+import event.EventListener;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,7 +27,6 @@ import java.util.ArrayList;
  */
 public class Bridge {
     private static final ArrayList<Message> queue = new ArrayList<>();
-    private static final ArrayList<BridgeListener> listeners = new ArrayList<>();
     private static int port = 5000; //Default
     private static String address = "localhost"; //Default
     private static int refreshTimer = 100; //Delay period between refreshing inbound connections for new Messages
@@ -96,7 +97,7 @@ public class Bridge {
     }
 
     public static void registerListener(BridgeListener listener) {
-        listeners.add(listener);
+        Event.Manager.registerListener(listener);
     }
 
     public static void send(Message message) throws IOException {
@@ -114,7 +115,7 @@ public class Bridge {
                 out.write(message.getMessage());
                 out.flush();
 
-                listeners.forEach(l -> l.BridgeMessageSend(new BridgeMessageSendEvent(message)));
+                Event.Manager.fire(new BridgeMessageSendEvent(message));
             }
 
             queue.clear();
