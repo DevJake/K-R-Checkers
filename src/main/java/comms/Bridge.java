@@ -153,21 +153,4 @@ public class Bridge {
         CONTINUOUS, //Allows for continuously sending packets
         PONG //Must receive a response for sending the next packet //TODO impl.
     }
-
-//    /*
-//    Decodes information from inbound transfers.
-//     */
-//    public class Decoder {
-//        public class DecodedMessage {
-//            private final String message;
-//
-//            private DecodedMessage(String message) {
-//                this.message = message;
-//            }
-//
-//            public String getMessage() {
-//                return message;
-//            }
-//        }
-//    }
 }
