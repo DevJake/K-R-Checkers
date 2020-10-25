@@ -16,7 +16,7 @@ import java.util.UUID;
 Encodes information for outbound transfers.
  */
 public class MessageEncoder {
-    private final Message.State state = Message.State.OUTBOUND;
+    private Message.State state = Message.State.OUTBOUND;
     private String message;
     private UUID responseCode;
 
@@ -30,6 +30,11 @@ public class MessageEncoder {
 
     public Message.State getState() {
         return state;
+    }
+
+    public MessageEncoder setState(Message.State state) {
+        this.state = state;
+        return this;
     }
 
     public MessageEncoder setResponseCode(UUID responseCode) {
