@@ -6,15 +6,10 @@
  * Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
  */
 
-package comms;
+package event;
 
-import event.BridgeMessageReceiveEvent;
-import event.BridgeMessageSendEvent;
+import java.util.UUID;
 
-public class BridgeListener {
-    public void BridgeMessageSend(BridgeMessageSendEvent event) {
-    }
-
-    public void BridgeMessageReceive(BridgeMessageReceiveEvent event) {
-    }
+public class Event {
+    private final UUID ID = UUID.randomUUID();
 }

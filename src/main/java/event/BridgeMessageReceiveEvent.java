@@ -6,15 +6,18 @@
  * Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
  */
 
-package comms;
+package event;
 
-import event.BridgeMessageReceiveEvent;
-import event.BridgeMessageSendEvent;
+import comms.Message;
 
-public class BridgeListener {
-    public void BridgeMessageSend(BridgeMessageSendEvent event) {
+public class BridgeMessageReceiveEvent extends Event {
+    private final Message message;
+
+    public BridgeMessageReceiveEvent(Message m) {
+        this.message = m;
     }
 
-    public void BridgeMessageReceive(BridgeMessageReceiveEvent event) {
+    public Message getMessage() {
+        return message;
     }
 }

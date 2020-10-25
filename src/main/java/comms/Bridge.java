@@ -9,6 +9,7 @@
 package comms;
 
 import err.BridgeClosedException;
+import event.BridgeMessageSendEvent;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -113,7 +114,7 @@ public class Bridge {
                 out.write(message.getMessage());
                 out.flush();
 
-                listeners.forEach(l -> l.MessageSendEvent(message));
+                listeners.forEach(l -> l.BridgeMessageSend(new BridgeMessageSendEvent(message)));
             }
 
             queue.clear();
