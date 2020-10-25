@@ -12,14 +12,14 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Team extends Entity {
+public class Player extends Entity {
     private final UUID id;
     private String name;
     private Color colour;
     private ArrayList<Piece> capturedPieces = new ArrayList<>();
-    private ArrayList<Piece> ownedPieces = new ArrayList<>();
+    private ArrayList<Piece> ownedPieces;
 
-    public Team(String name, Color colour, ArrayList<Piece> ownedPieces) {
+    public Player(String name, Color colour, ArrayList<Piece> ownedPieces) {
         this.name = name;
         this.colour = colour;
         this.id = UUID.randomUUID();

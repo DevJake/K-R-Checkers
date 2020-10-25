@@ -15,15 +15,15 @@ public class Piece extends Entity {
     private final int y;
     private Type type = Type.MAN;
     private Color colour;
-    private Team team;
-    private Team capturedBy = null;
+    private Player player;
+    private Player capturedBy = null;
 
-    public Piece(int x, int y, Type type, Team team) {
+    public Piece(int x, int y, Type type, Player player) {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.colour = team.getColour();
-        this.team = team;
+        this.colour = player.getColour();
+        this.player = player;
     }
 
     /**
@@ -36,18 +36,18 @@ public class Piece extends Entity {
     }
 
     /**
-     * @return The {@link Team} that captured this piece.
+     * @return The {@link Player} that captured this piece.
      */
-    public Team getCapturedBy() {
+    public Player getCapturedBy() {
         return capturedBy;
     }
 
-    public void setCapturedBy(Team capturedBy) {
+    public void setCapturedBy(Player capturedBy) {
         this.capturedBy = capturedBy;
     }
 
-    public Team getTeam() {
-        return team;
+    public Player getTeam() {
+        return player;
     }
 
     public Type getType() {

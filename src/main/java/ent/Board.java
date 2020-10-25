@@ -116,7 +116,7 @@ public class Board extends Entity {
                     if (!flip)
                         inner.add(
                                 new Piece(j + i % 2, i, Piece.Type.MAN,
-                                        new Team("Team 1", Color.BLACK, new ArrayList<>())));
+                                        new Player("Team 1", Color.BLACK, new ArrayList<>())));
                     //TODO Unit test this
                     //TODO add team-adding logic and team-assignment logic
                     //TODO add in 'spacing' parameter support
