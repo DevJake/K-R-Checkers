@@ -30,10 +30,17 @@ public class MessageContainer {
         The UUID of the Message that this Message is responding to. Useful for tracking, as well as implementing
         Ping Pong-esque behaviour.*/
 
-        Message(String message, UUID responseCode) {
+        public Message(String message, UUID responseCode) {
             this.id = UUID.randomUUID();
             this.message = message;
             this.responseCode = responseCode;
+        }
+
+
+        public Message(String message) {
+            this.id = UUID.randomUUID();
+            this.message = message;
+            this.responseCode = null;
         }
 
         public UUID getId() {

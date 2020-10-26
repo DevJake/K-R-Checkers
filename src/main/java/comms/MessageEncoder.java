@@ -9,6 +9,7 @@
 package comms;
 
 import comms.protocol.ProtocolManager;
+import err.EventProtocolMismatchException;
 import event.Event;
 
 import java.util.UUID;
@@ -21,12 +22,16 @@ public class MessageEncoder {
     private final MessageContainer.Message message;
     private UUID responseCode;
 
-    public <E extends Event> MessageEncoder(E event) {
-        this.message = ProtocolManager.getProtocolFor(event).encode(event);
+    public <E extends Event> MessageEncoder(E event) throws EventProtocolMismatchException {
+        this.message = ProtocolManager.getProtocolFor(event.getClass()).encode(event);
     }
 
     public MessageContainer.Message encode() {
         return message;
     }
-
 }
+
+/*
+This class may potentially need to be removed, as its functionality is obsolete and being replaced by the
+Event-to-Protocol system.
+ */

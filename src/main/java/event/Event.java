@@ -13,7 +13,7 @@ import err.UnregisteredEventException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Event {
+public abstract class Event {
     private final UUID ID = UUID.randomUUID();
 
     public UUID getID() {

@@ -28,7 +28,7 @@ public class BoardUpdateProtocol extends Protocol {
 
     @Override
     public Event decode(MessageContainer.Message message) {
-        return null;
+        return new BoardUpdateEvent(null, null);
     }
 
 
