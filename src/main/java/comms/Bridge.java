@@ -8,6 +8,7 @@
 
 package comms;
 
+import comms.protocol.ProtocolManager;
 import err.BridgeClosedException;
 import event.BridgeMessageReceiveEvent;
 import event.BridgeMessageSendEvent;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -131,22 +133,13 @@ public class Bridge {
             try {
                 Socket accept = inboundSocket.accept();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(accept.getInputStream()));
-                Event.Manager.fire(
-                        new BridgeMessageReceiveEvent(
-                                new MessageEncoder(bufferedReader.readLine())
-                                        .setState(Message.State.INBOUND)
-                                        .encode()));
-                //TODO add MessageDecoder class; remove #setState method
+                String message = bufferedReader.lines().collect(Collectors.joining()).replaceAll("\\r|\\n", "");
+                ProtocolManager.decodeFor(new MessageContainer.Message(message));
+                Event.Manager.fire(new BridgeMessageReceiveEvent(new MessageContainer.Message(message)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }, 0, refreshTimer, TimeUnit.MILLISECONDS);
-
-//        while (true) {
-//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(accept.getInputStream()));
-//            System.out.println(bufferedReader.readLine());
-//            accept = x.accept();
-//        }
     }
 
     public enum Mode {

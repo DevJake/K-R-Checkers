@@ -8,20 +8,38 @@
 
 package comms.protocol;
 
+import comms.MessageContainer;
+import err.EventProtocolMismatchException;
 import event.Event;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProtocolManager {
     private static final ArrayList<Protocol> protocols = new ArrayList<>();
 
-    public static void registerProtocol(Protocol protocol) {
+    public static <E extends Event> void registerProtocol(Protocol<E> protocol) {
         protocols.add(protocol);
     }
 
-    public <E extends Event> List<Protocol> getProtocolsFor(E event) {
-        return protocols.stream().filter(p -> p.getEventClass() == event.getClass()).collect(Collectors.toList());
+    public static <E extends Event> Protocol getProtocolFor(Class<E> event) {
+        Stream<Protocol> protocolStream = protocols.stream().filter(p -> p.getEventClass() == event); //Might need to
+        // use instanceof
+        if (protocolStream.count() <= 0)
+            return null;
+        return protocolStream.findFirst().get();
+    }
+
+    public static <E extends Event> void decodeFor(MessageContainer.Message message) {
+        for (Protocol protocol : protocols) {
+            if (protocol.isMatchFor(message)) {
+                Event decode = protocol.decode(message);
+                Event.Manager.fire(decode);
+            }
+        }
+    }
+
+    public static <E extends Event> MessageContainer.Message encodeFor(E event) throws EventProtocolMismatchException {
+        return getProtocolFor(event.getClass()).encode(event);
     }
 }
