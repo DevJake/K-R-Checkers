@@ -21,6 +21,7 @@ repositories {
 }
 
 dependencies {
+    implementation fileTree(dir: "${rootProject.projectDir}/src/python/", includes: ['/**/*.py'])
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
