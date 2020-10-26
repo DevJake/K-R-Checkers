@@ -22,10 +22,14 @@ public class BoardUpdateProtocol extends Protocol {
     public MessageContainer.Message encode(Event event) throws EventProtocolMismatchException {
         if (!(event instanceof BoardUpdateEvent))
             throw new EventProtocolMismatchException(this, event.getClass());
+
+        return new MessageContainer.Message("Placeholder!");
     }
 
     @Override
-    public MessageContainer.Message decode(MessageContainer.Message message) {
+    public Event decode(MessageContainer.Message message) {
         return null;
     }
+
+
 }

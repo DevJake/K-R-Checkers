@@ -23,7 +23,7 @@ public class AIMakeMoveProtocol extends Protocol {
     }
 
     @Override
-    public MessageContainer.Message decode(MessageContainer.Message message) {
+    public Event decode(MessageContainer.Message message) {
         return null;
     }
 }

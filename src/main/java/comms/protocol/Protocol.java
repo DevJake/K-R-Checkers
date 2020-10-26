@@ -39,7 +39,7 @@ public abstract class Protocol<E extends Event> {
 
     public abstract MessageContainer.Message encode(E event) throws EventProtocolMismatchException;
 
-    public abstract MessageContainer.Message decode(MessageContainer.Message message);
+    public abstract E decode(MessageContainer.Message message);
 
     public boolean isMatchFor(MessageContainer.Message message) {
         return message.getMessage().startsWith(header) && message.getMessage().endsWith(footer);
