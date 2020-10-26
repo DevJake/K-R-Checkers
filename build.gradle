@@ -20,9 +20,18 @@ repositories {
     }
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'fx.controllers.Main'
+    }
+}
+
 dependencies {
-    implementation fileTree(dir: "${rootProject.projectDir}/src/python/", includes: ['/**/*.py'])
+    implementation fileTree(dir: "${rootProject.projectDir}/src/python/")
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 mainClassName = 'fx.controllers.Main'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
