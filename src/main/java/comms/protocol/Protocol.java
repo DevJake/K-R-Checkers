@@ -8,7 +8,7 @@
 
 package comms.protocol;
 
-import comms.Message;
+import comms.MessageContainer;
 import err.EventProtocolMismatchException;
 import event.Event;
 
@@ -37,11 +37,11 @@ public abstract class Protocol<E extends Event> {
         return eventClass;
     }
 
-    public abstract Message encode(E event) throws EventProtocolMismatchException;
+    public abstract MessageContainer.Message encode(E event) throws EventProtocolMismatchException;
 
-    public abstract Message decode(Message message);
+    public abstract MessageContainer.Message decode(MessageContainer.Message message);
 
-    public boolean isMatchFor(Message message) {
+    public boolean isMatchFor(MessageContainer.Message message) {
         return message.getMessage().startsWith(header) && message.getMessage().endsWith(footer);
     }
 }

@@ -8,16 +8,16 @@
 
 package event;
 
-import comms.Message;
+import comms.MessageContainer;
 
 public class PlayerMakeMoveEvent extends Event {
-    private final Message message;
+    private final MessageContainer.Message message;
 
-    public PlayerMakeMoveEvent(Message m) {
+    public PlayerMakeMoveEvent(MessageContainer.Message m) {
         this.message = m;
     }
 
-    public Message getMessage() {
+    public MessageContainer.Message getMessage() {
         return message;
     }
 }

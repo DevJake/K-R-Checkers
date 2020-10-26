@@ -8,16 +8,16 @@
 
 package event;
 
-import comms.Message;
+import comms.MessageContainer;
 
 public class BridgeMessageReceiveEvent extends Event {
-    private final Message message;
+    private final MessageContainer.Message message;
 
-    public BridgeMessageReceiveEvent(Message m) {
+    public BridgeMessageReceiveEvent(MessageContainer.Message m) {
         this.message = m;
     }
 
-    public Message getMessage() {
+    public MessageContainer.Message getMessage() {
         return message;
     }
 }

@@ -8,18 +8,19 @@
 
 package event;
 
-import comms.Message;
+import comms.MessageContainer;
+
 /*
 Called when the AI opponent plays a given move.
  */
 public class AIPlayMoveEvent extends Event {
-    private final Message message;
+    private final MessageContainer.Message message;
 
-    public AIPlayMoveEvent(Message m) {
+    public AIPlayMoveEvent(MessageContainer.Message m) {
         this.message = m;
     }
 
-    public Message getMessage() {
+    public MessageContainer.Message getMessage() {
         return message;
     }
 }

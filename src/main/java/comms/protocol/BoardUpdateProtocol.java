@@ -8,7 +8,7 @@
 
 package comms.protocol;
 
-import comms.Message;
+import comms.MessageContainer;
 import err.EventProtocolMismatchException;
 import event.BoardUpdateEvent;
 import event.Event;
@@ -19,13 +19,13 @@ public class BoardUpdateProtocol extends Protocol {
     }
 
     @Override
-    public Message encode(Event event) throws EventProtocolMismatchException {
+    public MessageContainer.Message encode(Event event) throws EventProtocolMismatchException {
         if (!(event instanceof BoardUpdateEvent))
             throw new EventProtocolMismatchException(this, event.getClass());
     }
 
     @Override
-    public Message decode(Message message) {
+    public MessageContainer.Message decode(MessageContainer.Message message) {
         return null;
     }
 }

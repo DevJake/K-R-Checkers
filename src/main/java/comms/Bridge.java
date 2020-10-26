@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * A socket structure for cross-communication to and from the Python backend. TODO
  */
 public class Bridge {
-    private static final ArrayList<Message> queue = new ArrayList<>();
+    private static final ArrayList<MessageContainer.Message> queue = new ArrayList<>();
     private static int port = 5000; //Default
     private static String address = "localhost"; //Default
     private static int refreshTimer = 100; //Delay period between refreshing inbound connections for new Messages
@@ -96,7 +96,7 @@ public class Bridge {
         }
     }
 
-    public static void send(Message message) throws IOException {
+    public static void send(MessageContainer.Message message) throws IOException {
         if (!isOpen()) throw new BridgeClosedException("The Bridge has not been opened!");
 
         queue.add(message);
@@ -107,7 +107,7 @@ public class Bridge {
         if (queue.size() >= queueThreshold) {
             PrintWriter out = new PrintWriter(outboundSocket.getOutputStream(), true);
 
-            for (Message message : queue) {
+            for (MessageContainer.Message message : queue) {
                 out.write(message.getMessage());
                 out.flush();
 

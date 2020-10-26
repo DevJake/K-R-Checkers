@@ -17,15 +17,15 @@ import java.util.UUID;
 Encodes information for outbound transfers.
  */
 public class MessageEncoder {
-    private final Message.State state = Message.State.OUTBOUND;
-    private final Message message;
+    private final MessageContainer.State state = MessageContainer.State.OUTBOUND;
+    private final MessageContainer.Message message;
     private UUID responseCode;
 
     public <E extends Event> MessageEncoder(E event) {
         this.message = ProtocolManager.getProtocolFor(event).encode(event);
     }
 
-    public Message encode() {
+    public MessageContainer.Message encode() {
         return message;
     }
 

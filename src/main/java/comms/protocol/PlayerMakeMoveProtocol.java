@@ -8,7 +8,7 @@
 
 package comms.protocol;
 
-import comms.Message;
+import comms.MessageContainer;
 import event.Event;
 import event.PlayerMakeMoveEvent;
 
@@ -18,12 +18,12 @@ public class PlayerMakeMoveProtocol extends Protocol {
     }
 
     @Override
-    public Message encode(Event event) {
+    public MessageContainer.Message encode(Event event) {
         return null;
     }
 
     @Override
-    public Message decode(Message message) {
+    public MessageContainer.Message decode(MessageContainer.Message message) {
         return null;
     }
 }
