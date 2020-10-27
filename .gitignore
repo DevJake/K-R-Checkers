@@ -5,3 +5,6 @@ build/
 gradlew
 gradlew.bat
 venv/
+*.iml
+
+/**/__pycache__/
