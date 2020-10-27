@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
  */
 public class Bridge {
     private static final ArrayList<MessageContainer.Message> queue = new ArrayList<>();
-    private static int port = 5000; //Default
+    private static int inboundPort = 5001; //Default
+    private static int outboundPort = 5000; //Default
     private static String address = "localhost"; //Default
     private static int refreshTimer = 100; //Delay period between refreshing inbound connections for new Messages
     private static int queueThreshold = 1;
@@ -52,25 +53,37 @@ public class Bridge {
         Bridge.queueThreshold = queueThreshold;
     }
 
-    public static void setRefreshTimer(int refreshTimer) {
-        Bridge.refreshTimer = refreshTimer;
-    }
-
     /*
         Launch the server instance, and begin listening
          */
     public static void open() throws IOException {
-        inboundSocket = new ServerSocket(port);
-        outboundSocket = new Socket(InetAddress.getLocalHost(), 5000);
+        inboundSocket = new ServerSocket(inboundPort);
+//        outboundSocket = new Socket(InetAddress.getLocalHost(), outboundPort);
         beginListening();
     }
 
-    public static int getPort() {
-        return port;
+    public static int getRefreshTimer() {
+        return refreshTimer;
     }
 
-    public static void setPort(int port) {
-        Bridge.port = port;
+    public static void setRefreshTimer(int refreshTimer) {
+        Bridge.refreshTimer = refreshTimer;
+    }
+
+    public static int getInboundPort() {
+        return inboundPort;
+    }
+
+    public static void setInboundPort(int inboundPort) {
+        Bridge.inboundPort = inboundPort;
+    }
+
+    public static int getOutboundPort() {
+        return outboundPort;
+    }
+
+    public static void setOutboundPort(int outboundPort) {
+        Bridge.outboundPort = outboundPort;
     }
 
     public static String getAddress() {
@@ -128,18 +141,24 @@ public class Bridge {
     private static void beginListening() {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(() -> {
-            if (!isOpen()) return;
+//            if (!isOpen()) return;
 
             try {
+                System.out.println("Began listening...");
                 Socket accept = inboundSocket.accept();
+                System.out.println("Received Message @" + System.currentTimeMillis());
+
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(accept.getInputStream()));
                 String message = bufferedReader.lines().collect(Collectors.joining()).replaceAll("\\r|\\n", "");
+                System.out.println("Received new Bridge Message: " + message);
+
                 ProtocolManager.decodeFor(new MessageContainer.Message(message));
                 Event.Manager.fire(new BridgeMessageReceiveEvent(new MessageContainer.Message(message)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }, 0, refreshTimer, TimeUnit.MILLISECONDS);
+
     }
 
     public enum Mode {
