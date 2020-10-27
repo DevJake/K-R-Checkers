@@ -51,7 +51,6 @@ class Bridge:
 
         s.close()
 
-
 # Bridge.boot()
 #
 # Bridge.send(Message(None, "Hello World!!", None))

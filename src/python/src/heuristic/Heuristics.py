@@ -24,4 +24,6 @@ class HeuristicsManager:
         HeuristicsManager.__heuristics.add(heuristic)
 
 
+# Estimates how many opponent pieces could be captured
 class CapturablePiecesHeuristic(Heuristic):
+    pass

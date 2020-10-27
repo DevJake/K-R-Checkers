@@ -11,7 +11,7 @@ package util;
 import ent.Board;
 
 public class PrintUtil {
-    public static String asFormatted(Board board){
+    public static String asFormatted(Board board) {
         return "";
     }
 }

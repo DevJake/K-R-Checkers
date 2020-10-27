@@ -21,5 +21,6 @@ public class EventListener {
     public void onAIPlayMove(AIPlayMoveEvent event) {
     }
 
-    public void onBoardUpdate(BoardUpdateEvent event){}
+    public void onBoardUpdate(BoardUpdateEvent event) {
+    }
 }

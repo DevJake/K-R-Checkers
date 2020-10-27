@@ -16,8 +16,8 @@ public class Player extends Entity {
     private final UUID id;
     private String name;
     private Color colour;
-    private ArrayList<Piece> capturedPieces = new ArrayList<>();
-    private ArrayList<Piece> ownedPieces;
+    private final ArrayList<Piece> capturedPieces = new ArrayList<>();
+    private final ArrayList<Piece> ownedPieces;
 
     public Player(String name, Color colour, ArrayList<Piece> ownedPieces) {
         this.name = name;
@@ -34,7 +34,7 @@ public class Player extends Entity {
         return capturedPieces;
     }
 
-    public void capturePiece(Piece piece){
+    public void capturePiece(Piece piece) {
         this.capturedPieces.add(piece);
         piece.setCapturedBy(this);
     }

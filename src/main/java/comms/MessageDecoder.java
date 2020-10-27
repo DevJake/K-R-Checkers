@@ -9,7 +9,7 @@
 package comms;
 
 public class MessageDecoder {
-    public MessageContainer.Message decode(String message){
+    public MessageContainer.Message decode(String message) {
         return new MessageContainer.Message("Placeholder#2");
     }
 }

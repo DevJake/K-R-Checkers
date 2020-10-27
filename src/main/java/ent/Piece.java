@@ -14,8 +14,8 @@ public class Piece extends Entity {
     private final int x;
     private final int y;
     private Type type = Type.MAN;
-    private Color colour;
-    private Player player;
+    private final Color colour;
+    private final Player player;
     private Player capturedBy = null;
 
     public Piece(int x, int y, Type type, Player player) {
