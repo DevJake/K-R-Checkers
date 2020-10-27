@@ -7,7 +7,7 @@
 #
 from abc import ABC, abstractmethod
 
-from Protocol import Message
+from Entity import Message
 from event.Events import Event, PlayerMakeMoveEvent
 
 

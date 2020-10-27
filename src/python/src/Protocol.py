@@ -7,18 +7,10 @@
 #
 
 import uuid
-from uuid import UUID
 
+from Entity import Message
 from event.Events import PlayerMakeMoveEvent
 from protocol.Protocols import PlayerMakeMoveProtocol, ProtocolManager
-
-
-class Message:
-    def __init__(self, id: UUID, message: str, response_code: UUID):
-        self.id = id
-        self.message = message
-        self.response_code = response_code
-
 
 p = PlayerMakeMoveProtocol('', '')
 
