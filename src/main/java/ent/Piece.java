@@ -8,6 +8,8 @@
 
 package ent;
 
+import javafx.scene.Node;
+
 import java.awt.*;
 
 public class Piece extends Entity {
@@ -17,13 +19,23 @@ public class Piece extends Entity {
     private final Color colour;
     private final Player player;
     private Player capturedBy = null;
+    private final Node node;
 
-    public Piece(int x, int y, Type type, Player player) {
+    public Node getNode() {
+        return node;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Piece(int x, int y, Type type, Player player, Node node) {
         this.x = x;
         this.y = y;
         this.type = type;
         this.colour = player.getColour();
         this.player = player;
+        this.node = node;
     }
 
     /**
