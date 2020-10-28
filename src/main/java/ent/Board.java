@@ -11,29 +11,28 @@ package ent;
 import javafx.scene.Node;
 
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Board extends Entity {
-    private final ArrayList<ArrayList<Piece>> board;
-    private final Color evenTilesColour;
-    private final Color oddTilesColour;
+    private final ArrayList<ArrayList<Piece>> tiles;
+    private final Color playableTilesColour;
+    private final Color unplayableTilesColour;
     private final int width;
     private final int height;
 
-//    public static ArrayList<ArrayList<Piece>> fromGridPane(GridPane pane){
-//
-//    }
-
-    public Board(ArrayList<ArrayList<Piece>> board, Color evenTilesColour, Color oddTilesColour) {
-        this.board = board;
-        this.evenTilesColour = evenTilesColour;
-        this.oddTilesColour = oddTilesColour;
-        this.width = board.get(0).size();
-        this.height = board.size();
+    public Board(ArrayList<ArrayList<Piece>> tiles, Color playableTilesColour, Color unplayableTilesColour) {
+        this.tiles = tiles;
+        this.playableTilesColour = playableTilesColour;
+        this.unplayableTilesColour = unplayableTilesColour;
+        this.width = tiles.get(0).size();
+        this.height = tiles.size();
     }
 
-    public ArrayList<ArrayList<Piece>> getBoard() { //TODO remove
-        return board;
+    public ArrayList<ArrayList<Piece>> getTiles() { //TODO remove
+        return tiles;
     }
 
     public int getHeight() {
@@ -44,16 +43,37 @@ public class Board extends Entity {
         return width;
     }
 
-    public Color getEvenTilesColour() {
-        return evenTilesColour;
+    public Color getPlayableTilesColour() {
+        return playableTilesColour;
     }
 
-    public Color getOddTilesColour() {
-        return oddTilesColour;
+    public Color getUnplayableTilesColour() {
+        return unplayableTilesColour;
     }
 
     public Piece getPieceAtIndex(int x, int y) {
-        return board.get(x).get(y);
+        return tiles.get(x).get(y);
+    }
+
+    public List<Piece> getPlayableTiles() {
+        return getWithOffset(false);
+    }
+
+    private List<Piece> getWithOffset(boolean offset){
+        ArrayList<Piece> pieces = new ArrayList<>();
+        for (int i = 0; i < tiles.size(); i++) {
+            int _offset = offset ? Math.abs((i-1)%2) : i%2;
+            for (int j = 0; j < tiles.get(i).size()/2; j++) { //Slight optimisation ;)
+                pieces.add(getPieceAtIndex(i, (j*2)+_offset));
+            }
+        }
+
+        return pieces;
+    }
+
+
+    public List<Piece> getUnplayableTiles() {
+        return getWithOffset(true);
     }
 
     /**
@@ -62,14 +82,14 @@ public class Board extends Entity {
      * @return Int - How many uncaptured pieces remain on the board.
      */
     public int getTotalPieces() { //TODO Unit test
-        return board.stream().mapToInt(row -> (int) row.stream().filter(piece -> piece.getCapturedBy() == null).count()).sum();
+        return tiles.stream().mapToInt(row -> (int) row.stream().filter(piece -> piece.getCapturedBy() == null).count()).sum();
     }
 
 
     @Override
     public String toString() {
         return "Board{" +
-                "board=" + board +
+                "board=" + tiles +
                 '}';
     }
 
@@ -109,7 +129,7 @@ public class Board extends Entity {
         public Board build(ArrayList<Node> children) {
             ArrayList<ArrayList<Piece>> outer = new ArrayList<>();
 
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < 8; i++) {
                 ArrayList<Piece> temp = new ArrayList<>();
                 ArrayList<Node> nodes = new ArrayList<>(children.subList(i * 8, (i * 8) + 8));
 
