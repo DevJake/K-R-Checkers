@@ -30,9 +30,9 @@ class BoardUpdateStateEvent(Event):
 
 
 class OpponentMovePieceEvent(Event):
-    def __init__(self, before: Piece, after: Piece):
-        self.before_move = before
-        self.after_move = after
+    def __init__(self, before_piece: Piece, after_piece: Piece):
+        self.before_piece = before_piece
+        self.after_piece = after_piece
 
 
 class OpponentCapturePieceEvent(Event):
