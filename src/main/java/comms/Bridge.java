@@ -9,6 +9,7 @@
 package comms;
 
 import comms.protocol.ProtocolManager;
+import err.BridgeClosedException;
 import event.BridgeMessageReceiveEvent;
 import event.BridgeMessageSendEvent;
 import event.Event;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * A socket structure for cross-communication to and from the Python backend. TODO
+ * A socket structure for cross-communication to and from the Python backend.
  */
 public class Bridge {
     private static final ArrayList<MessageContainer.Message> queue = new ArrayList<>();
@@ -39,7 +40,6 @@ public class Bridge {
     private static int queueThreshold = 1;
     /*How many entries in the queue must be present before transmitting as many as possible. In CONTINUOUS mode, this
      will act as a 'burst' threshold. In PONG mode, this will simply act as a standard FIFO queue. */
-//    private static Socket outboundSocket; //The 'client', sending Messages out
     private static ServerSocket inboundSocket; //The 'server', receiving Messages
 
     private static Mode transferMode = Mode.CONTINUOUS;
@@ -52,12 +52,9 @@ public class Bridge {
         Bridge.queueThreshold = queueThreshold;
     }
 
-    /*
-        Launch the server instance, and begin listening
-         */
+    //Launch the server instance, and begin listening
     public static void open() throws IOException {
         inboundSocket = new ServerSocket(inboundPort, 0, InetAddress.getByName(address));
-//        outboundSocket = new Socket(InetAddress.getLocalHost(), outboundPort);
         beginListening();
     }
 
@@ -101,9 +98,8 @@ public class Bridge {
         Bridge.transferMode = transferMode;
     }
 
-    /*
-            Terminate the server instance; terminate listening for incoming traffic
-             */
+
+    //Terminate the server instance; terminate listening for incoming traffic
     public static void close() throws IOException {
         if (inboundSocket != null) {
             inboundSocket.close();
@@ -111,7 +107,7 @@ public class Bridge {
     }
 
     public static void send(MessageContainer.Message message) throws IOException {
-//        if (!isOpen()) throw new BridgeClosedException("The Bridge has not been opened!");
+        if (!isOpen()) throw new BridgeClosedException("The Bridge has not been opened!");
 
         queue.add(message);
         checkQueue();
@@ -143,7 +139,7 @@ public class Bridge {
     private static void beginListening() {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(() -> {
-//            if (!isOpen()) return;
+            if (!isOpen()) return;
 
             try {
                 System.out.println("Began listening...");
@@ -151,7 +147,7 @@ public class Bridge {
                 System.out.println("Received Message @" + System.currentTimeMillis());
 
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(accept.getInputStream()));
-                String message = bufferedReader.lines().collect(Collectors.joining()).replaceAll("\\r|\\n", "");
+                String message = bufferedReader.lines().collect(Collectors.joining());
                 System.out.println("Received new Bridge Message: " + message);
 
                 ProtocolManager.decodeFor(new MessageContainer.Message(message));
