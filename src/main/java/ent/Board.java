@@ -8,24 +8,32 @@
 
 package ent;
 
-import err.BoardSpacingException;
+import javafx.scene.Node;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public class Board extends Entity {
     private final ArrayList<ArrayList<Piece>> board;
-    private final Color evenTiles;
-    private final Color oddTiles;
+    private final Color evenTilesColour;
+    private final Color oddTilesColour;
     private final int width;
     private final int height;
 
-    public Board(ArrayList<ArrayList<Piece>> board, Color evenTiles, Color oddTiles) {
+//    public static ArrayList<ArrayList<Piece>> fromGridPane(GridPane pane){
+//
+//    }
+
+    public Board(ArrayList<ArrayList<Piece>> board, Color evenTilesColour, Color oddTilesColour) {
         this.board = board;
-        this.evenTiles = evenTiles;
-        this.oddTiles = oddTiles;
+        this.evenTilesColour = evenTilesColour;
+        this.oddTilesColour = oddTilesColour;
         this.width = board.get(0).size();
         this.height = board.size();
+    }
+
+    public ArrayList<ArrayList<Piece>> getBoard() { //TODO remove
+        return board;
     }
 
     public int getHeight() {
@@ -36,12 +44,12 @@ public class Board extends Entity {
         return width;
     }
 
-    public Color getEvenTiles() {
-        return evenTiles;
+    public Color getEvenTilesColour() {
+        return evenTilesColour;
     }
 
-    public Color getOddTiles() {
-        return oddTiles;
+    public Color getOddTilesColour() {
+        return oddTilesColour;
     }
 
     public Piece getPieceAtIndex(int x, int y) {
@@ -68,8 +76,8 @@ public class Board extends Entity {
     public static class Builder {
         private int width = 10;
         private int height = 10;
-        private Color evenTiles = Color.WHITE;
-        private Color oddTiles = Color.BLACK;
+        private Color evenTilesColour = Color.WHITE;
+        private Color oddTilesColour = Color.BLACK;
 
         private int spacing = 2;
 
@@ -85,47 +93,38 @@ public class Board extends Entity {
             this.height = height;
         }
 
-        public void setEvenTiles(Color evenTiles) {
-            this.evenTiles = evenTiles;
+        public void setEvenTilesColour(Color evenTilesColour) {
+            this.evenTilesColour = evenTilesColour;
         }
 
-        public void setOddTiles(Color oddTiles) {
-            this.oddTiles = oddTiles;
+        public void setOddTilesColour(Color oddTilesColour) {
+            this.oddTilesColour = oddTilesColour;
         }
 
-        public Board build() throws BoardSpacingException {
-
-
-            if (spacing <= 0 || spacing > height - 2)
-                throw new BoardSpacingException("Spacing between pieces is either too small or too large!");
-
+        /*
+        A 'Board' is represented as an ArrayList of ArrayLists. The first ArrayList contains the data for each row.
+        To do this, the height metric is used to initialise the board row-by-row. This allows for a given piece
+        on the board to be indexed by an (x,y) pair.
+        */
+        public Board build(ArrayList<Node> children) {
             ArrayList<ArrayList<Piece>> outer = new ArrayList<>();
 
-            /*
-            A 'Board' is represented as an ArrayList of ArrayLists. The first ArrayList contains the data for each row.
-            To do this, the height metric is used to initialise the board row-by-row. This allows for a given piece
-            on the board to be indexed by an (x,y) pair.
-             */
+            for (int i = 0; i < 7; i++) {
+                ArrayList<Piece> temp = new ArrayList<>();
+                ArrayList<Node> nodes = new ArrayList<>(children.subList(i * 8, (i * 8) + 8));
 
-            //This code initialises the new Board instance to the specified dimensions, along with Teams information
-            // and individual Pieces in the correct conditions
-            for (int i = 0; i < height; i++) {
-                ArrayList<Piece> inner = new ArrayList<>();
-                boolean flip = false;
-                for (int j = 0; j < width; j++) {
-                    if (!flip)
-                        inner.add(
-                                new Piece(j + i % 2, i, Piece.Type.MAN,
-                                        new Player("Team 1", Color.BLACK, new ArrayList<>())));
-                    //TODO Unit test this
-                    //TODO add team-adding logic and team-assignment logic
-                    //TODO add in 'spacing' parameter support
-                    flip = !flip;
+                for (int j = 0; j < nodes.size(); j++) {
+                    temp.add(new Piece(j, i, Piece.Type.MAN, Player.Defaults.HUMAN.getPlayer(), nodes.get(j)));
                 }
 
-                outer.add(inner);
+                outer.add(temp);
+
+                //TODO fix player type
             }
-            return new Board(outer, evenTiles, oddTiles);
+
+            return new Board(outer, this.evenTilesColour, this.oddTilesColour);
+
+
         }
     }
 }
