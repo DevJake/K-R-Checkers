@@ -8,6 +8,7 @@
 
 import socket
 import time
+from threading import Timer
 
 from Entity import Message
 
@@ -18,7 +19,16 @@ class Bridge:
     outbound_port = 5001
     __outbound_socket: socket.socket
     __inbound_socket: socket.socket
-    refresh_timer: int
+    refresh_timer: int = 0.5
+    __t: Timer
+
+    __is_closed: bool = False
+
+    @staticmethod
+    def close():
+        Bridge.__outbound_socket.close()
+        Bridge.__inbound_socket.close()
+        __is_closed = True
 
     @staticmethod
     def boot():
@@ -30,12 +40,33 @@ class Bridge:
 
         # Bridge.__outbound_socket.bind((Bridge.host, Bridge.outbound_port))
 
+        Bridge.__t = Timer(0.0, Bridge.__begin_listening)
+        Bridge.__t.start()
+
         # Bridge.__begin_listening()
 
     @staticmethod
     def __begin_listening():
+        print("Began listening...")
         Bridge.__inbound_socket.listen()
-        Bridge.__inbound_socket.accept()
+        if not Bridge.__is_closed:
+            # Bridge.__inbound_socket.listen()
+            conn, addr = Bridge.__inbound_socket.accept()
+
+            print("Received new Message...")
+
+            data = conn.recv(1024)
+            while True:
+                d = conn.recv(1024)
+                if not d:
+                    break
+                data += d
+
+            data = data.decode()
+
+            print(data)
+        Bridge.__t = Timer(Bridge.refresh_timer, Bridge.__begin_listening)
+        Bridge.__t.start()
 
     @staticmethod
     def send(message: Message):
@@ -51,10 +82,12 @@ class Bridge:
 
         s.close()
 
-# Bridge.boot()
+
+Bridge.boot()
 #
-# Bridge.send(Message(None, "Hello World!!", None))
-# Bridge.send(Message(None, "Hello World!!", None))
-# Bridge.send(Message(None, "Hello World!!", None))
-# Bridge.send(Message(None, "Hello World!!", None))
-# Bridge.send(Message(None, "Hello World!!", None))
+Bridge.send(Message("Hello World!!"))
+Bridge.send(Message("Hello World!!"))
+Bridge.send(Message("Hello World!!"))
+Bridge.send(Message("Hello World!!"))
+Bridge.send(Message("Hello World!!"))
+
