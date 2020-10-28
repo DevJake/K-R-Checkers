@@ -5,10 +5,15 @@
 #  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
 #  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 #
+import uuid
+from enum import Enum
 from uuid import UUID
 
 
-class Player:
+class Player(Enum):
+    COMPUTER = 0
+    HUMAN = 1
+
     def __init__(self, is_player: bool):
         self.is_player = is_player
 
@@ -55,7 +60,7 @@ class Board:
 
 
 class Message:
-    def __init__(self, id: UUID, message: str, response_code: UUID):
+    def __init__(self, message: str, id: UUID = uuid.uuid4(), response_code: UUID = None):
         self.id = id
         self.message = message
         self.response_code = response_code
