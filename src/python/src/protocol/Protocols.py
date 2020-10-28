@@ -7,8 +7,8 @@
 #
 from abc import ABC, abstractmethod
 
-from Entity import Message
-from event.Events import Event, PlayerMakeMoveEvent
+from Entity import Message, Piece, Player
+from event.Events import BridgeMessageReceiveEvent, Event, OpponentMovePieceEvent
 
 
 class Protocol(ABC):
@@ -30,23 +30,37 @@ class Protocol(ABC):
         pass
 
 
-class PlayerMakeMoveProtocol(Protocol):
+class EventProtocolMismatchException(Exception):
+    def __init__(self, protocol: [Protocol], event: [Event],
+                 message="There has been a mismatch between a given Protocol/Event and the expected type. "):
+        self.message = message
+        self.protocol = protocol
+        self.event = event
+
+
+class OpponentMovePieceProtocol(Protocol):
     def __init__(self, header: str, footer: str) -> None:
-        header = "pmm"
+        header = "omove"
         super().__init__(header, footer)
 
     def decode(self, message: Message) -> Event:
         prev, _next = message.message.split('>')
 
-        return PlayerMakeMoveEvent((prev[0], prev[1]), (_next[0], _next[1]))
+        return OpponentMovePieceEvent(Piece(Player.HUMAN, True, prev[0], prev[1]),
+                                      Piece(Player.HUMAN, True, _next[0], _next[1]))
 
     def encode(self, event: Event) -> Message:
-        pass
+        if event is not OpponentMovePieceEvent:
+            raise EventProtocolMismatchException(self, event)
+
+        event: OpponentMovePieceEvent = event
+
+        return Message(f"{event.before_piece.x}.{event.before_piece.y}:{event.after_piece.x}.{event.after_piece.y}")
 
 
-class BridgeMessageProtocol(Protocol):
+class BridgeMessageReceiveProtocol(Protocol):
 
-    def __init__(self, header: str, footer: str) -> None:
+    def __init__(self, footer: str) -> None:
         header = 'bridge'
         super().__init__(header, footer)
 
@@ -54,7 +68,8 @@ class BridgeMessageProtocol(Protocol):
         pass
 
     def encode(self, event: Event) -> Message:
-        pass
+        if event is not BridgeMessageReceiveEvent:
+            raise EventProtocolMismatchException(self, event)
 
 
 class ProtocolManager:
