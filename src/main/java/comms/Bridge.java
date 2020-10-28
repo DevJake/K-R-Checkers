@@ -9,7 +9,6 @@
 package comms;
 
 import comms.protocol.ProtocolManager;
-import err.BridgeClosedException;
 import event.BridgeMessageReceiveEvent;
 import event.BridgeMessageSendEvent;
 import event.Event;
@@ -18,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -34,12 +34,12 @@ public class Bridge {
     private static final ArrayList<MessageContainer.Message> queue = new ArrayList<>();
     private static int inboundPort = 5001; //Default
     private static int outboundPort = 5000; //Default
-    private static String address = "localhost"; //Default
+    private static String address = "127.0.0.1"; //Default
     private static int refreshTimer = 100; //Delay period between refreshing inbound connections for new Messages
     private static int queueThreshold = 1;
     /*How many entries in the queue must be present before transmitting as many as possible. In CONTINUOUS mode, this
      will act as a 'burst' threshold. In PONG mode, this will simply act as a standard FIFO queue. */
-    private static Socket outboundSocket; //The 'client', sending Messages out
+//    private static Socket outboundSocket; //The 'client', sending Messages out
     private static ServerSocket inboundSocket; //The 'server', receiving Messages
 
     private static Mode transferMode = Mode.CONTINUOUS;
@@ -56,7 +56,7 @@ public class Bridge {
         Launch the server instance, and begin listening
          */
     public static void open() throws IOException {
-        inboundSocket = new ServerSocket(inboundPort);
+        inboundSocket = new ServerSocket(inboundPort, 0, InetAddress.getByName(address));
 //        outboundSocket = new Socket(InetAddress.getLocalHost(), outboundPort);
         beginListening();
     }
@@ -105,13 +105,13 @@ public class Bridge {
             Terminate the server instance; terminate listening for incoming traffic
              */
     public static void close() throws IOException {
-        if (outboundSocket != null) {
-            outboundSocket.close();
+        if (inboundSocket != null) {
+            inboundSocket.close();
         }
     }
 
     public static void send(MessageContainer.Message message) throws IOException {
-        if (!isOpen()) throw new BridgeClosedException("The Bridge has not been opened!");
+//        if (!isOpen()) throw new BridgeClosedException("The Bridge has not been opened!");
 
         queue.add(message);
         checkQueue();
@@ -119,22 +119,25 @@ public class Bridge {
 
     private static void checkQueue() throws IOException {
         if (queue.size() >= queueThreshold) {
-            PrintWriter out = new PrintWriter(outboundSocket.getOutputStream(), true);
+
+            Socket out = new Socket(address, outboundPort);
+            PrintWriter writer = new PrintWriter(out.getOutputStream(), true);
 
             for (MessageContainer.Message message : queue) {
-                out.write(message.getMessage());
-                out.flush();
+                writer.write(message.getMessage());
+                writer.flush();
 
                 Event.Manager.fire(new BridgeMessageSendEvent(message));
             }
 
             queue.clear();
+            writer.close();
             out.close();
         }
     }
 
     public static boolean isOpen() {
-        return outboundSocket != null && inboundSocket != null;
+        return inboundSocket != null;
     }
 
     private static void beginListening() {
