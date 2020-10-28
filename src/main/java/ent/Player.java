@@ -14,10 +14,10 @@ import java.util.UUID;
 
 public class Player extends Entity {
     private final UUID id;
-    private String name;
-    private Color colour;
     private final ArrayList<Piece> capturedPieces = new ArrayList<>();
     private final ArrayList<Piece> ownedPieces;
+    private String name;
+    private Color colour;
 
     public Player(String name, Color colour, ArrayList<Piece> ownedPieces) {
         this.name = name;
@@ -57,5 +57,20 @@ public class Player extends Entity {
 
     public void setColour(Color colour) {
         this.colour = colour;
+    }
+
+    public enum Defaults {
+        HUMAN(new Player("HUMAN", Color.PINK, new ArrayList<>())),
+        COMPUTER(new Player("A.I.", Color.BLACK, new ArrayList<>()));
+
+        private final Player player;
+
+        Defaults(Player player) {
+            this.player = player;
+        }
+
+        public Player getPlayer() {
+            return player;
+        }
     }
 }
