@@ -13,21 +13,25 @@ import err.EventProtocolMismatchException;
 import event.Event;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ProtocolManager {
-    private static final ArrayList<Protocol> protocols = new ArrayList<>();
+    private static final HashSet<Protocol> protocols = new HashSet<>();
 
     public static <E extends Event> void registerProtocol(Protocol<E> protocol) {
         protocols.add(protocol);
+        System.out.println("Registering protocol: " + protocol.getClass() + protocol.getEventClass());
     }
 
     public static <E extends Event> Protocol getProtocolFor(Class<E> event) {
-        Stream<Protocol> protocolStream = protocols.stream().filter(p -> p.getEventClass() == event); //Might need to
-        // use instanceof
-        if (protocolStream.count() <= 0)
+        List<Protocol> select = protocols.stream().filter(p -> p.getEventClass() == event).collect(Collectors.toList());//Might need to
+// use instanceof
+        if (select.size() <= 0)
             return null;
-        return protocolStream.findFirst().get();
+        return select.get(0);
     }
 
     public static <E extends Event> void decodeFor(MessageContainer.Message message) {
