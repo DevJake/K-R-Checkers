@@ -11,6 +11,9 @@ import time
 from threading import Timer
 
 from Entity import Message
+from event.Events import BridgeMessageReceiveEvent, BridgeMessageSendEvent, Event
+from protocol.Protocols import BridgeMessageReceiveProtocol, BridgeMessageSendProtocol, OpponentMovePieceProtocol, \
+    ProtocolManager
 
 
 class Bridge:
@@ -33,24 +36,16 @@ class Bridge:
     @staticmethod
     def boot():
         Bridge.__inbound_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         Bridge.__inbound_socket.bind((Bridge.host, Bridge.inbound_port))
-
-        # Bridge.__outbound_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        # Bridge.__outbound_socket.bind((Bridge.host, Bridge.outbound_port))
 
         Bridge.__t = Timer(0.0, Bridge.__begin_listening)
         Bridge.__t.start()
-
-        # Bridge.__begin_listening()
 
     @staticmethod
     def __begin_listening():
         print("Began listening...")
         Bridge.__inbound_socket.listen()
         if not Bridge.__is_closed:
-            # Bridge.__inbound_socket.listen()
             conn, addr = Bridge.__inbound_socket.accept()
 
             print("Received new Message...")
@@ -63,31 +58,34 @@ class Bridge:
                 data += d
 
             data = data.decode()
+            # TODO decode to correct protocol, split off @ID
+
+            # ProtocolManager.decodeFor()
 
             print(data)
         Bridge.__t = Timer(Bridge.refresh_timer, Bridge.__begin_listening)
         Bridge.__t.start()
 
     @staticmethod
-    def send(message: Message):
+    def send(event: Event):
         print(f"Sending new message @{int(round(time.time() * 1000))}")
-        # Bridge.__outbound_socket.send(message.message.encode())
 
         s = socket.socket()
 
         s.connect((Bridge.host, Bridge.outbound_port))
 
-        print("Attempting to send a new Message...")
-        s.send(message.message.encode())
+        print(ProtocolManager.encodeFor(event))
+        m: Message = ProtocolManager.encodeFor(event)
 
+        print(f"Attempting to send a new Message...")
+        s.send(f"{m.header}@{m.id}://{m.message}//:".encode())
         s.close()
 
 
-Bridge.boot()
-#
-Bridge.send(Message("Hello World!!"))
-Bridge.send(Message("Hello World!!"))
-Bridge.send(Message("Hello World!!"))
-Bridge.send(Message("Hello World!!"))
-Bridge.send(Message("Hello World!!"))
+ProtocolManager.register_protocol(OpponentMovePieceProtocol())
+ProtocolManager.register_protocol(BridgeMessageReceiveProtocol())
+ProtocolManager.register_protocol(BridgeMessageSendProtocol())
 
+Bridge.boot()
+
+Bridge.send(BridgeMessageSendEvent(Message("Hello World!")))

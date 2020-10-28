@@ -60,7 +60,22 @@ class Board:
 
 
 class Message:
-    def __init__(self, message: str, id: UUID = uuid.uuid4(), response_code: UUID = None):
+    def __init__(self, message: str, id: UUID = uuid.uuid4(), response_code: UUID = None, header:str = "", footer:str = ""):
+        self.header = header
+        self.footer = footer
         self.id = id
         self.message = message
         self.response_code = response_code
+
+
+    def set_header(self, header:str):
+        self.header = header
+        return self
+
+    def set_footer(self, footer:str):
+        self.footer =footer
+        return self
+
+    def set_response_code(self, response_code:UUID):
+        self.response_code = response_code
+        return self
