@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static fx.controllers.Main.toRGBString;
+
 public class Board extends Entity {
     private final ArrayList<ArrayList<Tile>> tiles;
     private final Color playableTilesColour;
@@ -32,8 +34,14 @@ public class Board extends Entity {
         this.width = tiles.get(0).size();
         this.height = tiles.size();
 
-        getPlayableTiles().forEach(t -> t.setPlayable(true));
-        getUnplayableTiles().forEach(t -> t.setPlayable(false));
+        for (Tile tile : getPlayableTiles()) {
+            tile.setPlayable(true);
+            tile.getNode().setStyle("-fx-background-color: " + toRGBString(getPlayableTilesColour()));
+        }
+        for (Tile tile : getUnplayableTiles()) {
+            tile.setPlayable(false);
+            tile.getNode().setStyle("-fx-background-color: " + toRGBString(getUnplayableTilesColour()));
+        }
 
         this.manager = new BoardManager(this);
     }

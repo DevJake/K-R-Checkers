@@ -22,7 +22,6 @@
  import javafx.fxml.FXMLLoader;
  import javafx.scene.Scene;
  import javafx.scene.layout.GridPane;
- import javafx.scene.shape.Circle;
  import javafx.stage.Stage;
  import util.PrintUtil;
 
@@ -95,40 +94,24 @@
          GridPane gridPane = (GridPane) s.lookup("#gridPane");
          gridPane.setGridLinesVisible(true);
 
-         mainBoard =
-                 new Board.Builder().setEvenTilesColour(Color.ORANGE).setOddTilesColour(Color.DARK_GRAY).build(new ArrayList<>(gridPane.getChildren()));
+         mainBoard = new Board.Builder()
+                 .setEvenTilesColour(Color.PINK)
+                 .setOddTilesColour(Color.DARK_GRAY)
+                 .build(new ArrayList<>(gridPane.getChildren()));
 
-
-//         System.out.println(mainBoard.getPieceAtIndex(3, 6));
-//         System.out.println(mainBoard.getPieceAtIndex(3, 6).getNode());
-
-//         System.out.println(mainBoard.getPlayableTiles());
-
-
-         mainBoard.getPlayableTiles().forEach(tile -> tile.getNode().setStyle("-fx-background-color: " + toRGBString(mainBoard.getPlayableTilesColour())));
-         mainBoard.getUnplayableTiles().forEach(tile -> tile.getNode().setStyle("-fx-background-color: " + toRGBString(mainBoard.getUnplayableTilesColour())));
-
-//         for (Tile t : mainBoard.getPlayableTiles()) {
-//             System.out.println("x:" + t.getPiece().getX() + " y:" + t.getPiece().getY());
-//         }
 
          mainBoard.init();
          mainBoard.getRow(3).forEach(Tile::delete);
          mainBoard.getRow(4).forEach(Tile::delete);
          mainBoard.getPieceAtIndex(3, 3).init();
-//         mainBoard.getPieceAtIndex(4, 4).init();
-
-
-//         Thread.sleep(2000);
 
          try {
              mainBoard.getManager().makeMove(mainBoard.getPieceAtIndex(3, 3).getPiece(), 4, 4);
-//             mainBoard.getManager().makeMove(mainBoard.getPieceAtIndex(3, 5).getPiece(), 3, 3);
 
              Thread.sleep(2000);
 
              mainBoard.getManager().makeMove(mainBoard.getPieceAtIndex(5, 5).getPiece(), 3, 3);
-         } catch (RuntimeException exception){
+         } catch (RuntimeException exception) {
              exception.printStackTrace();
          }
 
