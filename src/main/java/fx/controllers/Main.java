@@ -10,41 +10,35 @@
 
  import comms.Bridge;
  import comms.BridgeListener;
+ import comms.protocol.BoardUpdateProtocol;
+ import comms.protocol.ProtocolManager;
  import ent.Board;
- import err.BoardSpacingException;
+ import ent.Player;
+ import ent.Tile;
  import err.EventProtocolMismatchException;
+ import event.BoardUpdateEvent;
  import event.Event;
  import javafx.application.Application;
  import javafx.fxml.FXMLLoader;
  import javafx.scene.Scene;
- import javafx.scene.layout.BorderPane;
- import javafx.scene.layout.Pane;
+ import javafx.scene.layout.GridPane;
+ import javafx.scene.shape.Circle;
  import javafx.stage.Stage;
  import util.PrintUtil;
 
- import java.io.File;
+ import java.awt.*;
  import java.io.IOException;
  import java.net.URISyntaxException;
+ import java.util.ArrayList;
 
  public class Main extends Application {
      public static Board mainBoard;
 
-     static {
-         try {
-             mainBoard = new Board.Builder().build();
-         } catch (BoardSpacingException e) {
-             e.printStackTrace();
-         }
-     }
-
      public static void main(String[] args) throws IOException, EventProtocolMismatchException, URISyntaxException {
-//         launch(args);
+         launch(args);
 
-//         System.out.println(mainBoard.toString());
 
          PrintUtil.asFormatted(mainBoard);
-
-//         System.out.println(mainBoard.getTotalPieces());
 
          Event.Manager.registerListener(new BridgeListener());
 
@@ -58,40 +52,89 @@
 //         String absolutePath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI())
 //         .getAbsolutePath();
 
-         File pyMain = new File("./Main.py");
-//         System.out.println(pyMain);
 
-         ProcessBuilder builder = new ProcessBuilder("python", pyMain.getAbsolutePath());
+//         File pyMain = new File("./Main.py");
 
-         Process process = builder.start();
+//         ProcessBuilder builder = new ProcessBuilder("python", pyMain.getAbsolutePath());
+
+//         Process process = builder.start();
 
 
-         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-             System.out.println("Calling shutdown hook...");
-             process.destroy();
-         }));
+//         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//             System.out.println("Calling shutdown hook...");
+//             process.destroy();
+//         }));
 
          Bridge.open();
 
-//         Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard, mainBoard)));
+         new BoardUpdateProtocol("boardupdate", "");
+
+         Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard, mainBoard)));
+     }
+
+     public static String toHex(Color color) {
+         return Integer.toHexString(color.getRGB()).substring(2);
+     }
+
+     public static String toRGBString(Color color) {
+         return "rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ")";
      }
 
      @Override
-     public void start(Stage primaryStage) throws IOException {
+     public void start(Stage primaryStage) throws IOException, InterruptedException {
          FXMLLoader loader = new FXMLLoader(getClass().getResource("/Main.fxml"));
          Scene s = new Scene(loader.load());
 
          primaryStage.setScene(s);
          primaryStage.setResizable(false);
-         primaryStage.setHeight(1000);
-         primaryStage.setWidth(1900);
+         primaryStage.setHeight(800);
+         primaryStage.setWidth(800);
+         primaryStage.setTitle("Checkers");
          primaryStage.show();
 
-         Pane mainPane = (Pane) s.lookup("#pane");
-         BorderPane borderPane = (BorderPane) s.lookup("#border");
+         GridPane gridPane = (GridPane) s.lookup("#gridPane");
+         gridPane.setGridLinesVisible(true);
 
-         mainPane.prefWidthProperty().bind(mainPane.widthProperty());
-         mainPane.prefHeightProperty().bind(mainPane.heightProperty());
+         mainBoard =
+                 new Board.Builder().setEvenTilesColour(Color.ORANGE).setOddTilesColour(Color.DARK_GRAY).build(new ArrayList<>(gridPane.getChildren()));
+
+
+//         System.out.println(mainBoard.getPieceAtIndex(3, 6));
+//         System.out.println(mainBoard.getPieceAtIndex(3, 6).getNode());
+
+//         System.out.println(mainBoard.getPlayableTiles());
+
+
+         mainBoard.getPlayableTiles().forEach(tile -> tile.getNode().setStyle("-fx-background-color: " + toRGBString(mainBoard.getPlayableTilesColour())));
+         mainBoard.getUnplayableTiles().forEach(tile -> tile.getNode().setStyle("-fx-background-color: " + toRGBString(mainBoard.getUnplayableTilesColour())));
+
+//         for (Tile t : mainBoard.getPlayableTiles()) {
+//             System.out.println("x:" + t.getPiece().getX() + " y:" + t.getPiece().getY());
+//         }
+
+         mainBoard.init();
+         mainBoard.getRow(3).forEach(Tile::delete);
+         mainBoard.getRow(4).forEach(Tile::delete);
+         mainBoard.getPieceAtIndex(3, 3).init();
+//         mainBoard.getPieceAtIndex(4, 4).init();
+
+
+//         Thread.sleep(2000);
+
+         try {
+             mainBoard.getManager().makeMove(mainBoard.getPieceAtIndex(3, 3).getPiece(), 4, 4);
+//             mainBoard.getManager().makeMove(mainBoard.getPieceAtIndex(3, 5).getPiece(), 3, 3);
+
+             Thread.sleep(2000);
+
+             mainBoard.getManager().makeMove(mainBoard.getPieceAtIndex(5, 5).getPiece(), 3, 3);
+         } catch (RuntimeException exception){
+             exception.printStackTrace();
+         }
+
+         System.out.println(mainBoard);
+         System.out.println(Player.Defaults.HUMAN.getPlayer().getCapturedPieces());
+         System.out.println(Player.Defaults.COMPUTER.getPlayer().getCapturedPieces());
 
      }
  }
