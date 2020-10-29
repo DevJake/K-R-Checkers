@@ -8,6 +8,7 @@
 
 package ent;
 
+import err.*;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 
@@ -37,6 +38,10 @@ public class Board extends Entity {
         this.manager = new BoardManager(this);
     }
 
+    public BoardManager getManager() {
+        return manager;
+    }
+
     public void init() {
         tiles.forEach(t0 -> t0.forEach(Tile::init));
     }
@@ -63,6 +68,10 @@ public class Board extends Entity {
 
     public Tile getPieceAtIndex(int x, int y) {
         return tiles.get(x).get(y);
+    }
+
+    public void setPieceAtIndex(int x, int y, Piece piece) {
+        tiles.get(x).get(y).setPiece(piece);
     }
 
     public List<Tile> getPlayableTiles() {
@@ -118,11 +127,6 @@ public class Board extends Entity {
         private final Color colourMachine = Color.BLACK;
         private Color evenTilesColour = Color.WHITE;
         private Color oddTilesColour = Color.BLACK;
-        private int spacing = 2;
-
-        public void setSpacing(int spacing) {
-            this.spacing = spacing;
-        }
 
         public Builder setEvenTilesColour(Color evenTilesColour) {
             this.evenTilesColour = evenTilesColour;
@@ -144,9 +148,10 @@ public class Board extends Entity {
 
             for (int i = 0; i < 8; i++) {
                 ArrayList<Tile> temp = new ArrayList<>();
-                ArrayList<Node> nodes = new ArrayList<>(children.subList(i * 8, (i * 8) + 8));
+                ArrayList<Node> nodes = new ArrayList<>(children.subList(64 - ((i * 8) + 8), 64 - (i * 8)));
 
                 for (int j = 0; j < nodes.size(); j++) {
+//                    System.out.println("i: " + i + " j:" + j);
                     Tile tile = new Tile(Color.ORANGE, (StackPane) nodes.get(j), new Piece(j, i, Color.BLACK,
                             Player.Defaults.HUMAN.getPlayer(), Piece.Type.MAN));
                     temp.add(tile);
@@ -162,6 +167,8 @@ public class Board extends Entity {
 
                 outer.add(temp);
 
+//                System.out.println("row: " + i + " added: " + temp);
+
                 //TODO fix player type
             }
 
@@ -174,8 +181,151 @@ public class Board extends Entity {
     public class BoardManager {
         private final Board board;
 
-        public BoardManager(Board board) {
+        private BoardManager(Board board) {
             this.board = board;
+        }
+
+        private boolean isOccupied(int x, int y) {
+            return board.getPieceAtIndex(x, y).getPiece().getChecker() != null && board.getPieceAtIndex(x, y).getPiece().getCapturedBy() == null;
+        }
+
+        //Make a move from x,y to x,y
+        public boolean makeMove(Piece origin, int toX, int toY) {
+
+            if (!isOccupied(origin.getX(), origin.getY()))
+                throw new BoardMoveInvalidOriginException(origin, toX, toY);
+
+            if (isOccupied(toX, toY))
+                throw new BoardMoveInvalidDestinationException("Invalid destination, already occupied! x:" + toX + "," +
+                        " y: " + toY);
+
+            int diffX = Math.abs(origin.getX() - toX);
+            int diffY = Math.abs(origin.getY() - toY);
+
+            if (diffX == 0 || diffX > 2 || diffY == 0 || diffY > 2) //Filters for attempted moves that aren't diagonal
+                throw new BoardMoveException("Attempted move was too extreme, or not along a diagonal!");
+
+
+            boolean capturing = Math.abs(origin.getX() - toX) == 2 && Math.abs(origin.getY() - toY) == 2;
+
+            boolean left = origin.getX() > toX;
+            boolean up = origin.getY() < toY;
+
+
+            if (left) {
+                if (up) {
+                    //Left+up
+                    checkLeftUp(origin, capturing);
+                } else {
+                    //Left+down
+                    checkLeftDown(origin, capturing);
+                }
+            } else {
+                if (up) {
+                    //Right+up
+                    checkRightUp(origin, capturing);
+                } else {
+                    //Right+down
+                    checkRightDown(origin, capturing);
+                }
+            }
+
+
+            return true;
+        }
+
+        //Attempt to execute a move left+up of the origin
+        private void checkLeftUp(Piece origin, boolean capturingMove) {
+            System.out.println("Check Left Up");
+            int destX = origin.getX() - (capturingMove ? 2 : 1);
+            int destY = origin.getY() + (capturingMove ? 2 : 1);
+
+            int midX = origin.getX();
+            int midY = origin.getY();
+
+            midX -= (capturingMove ? 2 : 1);
+            midY += (capturingMove ? 2 : 1);
+
+
+            finalCheck(origin, destX, destY, midX, midY, capturingMove);
+        }
+
+        //Attempt to execute a move left+down of the origin
+        private void checkLeftDown(Piece origin, boolean capturingMove) {
+            System.out.println("Check Left Down");
+            int destX = origin.getX() - (capturingMove ? 2 : 1);
+            int destY = origin.getY() - (capturingMove ? 2 : 1);
+
+            int midX = origin.getX();
+            int midY = origin.getY();
+
+            midX -= (capturingMove ? 2 : 1);
+            midY -= (capturingMove ? 2 : 1);
+
+
+            finalCheck(origin, destX, destY, midX, midY, capturingMove);
+        }
+
+
+        //Attempt to execute a move right+up of the origin
+        private void checkRightUp(Piece origin, boolean capturingMove) {
+            System.out.println("Check Right Up");
+            int destX = origin.getX() + (capturingMove ? 2 : 1);
+            int destY = origin.getY() + (capturingMove ? 2 : 1);
+
+            int midX = origin.getX();
+            int midY = origin.getY();
+
+            midX += (capturingMove ? 2 : 1);
+            midY += (capturingMove ? 2 : 1);
+
+            finalCheck(origin, destX, destY, midX, midY, capturingMove);
+        }
+
+        //Attempt to execute a move right+down of the origin
+        private void checkRightDown(Piece origin, boolean capturingMove) {
+            System.out.println("Check Right Down");
+            int destX = origin.getX() + (capturingMove ? 2 : 1);
+            int destY = origin.getY() - (capturingMove ? 2 : 1);
+
+            int midX = origin.getX();
+            int midY = origin.getY();
+
+            midX += (capturingMove ? 2 : 1);
+            midY -= (capturingMove ? 2 : 1);
+
+            finalCheck(origin, destX, destY, midX, midY, capturingMove);
+        }
+
+        private void finalCheck(Piece origin, int destX, int destY, int midX, int midY, boolean capturingMove) {
+            if (capturingMove) {
+                if (isOccupied(midX, midY))
+                    throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existant " +
+                            "piece! x:" + midX + ", y: " + midY);
+                if (board.getPieceAtIndex(midX, midY).getPiece().getPlayer() == origin.getPlayer())
+                    throw new BoardMoveSelfCaptureException("Attempting to capture a member of your team! x:" + midX + "," +
+                            " y: "
+                            + midY);
+            }
+
+            boolean kingOnlyMove = origin.getPlayer().getHomeSide() == Player.HomeSide.BOTTOM ?
+                    destY < origin.getY() : destY > origin.getY();
+
+            if (origin.getType() != Piece.Type.KING && kingOnlyMove)
+                throw new BoardMoveNotKingException("This piece is not a king!");
+
+            Piece capturing = capturingMove ? board.getPieceAtIndex(midX, midY).getPiece() : null;
+            executeMove(origin, destX, destY, capturing);
+        }
+
+        private void executeMove(Piece origin, int destX, int destY, Piece captured) {
+            if (captured != null) {
+                origin.getPlayer().getCapturedPieces().add(captured);
+                captured.deleteFromBoard();
+            }
+
+            board.getPieceAtIndex(destX, destY).init();
+            board.getPieceAtIndex(origin.getX(), origin.getY()).delete();
         }
     }
 }
