@@ -17,7 +17,7 @@ public class Piece {
     private final int x;
     private final int y;
     private final Type type;
-    private final Player capturedBy = null;
+    private Player capturedBy = null;
     private Color colour;
     private Player player;
     private Circle checker;
@@ -31,7 +31,7 @@ public class Piece {
         init();
     }
 
-    public void delete() {
+    public void deleteFromBoard() {
         checker = null;
     }
 
@@ -74,6 +74,10 @@ public class Piece {
 
     public Player getCapturedBy() {
         return capturedBy;
+    }
+
+    public void setCapturedBy(Player capturedBy) {
+        this.capturedBy = capturedBy;
     }
 
 

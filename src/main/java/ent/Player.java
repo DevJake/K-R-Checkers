@@ -14,29 +14,24 @@ import java.util.UUID;
 
 public class Player extends Entity {
     private final UUID id;
-    private final ArrayList<Tile> capturedTiles = new ArrayList<>();
-    private final ArrayList<Tile> ownedTiles;
+    private final ArrayList<Piece> capturedTiles = new ArrayList<>();
+    private final HomeSide homeSide;
     private String name;
     private Color colour;
 
-    public Player(String name, Color colour, ArrayList<Tile> ownedTiles) {
+    public HomeSide getHomeSide() {
+        return homeSide;
+    }
+
+    public Player(HomeSide homeSide, String name, Color colour) {
+        this.homeSide = homeSide;
         this.name = name;
         this.colour = colour;
         this.id = UUID.randomUUID();
-        this.ownedTiles = ownedTiles;
     }
 
-    public ArrayList<Tile> getOwnedPieces() {
-        return ownedTiles;
-    }
-
-    public ArrayList<Tile> getCapturedPieces() {
+    public ArrayList<Piece> getCapturedPieces() {
         return capturedTiles;
-    }
-
-    public void capturePiece(Tile tile) {
-        this.capturedTiles.add(tile);
-//        tile.setCapturedBy(this); //TODO fix lol
     }
 
     public UUID getId() {
@@ -59,9 +54,14 @@ public class Player extends Entity {
         this.colour = colour;
     }
 
+    public enum HomeSide {
+        TOP,
+        BOTTOM
+    }
+
     public enum Defaults {
-        HUMAN(new Player("HUMAN", Color.PINK, new ArrayList<>())),
-        COMPUTER(new Player("A.I.", Color.BLACK, new ArrayList<>()));
+        HUMAN(new Player(HomeSide.BOTTOM, "HUMAN", Color.PINK)),
+        COMPUTER(new Player(HomeSide.TOP, "A.I.", Color.BLACK));
 
         private final Player player;
 

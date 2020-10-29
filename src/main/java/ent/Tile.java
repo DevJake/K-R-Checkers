@@ -15,7 +15,7 @@ import java.awt.*;
 public class Tile extends Entity {
     private final Color colour;
     private final StackPane node;
-    private final Piece piece;
+    private Piece piece;
     private boolean isPlayable;
 
     public Tile(Color colour, StackPane node, Piece piece) {
@@ -29,7 +29,7 @@ public class Tile extends Entity {
     }
 
     public void init() {
-        this.node.getChildren().remove(piece.init().getChecker());
+        this.node.getChildren().removeAll();
         if (isPlayable)
             this.node.getChildren().add(piece.init().getChecker());
     }
@@ -46,9 +46,13 @@ public class Tile extends Entity {
         return piece;
     }
 
-    public void delete(){
+    public void setPiece(Piece piece) {
+        this.piece = piece;
+    }
+
+    public void delete() {
         this.node.getChildren().remove(piece.getChecker());
-        piece.delete();
+        piece.deleteFromBoard();
     }
 
     /**
