@@ -9,29 +9,39 @@
 package ent;
 
 import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Board extends Entity {
-    private final ArrayList<ArrayList<Piece>> tiles;
+    private final ArrayList<ArrayList<Tile>> tiles;
     private final Color playableTilesColour;
     private final Color unplayableTilesColour;
     private final int width;
     private final int height;
+    private final BoardManager manager;
 
-    public Board(ArrayList<ArrayList<Piece>> tiles, Color playableTilesColour, Color unplayableTilesColour) {
+    public Board(ArrayList<ArrayList<Tile>> tiles, Color playableTilesColour, Color unplayableTilesColour) {
         this.tiles = tiles;
         this.playableTilesColour = playableTilesColour;
         this.unplayableTilesColour = unplayableTilesColour;
         this.width = tiles.get(0).size();
         this.height = tiles.size();
+
+        getPlayableTiles().forEach(t -> t.setPlayable(true));
+        getUnplayableTiles().forEach(t -> t.setPlayable(false));
+
+        this.manager = new BoardManager(this);
     }
 
-    public ArrayList<ArrayList<Piece>> getTiles() { //TODO remove
+    public void init() {
+        tiles.forEach(t0 -> t0.forEach(Tile::init));
+    }
+
+    public ArrayList<ArrayList<Tile>> getTiles() { //TODO remove
         return tiles;
     }
 
@@ -51,28 +61,36 @@ public class Board extends Entity {
         return unplayableTilesColour;
     }
 
-    public Piece getPieceAtIndex(int x, int y) {
+    public Tile getPieceAtIndex(int x, int y) {
         return tiles.get(x).get(y);
     }
 
-    public List<Piece> getPlayableTiles() {
+    public List<Tile> getPlayableTiles() {
         return getWithOffset(false);
     }
 
-    private List<Piece> getWithOffset(boolean offset){
-        ArrayList<Piece> pieces = new ArrayList<>();
-        for (int i = 0; i < tiles.size(); i++) {
-            int _offset = offset ? Math.abs((i-1)%2) : i%2;
-            for (int j = 0; j < tiles.get(i).size()/2; j++) { //Slight optimisation ;)
-                pieces.add(getPieceAtIndex(i, (j*2)+_offset));
+    private List<Tile> getWithOffset(boolean offset) {
+        ArrayList<Tile> tiles = new ArrayList<>();
+        for (int i = 0; i < this.tiles.size(); i++) {
+            int _offset = offset ? Math.abs((i - 1) % 2) : i % 2;
+            for (int j = 0; j < this.tiles.get(i).size() / 2; j++) { //Slight optimisation ;)
+                tiles.add(getPieceAtIndex(i, (j * 2) + _offset));
             }
         }
 
-        return pieces;
+        return tiles;
+    }
+
+    public List<Tile> getRow(int n) {
+        return tiles.get(n);
+    }
+
+    public List<Tile> getColumn(int n) {
+        return tiles.stream().map(t -> t.get(n)).collect(Collectors.toList());
     }
 
 
-    public List<Piece> getUnplayableTiles() {
+    public List<Tile> getUnplayableTiles() {
         return getWithOffset(true);
     }
 
@@ -82,7 +100,7 @@ public class Board extends Entity {
      * @return Int - How many uncaptured pieces remain on the board.
      */
     public int getTotalPieces() { //TODO Unit test
-        return tiles.stream().mapToInt(row -> (int) row.stream().filter(piece -> piece.getCapturedBy() == null).count()).sum();
+        return tiles.stream().mapToInt(row -> (int) row.stream().filter(tile -> tile.getPiece().getCapturedBy() == null).count()).sum();
     }
 
 
@@ -94,31 +112,26 @@ public class Board extends Entity {
     }
 
     public static class Builder {
-        private int width = 10;
-        private int height = 10;
+        private final int width = 8;
+        private final int height = 8;
+        private final Color colourHuman = Color.RED;
+        private final Color colourMachine = Color.BLACK;
         private Color evenTilesColour = Color.WHITE;
         private Color oddTilesColour = Color.BLACK;
-
         private int spacing = 2;
 
         public void setSpacing(int spacing) {
             this.spacing = spacing;
         }
 
-        public void setWidth(int width) {
-            this.width = width;
-        }
-
-        public void setHeight(int height) {
-            this.height = height;
-        }
-
-        public void setEvenTilesColour(Color evenTilesColour) {
+        public Builder setEvenTilesColour(Color evenTilesColour) {
             this.evenTilesColour = evenTilesColour;
+            return this;
         }
 
-        public void setOddTilesColour(Color oddTilesColour) {
+        public Builder setOddTilesColour(Color oddTilesColour) {
             this.oddTilesColour = oddTilesColour;
+            return this;
         }
 
         /*
@@ -127,14 +140,24 @@ public class Board extends Entity {
         on the board to be indexed by an (x,y) pair.
         */
         public Board build(ArrayList<Node> children) {
-            ArrayList<ArrayList<Piece>> outer = new ArrayList<>();
+            ArrayList<ArrayList<Tile>> outer = new ArrayList<>();
 
             for (int i = 0; i < 8; i++) {
-                ArrayList<Piece> temp = new ArrayList<>();
+                ArrayList<Tile> temp = new ArrayList<>();
                 ArrayList<Node> nodes = new ArrayList<>(children.subList(i * 8, (i * 8) + 8));
 
                 for (int j = 0; j < nodes.size(); j++) {
-                    temp.add(new Piece(j, i, Piece.Type.MAN, Player.Defaults.HUMAN.getPlayer(), nodes.get(j)));
+                    Tile tile = new Tile(Color.ORANGE, (StackPane) nodes.get(j), new Piece(j, i, Color.BLACK,
+                            Player.Defaults.HUMAN.getPlayer(), Piece.Type.MAN));
+                    temp.add(tile);
+
+                    if (i - 2 < 3) {
+                        tile.getPiece().setPlayer(Player.Defaults.HUMAN.getPlayer());
+                        tile.getPiece().setColour(colourHuman);
+                    } else {
+                        tile.getPiece().setPlayer(Player.Defaults.COMPUTER.getPlayer());
+                        tile.getPiece().setColour(colourMachine);
+                    }
                 }
 
                 outer.add(temp);
@@ -145,6 +168,14 @@ public class Board extends Entity {
             return new Board(outer, this.evenTilesColour, this.oddTilesColour);
 
 
+        }
+    }
+
+    public class BoardManager {
+        private final Board board;
+
+        public BoardManager(Board board) {
+            this.board = board;
         }
     }
 }
