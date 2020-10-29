@@ -8,66 +8,36 @@
 
 package ent;
 
-import javafx.scene.Node;
+import fx.controllers.Main;
+import javafx.scene.shape.Circle;
 
 import java.awt.*;
 
-public class Piece extends Entity {
+public class Piece {
     private final int x;
     private final int y;
-    private Type type = Type.MAN;
-    private final Color colour;
-    private final Player player;
-    private Player capturedBy = null;
-    private final Node node;
+    private final Type type;
+    private final Player capturedBy = null;
+    private Color colour;
+    private Player player;
+    private Circle checker;
 
-    public Node getNode() {
-        return node;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public Piece(int x, int y, Type type, Player player, Node node) {
+    public Piece(int x, int y, Color colour, Player player, Type type) {
         this.x = x;
         this.y = y;
-        this.type = type;
-        this.colour = player.getColour();
+        this.colour = colour;
         this.player = player;
-        this.node = node;
+        this.type = type;
+        init();
     }
 
-    /**
-     * @param direction The {@link Direction} in which to attempt a move
-     * @return Boolean - If the move was successful
-     */
-    public boolean makeMove(Direction direction) {
-//TODO Call legal-check methods on the Board
-        return true;
+    public void delete() {
+        checker = null;
     }
 
-    /**
-     * @return The {@link Player} that captured this piece.
-     */
-    public Player getCapturedBy() {
-        return capturedBy;
-    }
-
-    public void setCapturedBy(Player capturedBy) {
-        this.capturedBy = capturedBy;
-    }
-
-    public Player getTeam() {
-        return player;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public Color getColour() {
-        return colour;
+    public Piece init() {
+        checker = new Circle(30, javafx.scene.paint.Paint.valueOf(Main.toRGBString(colour)));
+        return this;
     }
 
     public int getX() {
@@ -78,19 +48,37 @@ public class Piece extends Entity {
         return y;
     }
 
-    @Override
-    public String toString() {
-        return "Piece{" +
-                "type=" + type +
-                ", colour=" + colour +
-                ", x=" + x +
-                ", y=" + y +
-                '}';
+    public Color getColour() {
+        return colour;
     }
+
+    public void setColour(Color colour) {
+        this.colour = colour;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Circle getChecker() {
+        return checker;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Player getCapturedBy() {
+        return capturedBy;
+    }
+
 
     public enum Type { //https://en.wikipedia.org/wiki/English_draughts#Pieces
         MAN,
         KING
     }
 }
-
