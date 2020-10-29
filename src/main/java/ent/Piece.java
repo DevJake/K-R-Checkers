@@ -16,7 +16,7 @@ import java.awt.*;
 public class Piece {
     private final int x;
     private final int y;
-    private final Type type;
+    private Type type;
     private Player capturedBy = null;
     private Color colour;
     private Player player;
@@ -29,6 +29,10 @@ public class Piece {
         this.player = player;
         this.type = type;
         init();
+    }
+
+    public void makeKing() {
+        this.type = Type.KING;
     }
 
     public void deleteFromBoard() {

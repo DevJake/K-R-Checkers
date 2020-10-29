@@ -112,6 +112,26 @@ public class Board extends Entity {
         return tiles.stream().mapToInt(row -> (int) row.stream().filter(tile -> tile.getPiece().getCapturedBy() == null).count()).sum();
     }
 
+    public List<Tile> getKingsWall(Player player) {
+        switch (player.getHomeSide()) {
+            case TOP:
+                return tiles.get(0);
+            case BOTTOM:
+                return tiles.get(tiles.size() - 1);
+        }
+        return null;
+    }
+
+    public int getKingsWallRow(Player player) {
+        switch (player.getHomeSide()) {
+            case TOP:
+                return 0;
+            case BOTTOM:
+                return height - 1;
+        }
+        return -1;
+    }
+
 
     @Override
     public String toString() {
@@ -190,22 +210,7 @@ public class Board extends Entity {
         }
 
         //Make a move from x,y to x,y
-        public boolean makeMove(Piece origin, int toX, int toY) {
-
-            if (!isOccupied(origin.getX(), origin.getY()))
-                throw new BoardMoveInvalidOriginException(origin, toX, toY);
-
-            if (isOccupied(toX, toY))
-                throw new BoardMoveInvalidDestinationException("Invalid destination, already occupied! x:" + toX + "," +
-                        " y: " + toY);
-
-            int diffX = Math.abs(origin.getX() - toX);
-            int diffY = Math.abs(origin.getY() - toY);
-
-            if (diffX == 0 || diffX > 2 || diffY == 0 || diffY > 2) //Filters for attempted moves that aren't diagonal
-                throw new BoardMoveException("Attempted move was too extreme, or not along a diagonal!");
-
-
+        public void makeMove(Piece origin, int toX, int toY) {
             boolean capturing = Math.abs(origin.getX() - toX) == 2 && Math.abs(origin.getY() - toY) == 2;
 
             boolean left = origin.getX() > toX;
@@ -229,14 +234,10 @@ public class Board extends Entity {
                     checkRightDown(origin, capturing);
                 }
             }
-
-
-            return true;
         }
 
         //Attempt to execute a move left+up of the origin
         private void checkLeftUp(Piece origin, boolean capturingMove) {
-            System.out.println("Check Left Up");
             int destX = origin.getX() - (capturingMove ? 2 : 1);
             int destY = origin.getY() + (capturingMove ? 2 : 1);
 
@@ -247,7 +248,7 @@ public class Board extends Entity {
             midY += (capturingMove ? 2 : 1);
 
 
-            finalCheck(origin, destX, destY, midX, midY, capturingMove);
+            finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
         }
 
         //Attempt to execute a move left+down of the origin
@@ -263,7 +264,7 @@ public class Board extends Entity {
             midY -= (capturingMove ? 2 : 1);
 
 
-            finalCheck(origin, destX, destY, midX, midY, capturingMove);
+            finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
         }
 
 
@@ -279,7 +280,7 @@ public class Board extends Entity {
             midX += (capturingMove ? 2 : 1);
             midY += (capturingMove ? 2 : 1);
 
-            finalCheck(origin, destX, destY, midX, midY, capturingMove);
+            finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
         }
 
         //Attempt to execute a move right+down of the origin
@@ -294,10 +295,28 @@ public class Board extends Entity {
             midX += (capturingMove ? 2 : 1);
             midY -= (capturingMove ? 2 : 1);
 
-            finalCheck(origin, destX, destY, midX, midY, capturingMove);
+            finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
         }
 
-        private void finalCheck(Piece origin, int destX, int destY, int midX, int midY, boolean capturingMove) {
+        private void finalCheck(Piece origin, int destX, int destY, int midX, int midY, boolean capturingMove,
+                                boolean trial) {
+
+
+            if (!isOccupied(origin.getX(), origin.getY()))
+                throw new BoardMoveInvalidOriginException(origin, destX, destY);
+
+            if (isOccupied(destX, destY))
+                throw new BoardMoveInvalidDestinationException("Invalid destination, already occupied! x:" + destX +
+                        "," +
+                        " y: " + destY);
+
+            int diffX = Math.abs(origin.getX() - destX);
+            int diffY = Math.abs(origin.getY() - destY);
+
+            if (diffX == 0 || diffX > 2 || diffY == 0 || diffY > 2) //Filters for attempted moves that aren't diagonal
+                throw new BoardMoveException("Attempted move was too extreme, or not along a diagonal!");
+
+
             if (capturingMove) {
                 if (isOccupied(midX, midY))
                     throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existant " +
@@ -315,7 +334,9 @@ public class Board extends Entity {
                 throw new BoardMoveNotKingException("This piece is not a king!");
 
             Piece capturing = capturingMove ? board.getPieceAtIndex(midX, midY).getPiece() : null;
-            executeMove(origin, destX, destY, capturing);
+
+            if (!trial)
+                executeMove(origin, destX, destY, capturing);
         }
 
         private void executeMove(Piece origin, int destX, int destY, Piece captured) {
@@ -326,6 +347,84 @@ public class Board extends Entity {
 
             board.getPieceAtIndex(destX, destY).init();
             board.getPieceAtIndex(origin.getX(), origin.getY()).delete();
+
+            //TODO force capturing of neighbours
+            //TODO force auto-crowning of piece if it's on the back board
+
+            doAutoCapture(origin);
+
+            //TODO check for a winning state
+        }
+
+        private void doAutoCapture(Piece piece) {
+            Player opponent = piece.getPlayer().getName().equals(Player.Defaults.COMPUTER.getPlayer().getName()) ?
+                    Player.Defaults.HUMAN.getPlayer() : Player.Defaults.COMPUTER.getPlayer();
+            if (board.getKingsWallRow(opponent) == piece.getY() && piece.getType() == Piece.Type.MAN) {
+                piece.makeKing();
+                return; //Terminate all moves from here, since they've just been Crowned.
+            }
+
+            ArrayList<Boolean> validMoves = new ArrayList<>();
+            /*
+            Left-Up
+            Left-Down
+            Right-Up
+            Right-Down
+             */
+
+            try {
+                finalCheck(piece, piece.getX() - 2, piece.getY() + 2, piece.getX() - 1, piece.getY() + 1, true, true);
+                validMoves.add(true);
+            } catch (BoardMoveException e) {
+                validMoves.add(false);
+                //Do nothing
+            }
+
+            /*
+            Check which directions are valid to move in
+             */
+            try {
+                finalCheck(piece, piece.getX() - 2, piece.getY() - 2, piece.getX() - 1, piece.getY() - 1, true, true);
+                validMoves.add(true);
+            } catch (BoardMoveException e) {
+                validMoves.add(false);
+                //Do nothing
+            }
+
+            try {
+                finalCheck(piece, piece.getX() + 2, piece.getY() + 2, piece.getX() + 1, piece.getY() + 1, true, true);
+                validMoves.add(true);
+            } catch (BoardMoveException e) {
+                validMoves.add(false);
+                //Do nothing
+            }
+
+            try {
+                finalCheck(piece, piece.getX() + 2, piece.getY() - 2, piece.getX() + 1, piece.getY() - 1, true, true);
+                validMoves.add(true);
+            } catch (BoardMoveException e) {
+                validMoves.add(false);
+                //Do nothing
+            }
+
+            //The player has multiple options available... they must now decide which move to follow
+            if (validMoves.stream().filter(t -> t == Boolean.TRUE).count() > 1) {
+                //TODO it is now on the player to decide which move to take. Maybe fire event for this, including
+                // which moves are valid. Also write a method to generate a list of Direction enums detailing which
+                // moves are valid for a given piece
+
+                return;
+            }
+
+            //There is now only one move possible. Find the move and execute it.
+            if (validMoves.get(0))
+                makeMove(piece, piece.getX() - 2, piece.getY() + 2);
+            if (validMoves.get(1))
+                makeMove(piece, piece.getX() - 2, piece.getY() - 2);
+            if (validMoves.get(2))
+                makeMove(piece, piece.getX() + 2, piece.getY() + 2);
+            if (validMoves.get(3))
+                makeMove(piece, piece.getX() + 2, piece.getY() - 2);
         }
     }
 }
