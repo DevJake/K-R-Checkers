@@ -14,29 +14,29 @@ import java.util.UUID;
 
 public class Player extends Entity {
     private final UUID id;
-    private final ArrayList<Piece> capturedPieces = new ArrayList<>();
-    private final ArrayList<Piece> ownedPieces;
+    private final ArrayList<Tile> capturedTiles = new ArrayList<>();
+    private final ArrayList<Tile> ownedTiles;
     private String name;
     private Color colour;
 
-    public Player(String name, Color colour, ArrayList<Piece> ownedPieces) {
+    public Player(String name, Color colour, ArrayList<Tile> ownedTiles) {
         this.name = name;
         this.colour = colour;
         this.id = UUID.randomUUID();
-        this.ownedPieces = ownedPieces;
+        this.ownedTiles = ownedTiles;
     }
 
-    public ArrayList<Piece> getOwnedPieces() {
-        return ownedPieces;
+    public ArrayList<Tile> getOwnedPieces() {
+        return ownedTiles;
     }
 
-    public ArrayList<Piece> getCapturedPieces() {
-        return capturedPieces;
+    public ArrayList<Tile> getCapturedPieces() {
+        return capturedTiles;
     }
 
-    public void capturePiece(Piece piece) {
-        this.capturedPieces.add(piece);
-        piece.setCapturedBy(this);
+    public void capturePiece(Tile tile) {
+        this.capturedTiles.add(tile);
+//        tile.setCapturedBy(this); //TODO fix lol
     }
 
     public UUID getId() {
