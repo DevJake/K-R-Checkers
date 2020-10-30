@@ -86,10 +86,17 @@
          Scene s = new Scene(loader.load());
 
          primaryStage.setScene(s);
-         primaryStage.setResizable(false);
+         primaryStage.setResizable(true);
          primaryStage.setHeight(800);
          primaryStage.setWidth(800);
          primaryStage.setTitle("Checkers");
+         primaryStage.setMinWidth(200);
+         primaryStage.setMinHeight(200);
+         primaryStage.setMaxWidth(1080);
+         primaryStage.setMaxHeight(1080);
+         primaryStage.minHeightProperty().bind(primaryStage.widthProperty().multiply(1));
+         primaryStage.maxHeightProperty().bind(primaryStage.widthProperty().multiply(1));
+
          primaryStage.show();
 
          GridPane gridPane = (GridPane) s.lookup("#gridPane");
