@@ -22,10 +22,10 @@
  import javafx.fxml.FXMLLoader;
  import javafx.scene.Scene;
  import javafx.scene.layout.GridPane;
+ import javafx.scene.paint.Color;
  import javafx.stage.Stage;
  import util.PrintUtil;
 
- import java.awt.*;
  import java.io.IOException;
  import java.net.URISyntaxException;
  import java.util.ArrayList;
@@ -71,12 +71,13 @@
          Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard, mainBoard)));
      }
 
-     public static String toHex(Color color) {
-         return Integer.toHexString(color.getRGB()).substring(2);
-     }
-
+     //JavaFX does not support JavaFX without this method.
      public static String toRGBString(Color color) {
-         return "rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ")";
+         return String.format("rgba(%d, %d, %d, %f)",
+                 ((int) (255 * color.getRed())),
+                 ((int) (255 * color.getGreen())),
+                 ((int) (255 * color.getBlue())),
+                 color.getOpacity());
      }
 
      @Override
@@ -95,8 +96,8 @@
          gridPane.setGridLinesVisible(true);
 
          mainBoard = new Board.Builder()
-                 .setEvenTilesColour(Color.PINK)
-                 .setOddTilesColour(Color.DARK_GRAY)
+                 .setEvenTilesColour(Color.HOTPINK)
+                 .setOddTilesColour(Color.CORNFLOWERBLUE)
                  .build(new ArrayList<>(gridPane.getChildren()));
 
 

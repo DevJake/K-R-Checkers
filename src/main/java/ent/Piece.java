@@ -9,9 +9,10 @@
 package ent;
 
 import fx.controllers.Main;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.awt.*;
+
 
 public class Piece {
     private final int x;
@@ -40,7 +41,7 @@ public class Piece {
     }
 
     public Piece init() {
-        checker = new Circle(30, javafx.scene.paint.Paint.valueOf(Main.toRGBString(colour)));
+        checker = new Circle(30, colour);
         return this;
     }
 

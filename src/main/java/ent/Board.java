@@ -11,8 +11,8 @@ package ent;
 import err.*;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -152,7 +152,7 @@ public class Board extends Entity {
         private final int width = 8;
         private final int height = 8;
         private final Color colourHuman = Color.RED;
-        private final Color colourMachine = Color.BLACK;
+        private final Color colourMachine = Color.PINK;
         private Color evenTilesColour = Color.WHITE;
         private Color oddTilesColour = Color.BLACK;
 

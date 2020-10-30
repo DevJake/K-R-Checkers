@@ -9,8 +9,8 @@
 package ent;
 
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
 
 public class Tile extends Entity {
     private final Color colour;
