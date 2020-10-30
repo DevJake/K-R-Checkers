@@ -101,26 +101,28 @@
 
          primaryStage.show();
 
+         Pane canvas = (Pane) s.lookup("#canvas");
          GridPane gridPane = (GridPane) s.lookup("#gridPane");
          gridPane.setGridLinesVisible(true);
 
          mainBoard = new Board.Builder()
-                 .setEvenTilesColour(Color.HOTPINK)
-                 .setOddTilesColour(Color.CORNFLOWERBLUE)
+                 .setEvenTilesColour(Color.DEEPPINK)
+                 .setOddTilesColour(Color.DARKSLATEGRAY)
                  .build(new ArrayList<>(gridPane.getChildren()));
 
 
-         mainBoard.init();
+         mainBoard.init(canvas);
          mainBoard.getRow(3).forEach(Tile::delete);
          mainBoard.getRow(4).forEach(Tile::delete);
-         mainBoard.getPieceAtIndex(3, 3).init();
+         mainBoard.getTileAtIndex(3, 3).init();
 
          try {
-             mainBoard.getManager().makeMove(mainBoard.getPieceAtIndex(3, 3).getPiece(), 4, 4);
+             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(3, 3).getPiece(), 4, 4);
 
-             Thread.sleep(2000);
+//             Thread.sleep(2000);
 
-             mainBoard.getManager().makeMove(mainBoard.getPieceAtIndex(5, 5).getPiece(), 3, 3);
+             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(5, 5).getPiece(), 3, 3);
+             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(0, 2).getPiece(), 1, 3);
          } catch (RuntimeException exception) {
              exception.printStackTrace();
          }
@@ -128,6 +130,10 @@
          System.out.println(mainBoard);
          System.out.println(Player.Defaults.HUMAN.getPlayer().getCapturedPieces());
          System.out.println(Player.Defaults.COMPUTER.getPlayer().getCapturedPieces());
+
+         mainBoard.setShowCoordinates(true);
+
+         System.out.println(mainBoard.getTiles().get(1));
 
      }
  }
