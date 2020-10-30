@@ -216,6 +216,61 @@ public class Board extends Entity {
         }
     }
 
+    private class Movement {
+        private final Pane pane;
+        private Line line = init();
+        private double beginX;
+        private double beginY;
+        private double tileX;
+        private double tileY;
+
+        public Movement(Pane canvas) {
+            this.pane = canvas;
+            pane.getChildren().add(line);
+
+            pane.onMouseDraggedProperty().set(event -> {
+                line.setEndX(event.getSceneX());
+                line.setEndY(event.getSceneY());
+
+                Tile tile = getTileAtIndex(((int) tileX), ((int) tileY));
+                if (tile.isPlayable() && tile.getPiece().getChecker() != null)
+                    line.setVisible(true);
+
+
+//                Tile tile = getTileAtIndex(gridX, gridY);
+//                getTileAtIndex(gridX, gridY).setColour(Color.BLACK);
+
+            });
+
+            pane.onMousePressedProperty().set(event -> {
+                this.tileX = Math.floor(event.getX() / (pane.getWidth() / 8));
+                this.tileY = Math.floor((pane.getHeight() - event.getY()) / (pane.getHeight() / 8));
+
+                this.beginX = (tileX * (pane.getWidth() / 8)) + 50;
+                this.beginY = pane.getHeight()-(tileY*(pane.getHeight()/8))-50;
+
+                line.setStartX(beginX);
+                line.setStartY(beginY);
+
+            });
+
+
+            //TODO shit's broke yo, fix it
+            pane.onMouseClickedProperty().set(event -> {
+                pane.getChildren().remove(line);
+                this.line = init();
+                pane.getChildren().add(this.line);
+            });
+        }
+
+        private Line init() {
+            Line line = new Line(0, 0, 0, 0);
+            line.setVisible(false);
+            line.setStrokeWidth(5);
+            return line;
+        }
+    }
+
     public class BoardManager {
         private final Board board;
 
@@ -224,7 +279,7 @@ public class Board extends Entity {
         }
 
         private boolean isOccupied(int x, int y) {
-            return board.getPieceAtIndex(x, y).getPiece().getChecker() != null && board.getPieceAtIndex(x, y).getPiece().getCapturedBy() == null;
+            return board.getTileAtIndex(x, y).getPiece().getChecker() != null && board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null;
         }
 
         //Make a move from x,y to x,y
@@ -233,6 +288,11 @@ public class Board extends Entity {
 
             boolean left = toX < origin.getX();
             boolean up = toY > origin.getY();
+
+            System.out.println(origin.getX());
+            System.out.println(toX);
+            System.out.println(origin.getY());
+            System.out.println(toY);
 
 
             if (left) {
@@ -339,7 +399,7 @@ public class Board extends Entity {
                 if (isOccupied(midX, midY))
                     throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existant " +
                             "piece! x:" + midX + ", y: " + midY);
-                if (board.getPieceAtIndex(midX, midY).getPiece().getPlayer() == origin.getPlayer())
+                if (board.getTileAtIndex(midX, midY).getPiece().getPlayer() == origin.getPlayer())
                     throw new BoardMoveSelfCaptureException("Attempting to capture a member of your team! x:" + midX + "," +
                             " y: "
                             + midY);
@@ -351,7 +411,7 @@ public class Board extends Entity {
             if (origin.getType() != Piece.Type.KING && kingOnlyMove)
                 throw new BoardMoveNotKingException("This piece is not a king!");
 
-            Piece capturing = capturingMove ? board.getPieceAtIndex(midX, midY).getPiece() : null;
+            Piece capturing = capturingMove ? board.getTileAtIndex(midX, midY).getPiece() : null;
 
             if (!trial)
                 executeMove(origin, destX, destY, capturing);
@@ -363,8 +423,8 @@ public class Board extends Entity {
                 captured.deleteFromBoard();
             }
 
-            board.getPieceAtIndex(destX, destY).init();
-            board.getPieceAtIndex(origin.getX(), origin.getY()).delete();
+            board.getTileAtIndex(destX, destY).init();
+            board.getTileAtIndex(origin.getX(), origin.getY()).delete();
 
             //TODO force capturing of neighbours
             //TODO force auto-crowning of piece if it's on the back board
