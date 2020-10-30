@@ -79,11 +79,12 @@ public class Board extends Entity {
     }
 
     public Tile getPieceAtIndex(int x, int y) {
-        return tiles.get(x).get(y);
+//        System.out.println("thingy=" + tiles.get(x).get(y).toString());
+        return tiles.get(y).get(x);
     }
 
     public void setPieceAtIndex(int x, int y, Piece piece) {
-        tiles.get(x).get(y).setPiece(piece);
+        tiles.get(y).get(x).setPiece(piece);
     }
 
     public List<Tile> getPlayableTiles() {
