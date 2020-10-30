@@ -42,9 +42,6 @@ public class Board extends Entity {
             tile.setPlayable(false);
             tile.getNode().setStyle("-fx-background-color: " + toRGBString(getUnplayableTilesColour()));
             tile.delete();
-            tile.getPiece().setPlayer(null);
-            tile.getPiece().setColour(null);
-            tile.getPiece().setType(null);
         }
 
         this.manager = new BoardManager(this);

@@ -47,8 +47,17 @@ public class Piece {
         this.type = Type.KING;
     }
 
+    //Makes a piece no longer visible to the board
     public void deleteFromBoard() {
         checker = null;
+    }
+
+    //Completely deletes a piece from the board, including all information about the piece, such as the owner, colour
+    // and type.
+    public void delete() {
+        setPlayer(null);
+        setColour(null);
+        setType(null);
     }
 
     public Piece init() {
