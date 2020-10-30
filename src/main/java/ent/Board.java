@@ -132,13 +132,7 @@ public class Board extends Entity {
     }
 
     public List<Tile> getKingsWall(Player player) {
-        switch (player.getHomeSide()) {
-            case TOP:
-                return tiles.get(0);
-            case BOTTOM:
-                return tiles.get(tiles.size() - 1);
-        }
-        return null;
+        return getRow(getKingsWallRow(player));
     }
 
     public int getKingsWallRow(Player player) {
