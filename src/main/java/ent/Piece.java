@@ -8,10 +8,8 @@
 
 package ent;
 
-import fx.controllers.Main;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-
 
 
 public class Piece {
@@ -88,6 +86,10 @@ public class Piece {
 
     public Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public Player getCapturedBy() {

@@ -41,6 +41,10 @@ public class Board extends Entity {
         for (Tile tile : getUnplayableTiles()) {
             tile.setPlayable(false);
             tile.getNode().setStyle("-fx-background-color: " + toRGBString(getUnplayableTilesColour()));
+            tile.delete();
+            tile.getPiece().setPlayer(null);
+            tile.getPiece().setColour(null);
+            tile.getPiece().setType(null);
         }
 
         this.manager = new BoardManager(this);
@@ -221,8 +225,8 @@ public class Board extends Entity {
         public void makeMove(Piece origin, int toX, int toY) {
             boolean capturing = Math.abs(origin.getX() - toX) == 2 && Math.abs(origin.getY() - toY) == 2;
 
-            boolean left = origin.getX() > toX;
-            boolean up = origin.getY() < toY;
+            boolean left = toX < origin.getX();
+            boolean up = toY > origin.getY();
 
 
             if (left) {
