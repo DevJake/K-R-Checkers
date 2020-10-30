@@ -24,14 +24,29 @@ public class Tile extends Entity {
         this.piece = piece;
     }
 
+    @Override
+    public String toString() {
+        return "Tile{" +
+                "colour=" + colour +
+                ", node=" + node +
+                ", piece=" + piece +
+                ", isPlayable=" + isPlayable +
+                '}';
+    }
+
     public void setPlayable(boolean playable) {
         isPlayable = playable;
     }
 
     public void init() {
         this.node.getChildren().removeAll();
-        if (isPlayable)
+
+        if (isPlayable) {
             this.node.getChildren().add(piece.init().getChecker());
+            piece.getChecker().radiusProperty().bind(node.widthProperty().divide(2).multiply(0.8));
+            piece.getChecker().setStroke(Color.BLACK);
+            piece.getChecker().setStrokeWidth(0.5);
+        }
     }
 
     public Color getColour() {

@@ -32,6 +32,19 @@ public class Piece {
         init();
     }
 
+    @Override
+    public String toString() {
+        return "Piece{" +
+                "x=" + x +
+                ", y=" + y +
+                ", type=" + type +
+                ", capturedBy=" + capturedBy +
+                ", colour=" + colour +
+                ", player=" + player +
+                ", checker=" + checker +
+                '}';
+    }
+
     public void makeKing() {
         this.type = Type.KING;
     }
