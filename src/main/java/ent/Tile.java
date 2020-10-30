@@ -8,6 +8,7 @@
 
 package ent;
 
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
@@ -17,6 +18,7 @@ public class Tile extends Entity {
     private final StackPane node;
     private Piece piece;
     private boolean isPlayable;
+    private Label label = null;
 
     public Tile(Color colour, StackPane node, Piece piece) {
         this.colour = colour;
@@ -47,6 +49,17 @@ public class Tile extends Entity {
             piece.getChecker().setStroke(Color.BLACK);
             piece.getChecker().setStrokeWidth(0.5);
         }
+    }
+
+    public void showLabel() {
+        this.node.getChildren().removeAll(this.label);
+        this.label = new javafx.scene.control.Label("x:" + getPiece().getX() + " y:" + getPiece().getY());
+        this.node.getChildren().add(this.label);
+    }
+
+    public void removeLabel() {
+        this.node.getChildren().remove(label);
+        this.label = null;
     }
 
     public Color getColour() {

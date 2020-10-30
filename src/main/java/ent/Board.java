@@ -125,6 +125,15 @@ public class Board extends Entity {
         return tiles.stream().mapToInt(row -> (int) row.stream().filter(tile -> tile.getPiece().getCapturedBy() == null).count()).sum();
     }
 
+    public void setShowCoordinates(boolean show) {
+        getPlayableTiles().forEach(t -> {
+            if (show)
+            t.showLabel();
+            else
+                t.removeLabel();
+        });
+    }
+
     public List<Tile> getKingsWall(Player player) {
         switch (player.getHomeSide()) {
             case TOP:
