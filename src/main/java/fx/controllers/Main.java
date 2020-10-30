@@ -22,6 +22,7 @@
  import javafx.fxml.FXMLLoader;
  import javafx.scene.Scene;
  import javafx.scene.layout.GridPane;
+ import javafx.scene.layout.Pane;
  import javafx.scene.paint.Color;
  import javafx.stage.Stage;
  import util.PrintUtil;
@@ -79,6 +80,7 @@
                  ((int) (255 * color.getBlue())),
                  color.getOpacity());
      }
+
 
      @Override
      public void start(Stage primaryStage) throws IOException, InterruptedException {

@@ -10,14 +10,14 @@ package ent;
 
 import err.*;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static fx.controllers.Main.toRGBString;
 
 public class Board extends Entity {
     private final ArrayList<ArrayList<Tile>> tiles;
@@ -36,11 +36,12 @@ public class Board extends Entity {
 
         for (Tile tile : getPlayableTiles()) {
             tile.setPlayable(true);
-            tile.getNode().setStyle("-fx-background-color: " + toRGBString(getPlayableTilesColour()));
+            tile.setColour(getPlayableTilesColour());
         }
         for (Tile tile : getUnplayableTiles()) {
             tile.setPlayable(false);
-            tile.getNode().setStyle("-fx-background-color: " + toRGBString(getUnplayableTilesColour()));
+
+            tile.setColour(getUnplayableTilesColour());
             tile.delete();
         }
 
@@ -53,6 +54,12 @@ public class Board extends Entity {
 
     public void init() {
         tiles.forEach(t0 -> t0.forEach(Tile::init));
+    }
+
+    public void init(Pane canvas) {
+        init();
+        Movement movement = new Movement(canvas);
+
     }
 
     public ArrayList<ArrayList<Tile>> getTiles() { //TODO remove
@@ -75,12 +82,12 @@ public class Board extends Entity {
         return unplayableTilesColour;
     }
 
-    public Tile getPieceAtIndex(int x, int y) {
+    public Tile getTileAtIndex(int x, int y) {
 //        System.out.println("thingy=" + tiles.get(x).get(y).toString());
         return tiles.get(y).get(x);
     }
 
-    public void setPieceAtIndex(int x, int y, Piece piece) {
+    public void setTileAtIndex(int x, int y, Piece piece) {
         tiles.get(y).get(x).setPiece(piece);
     }
 
@@ -93,7 +100,7 @@ public class Board extends Entity {
         for (int i = 0; i < this.tiles.size(); i++) {
             int _offset = offset ? Math.abs((i - 1) % 2) : i % 2;
             for (int j = 0; j < this.tiles.get(i).size() / 2; j++) { //Slight optimisation ;)
-                tiles.add(getPieceAtIndex(i, (j * 2) + _offset));
+                tiles.add(getTileAtIndex(i, (j * 2) + _offset));
             }
         }
 
@@ -107,7 +114,6 @@ public class Board extends Entity {
     public List<Tile> getColumn(int n) {
         return tiles.stream().map(t -> t.get(n)).collect(Collectors.toList());
     }
-
 
     public List<Tile> getUnplayableTiles() {
         return getWithOffset(true);
@@ -125,7 +131,7 @@ public class Board extends Entity {
     public void setShowCoordinates(boolean show) {
         getPlayableTiles().forEach(t -> {
             if (show)
-            t.showLabel();
+                t.showLabel();
             else
                 t.removeLabel();
         });
@@ -144,7 +150,6 @@ public class Board extends Entity {
         }
         return -1;
     }
-
 
     @Override
     public String toString() {

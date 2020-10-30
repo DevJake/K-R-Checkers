@@ -12,10 +12,12 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+import static fx.controllers.Main.toRGBString;
+
 
 public class Tile extends Entity {
-    private final Color colour;
     private final StackPane node;
+    private Color colour;
     private Piece piece;
     private boolean isPlayable;
     private Label label = null;
@@ -24,6 +26,26 @@ public class Tile extends Entity {
         this.colour = colour;
         this.node = node;
         this.piece = piece;
+
+//        setupDrag();
+//        piece.getChecker().addEventHandler(new EventType<>(), new MouseDrag());
+    }
+
+    public boolean isPlayable() {
+        return isPlayable;
+    }
+
+    public void setPlayable(boolean playable) {
+        isPlayable = playable;
+        if (!playable)
+            node.setOnDragDetected(event -> { //TODO delete
+            });
+        else
+            setupDrag();
+//        piece.delete();
+    }
+
+    private void setupDrag() {
     }
 
     @Override
@@ -34,10 +56,6 @@ public class Tile extends Entity {
                 ", piece=" + piece +
                 ", isPlayable=" + isPlayable +
                 '}';
-    }
-
-    public void setPlayable(boolean playable) {
-        isPlayable = playable;
     }
 
     public void init() {
@@ -64,6 +82,13 @@ public class Tile extends Entity {
 
     public Color getColour() {
         return colour;
+    }
+
+    public void setColour(Color colour) {
+        this.colour = colour;
+
+
+        node.setStyle("-fx-background-color: " + toRGBString(colour));
     }
 
     public StackPane getNode() {
