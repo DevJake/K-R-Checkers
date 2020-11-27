@@ -55,7 +55,7 @@ public class Piece {
     //Completely deletes a piece from the board, including all information about the piece, such as the owner, colour
     // and type.
     public void delete() {
-        setPlayer(null);
+        setPlayer(Player.Defaults.NONE.getPlayer());
         setColour(null);
         setType(null);
     }

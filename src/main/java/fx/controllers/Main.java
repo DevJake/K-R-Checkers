@@ -83,7 +83,7 @@
 
 
      @Override
-     public void start(Stage primaryStage) throws IOException, InterruptedException {
+     public void start(Stage primaryStage) throws IOException {
          FXMLLoader loader = new FXMLLoader(getClass().getResource("/Main.fxml"));
          Scene s = new Scene(loader.load());
 
@@ -106,23 +106,22 @@
          gridPane.setGridLinesVisible(true);
 
          mainBoard = new Board.Builder()
-                 .setEvenTilesColour(Color.DEEPPINK)
-                 .setOddTilesColour(Color.DARKSLATEGRAY)
+                 .setEvenTilesColour(Color.FORESTGREEN)
+                 .setOddTilesColour(Color.ORANGE)
                  .build(new ArrayList<>(gridPane.getChildren()));
 
 
          mainBoard.init(canvas);
-         mainBoard.getRow(3).forEach(Tile::delete);
-         mainBoard.getRow(4).forEach(Tile::delete);
+         mainBoard.getRow(3).forEach(it -> {it.delete(); it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());});
+         mainBoard.getRow(4).forEach(it -> {it.delete(); it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());});
          mainBoard.getTileAtIndex(3, 3).init();
 
          try {
+             //This is an example of manually moving pieces around the board and simulating a capture
              mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(3, 3).getPiece(), 4, 4);
-
-//             Thread.sleep(2000);
-
              mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(5, 5).getPiece(), 3, 3);
              mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(0, 2).getPiece(), 1, 3);
+             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(3, 5).getPiece(), 2, 4);
          } catch (RuntimeException exception) {
              exception.printStackTrace();
          }

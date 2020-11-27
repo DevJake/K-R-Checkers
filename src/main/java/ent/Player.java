@@ -56,12 +56,14 @@ public class Player extends Entity {
 
     public enum HomeSide {
         TOP,
-        BOTTOM
+        BOTTOM,
+        NONE
     }
 
     public enum Defaults {
         HUMAN(new Player(HomeSide.BOTTOM, "HUMAN", Color.PINK)),
-        COMPUTER(new Player(HomeSide.TOP, "A.I.", Color.BLACK));
+        COMPUTER(new Player(HomeSide.TOP, "A.I.", Color.BLACK)),
+        NONE(new Player(HomeSide.NONE, "NULL", Color.BLACK));
 
         private final Player player;
 

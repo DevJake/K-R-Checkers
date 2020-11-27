@@ -40,6 +40,8 @@ public class Board extends Entity {
         }
         for (Tile tile : getUnplayableTiles()) {
             tile.setPlayable(false);
+            tile.getPiece().setPlayer(null); //Don't use Player.Defaults.NONE.getPlayer() as this tile is unplayable.
+            // NONE is for tiles that have no occupying player.
 
             tile.setColour(getUnplayableTilesColour());
             tile.delete();
@@ -58,7 +60,7 @@ public class Board extends Entity {
 
     public void init(Pane canvas) {
         init();
-        Movement movement = new Movement(canvas);
+        Movement.init(canvas, this);
 
     }
 
@@ -83,7 +85,6 @@ public class Board extends Entity {
     }
 
     public Tile getTileAtIndex(int x, int y) {
-//        System.out.println("thingy=" + tiles.get(x).get(y).toString());
         return tiles.get(y).get(x);
     }
 
@@ -98,9 +99,9 @@ public class Board extends Entity {
     private List<Tile> getWithOffset(boolean offset) {
         ArrayList<Tile> tiles = new ArrayList<>();
         for (int i = 0; i < this.tiles.size(); i++) {
-            int _offset = offset ? Math.abs((i - 1) % 2) : i % 2;
+            int compute_offset = offset ? Math.abs((i - 1) % 2) : i % 2;
             for (int j = 0; j < this.tiles.get(i).size() / 2; j++) { //Slight optimisation ;)
-                tiles.add(getTileAtIndex(i, (j * 2) + _offset));
+                tiles.add(getTileAtIndex(i, (j * 2) + compute_offset));
             }
         }
 
@@ -142,11 +143,10 @@ public class Board extends Entity {
     }
 
     public int getKingsWallRow(Player player) {
-        switch (player.getHomeSide()) {
-            case TOP:
-                return 0;
-            case BOTTOM:
-                return height - 1;
+        if (player.getHomeSide() == Player.HomeSide.TOP) {
+            return 0;
+        } else if (player.getHomeSide() == Player.HomeSide.BOTTOM) {
+            return height - 1;
         }
         return -1;
     }
@@ -159,8 +159,6 @@ public class Board extends Entity {
     }
 
     public static class Builder {
-        private final int width = 8;
-        private final int height = 8;
         private final Color colourHuman = Color.RED;
         private final Color colourMachine = Color.PINK;
         private Color evenTilesColour = Color.WHITE;
@@ -189,7 +187,6 @@ public class Board extends Entity {
                 ArrayList<Node> nodes = new ArrayList<>(children.subList(64 - ((i * 8) + 8), 64 - (i * 8)));
 
                 for (int j = 0; j < nodes.size(); j++) {
-//                    System.out.println("i: " + i + " j:" + j);
                     Tile tile = new Tile(Color.ORANGE, (StackPane) nodes.get(j), new Piece(j, i, Color.BLACK,
                             Player.Defaults.HUMAN.getPlayer(), Piece.Type.MAN));
                     temp.add(tile);
@@ -205,7 +202,6 @@ public class Board extends Entity {
 
                 outer.add(temp);
 
-//                System.out.println("row: " + i + " added: " + temp);
 
                 //TODO fix player type
             }
@@ -216,38 +212,35 @@ public class Board extends Entity {
         }
     }
 
-    private class Movement {
-        private final Pane pane;
-        private Line line = init();
-        private double beginX;
-        private double beginY;
-        private double tileX;
-        private double tileY;
+    private static class Movement {
+        private static Line line = getNewLine();
+        private static double beginX;
+        private static double beginY;
+        private static double tileX;
+        private static double tileY;
 
         public Movement(Pane canvas) {
-            this.pane = canvas;
-            pane.getChildren().add(line);
 
-            pane.onMouseDraggedProperty().set(event -> {
+        }
+
+        public static void init(Pane canvas, Board board) {
+            canvas.getChildren().add(line);
+
+            canvas.onMouseDraggedProperty().set(event -> {
                 line.setEndX(event.getSceneX());
                 line.setEndY(event.getSceneY());
 
-                Tile tile = getTileAtIndex(((int) tileX), ((int) tileY));
+                Tile tile = board.getTileAtIndex(((int) tileX), ((int) tileY));
                 if (tile.isPlayable() && tile.getPiece().getChecker() != null)
                     line.setVisible(true);
-
-
-//                Tile tile = getTileAtIndex(gridX, gridY);
-//                getTileAtIndex(gridX, gridY).setColour(Color.BLACK);
-
             });
 
-            pane.onMousePressedProperty().set(event -> {
-                this.tileX = Math.floor(event.getX() / (pane.getWidth() / 8));
-                this.tileY = Math.floor((pane.getHeight() - event.getY()) / (pane.getHeight() / 8));
+            canvas.onMousePressedProperty().set(event -> {
+                tileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
+                tileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
 
-                this.beginX = (tileX * (pane.getWidth() / 8)) + 50;
-                this.beginY = pane.getHeight()-(tileY*(pane.getHeight()/8))-50;
+                beginX = (tileX * (canvas.getWidth() / 8)) + 50;
+                beginY = canvas.getHeight() - (tileY * (canvas.getHeight() / 8)) - 50;
 
                 line.setStartX(beginX);
                 line.setStartY(beginY);
@@ -255,15 +248,39 @@ public class Board extends Entity {
             });
 
 
-            //TODO shit's broke yo, fix it
-            pane.onMouseClickedProperty().set(event -> {
-                pane.getChildren().remove(line);
-                this.line = init();
-                pane.getChildren().add(this.line);
+            //TODO shit's broke yo, fix it; Might be, no longer sure lol
+            canvas.onMouseClickedProperty().set(event -> {
+                double destTileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
+                double destTileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
+                System.out.println("actual- " + event.getX() + ":" + event.getY());
+                System.out.println("centered- " + destTileX + ":" + destTileY);
+
+                Tile tileOrigin = board.getTileAtIndex(((int) tileX), ((int) tileY));
+                Tile tileDest = board.getTileAtIndex(((int) destTileX), ((int) destTileY));
+
+                /*
+                Origin should be a playable tile.
+                Origin should have a valid checker.
+
+                Destination should be an empty tile.
+                Destination should be a playable tile.
+                 */
+                if (tileOrigin.isPlayable() &&
+                        tileDest.isPlayable() &&
+                        tileOrigin.getPiece().getChecker() != null &&
+                        tileDest.getPiece().getPlayer() == Player.Defaults.NONE.getPlayer()) {
+                    System.out.println(tileDest.getPiece().getPlayer().getName());
+
+                    //TODO if destX/Y is further than 1 tile away, void, unless it involves a capture
+                }
+
+                canvas.getChildren().remove(line);
+                line = getNewLine();
+                canvas.getChildren().add(line);
             });
         }
 
-        private Line init() {
+        private static Line getNewLine() {
             Line line = new Line(0, 0, 0, 0);
             line.setVisible(false);
             line.setStrokeWidth(5);
@@ -288,12 +305,6 @@ public class Board extends Entity {
 
             boolean left = toX < origin.getX();
             boolean up = toY > origin.getY();
-
-            System.out.println(origin.getX());
-            System.out.println(toX);
-            System.out.println(origin.getY());
-            System.out.println(toY);
-
 
             if (left) {
                 if (up) {
@@ -331,7 +342,6 @@ public class Board extends Entity {
 
         //Attempt to execute a move left+down of the origin
         private void checkLeftDown(Piece origin, boolean capturingMove) {
-            System.out.println("Check Left Down");
             int destX = origin.getX() - (capturingMove ? 2 : 1);
             int destY = origin.getY() - (capturingMove ? 2 : 1);
 
@@ -348,7 +358,6 @@ public class Board extends Entity {
 
         //Attempt to execute a move right+up of the origin
         private void checkRightUp(Piece origin, boolean capturingMove) {
-            System.out.println("Check Right Up");
             int destX = origin.getX() + (capturingMove ? 2 : 1);
             int destY = origin.getY() + (capturingMove ? 2 : 1);
 
@@ -363,7 +372,6 @@ public class Board extends Entity {
 
         //Attempt to execute a move right+down of the origin
         private void checkRightDown(Piece origin, boolean capturingMove) {
-            System.out.println("Check Right Down");
             int destX = origin.getX() + (capturingMove ? 2 : 1);
             int destY = origin.getY() - (capturingMove ? 2 : 1);
 
@@ -397,7 +405,7 @@ public class Board extends Entity {
 
             if (capturingMove) {
                 if (isOccupied(midX, midY))
-                    throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existant " +
+                    throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existent " +
                             "piece! x:" + midX + ", y: " + midY);
                 if (board.getTileAtIndex(midX, midY).getPiece().getPlayer() == origin.getPlayer())
                     throw new BoardMoveSelfCaptureException("Attempting to capture a member of your team! x:" + midX + "," +
@@ -420,7 +428,7 @@ public class Board extends Entity {
         private void executeMove(Piece origin, int destX, int destY, Piece captured) {
             if (captured != null) {
                 origin.getPlayer().getCapturedPieces().add(captured);
-                captured.deleteFromBoard();
+                captured.deleteFromBoard(); //TODO Add to capturer's captured pieces list
             }
 
             board.getTileAtIndex(destX, destY).init();
@@ -429,7 +437,7 @@ public class Board extends Entity {
             //TODO force capturing of neighbours
             //TODO force auto-crowning of piece if it's on the back board
 
-            doAutoCapture(origin);
+            doAutoCapture(origin); //TODO might not be working, check
 
             //TODO check for a winning state
         }
@@ -486,7 +494,7 @@ public class Board extends Entity {
             }
 
             //The player has multiple options available... they must now decide which move to follow
-            if (validMoves.stream().filter(t -> t == Boolean.TRUE).count() > 1) {
+            if (validMoves.stream().filter(t -> t.equals(Boolean.TRUE)).count() > 1) {
                 //TODO it is now on the player to decide which move to take. Maybe fire event for this, including
                 // which moves are valid. Also write a method to generate a list of Direction enums detailing which
                 // moves are valid for a given piece
@@ -495,13 +503,13 @@ public class Board extends Entity {
             }
 
             //There is now only one move possible. Find the move and execute it.
-            if (validMoves.get(0))
+            if (Boolean.TRUE.equals(validMoves.get(0)))
                 makeMove(piece, piece.getX() - 2, piece.getY() + 2);
-            if (validMoves.get(1))
+            if (Boolean.TRUE.equals(validMoves.get(1)))
                 makeMove(piece, piece.getX() - 2, piece.getY() - 2);
-            if (validMoves.get(2))
+            if (Boolean.TRUE.equals(validMoves.get(2)))
                 makeMove(piece, piece.getX() + 2, piece.getY() + 2);
-            if (validMoves.get(3))
+            if (Boolean.TRUE.equals(validMoves.get(3)))
                 makeMove(piece, piece.getX() + 2, piece.getY() - 2);
         }
     }
