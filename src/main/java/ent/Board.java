@@ -413,8 +413,9 @@ public class Board extends Entity {
                             + midY);
             }
 
-            boolean kingOnlyMove = origin.getPlayer().getHomeSide() == Player.HomeSide.BOTTOM ?
-                    destY < origin.getY() : destY > origin.getY();
+            boolean kingOnlyMove = origin.getPlayer().getHomeSide() == Player.Defaults.HUMAN.getPlayer().getHomeSide() ?
+                    destY < origin.getY() :
+                    origin.getPlayer().getHomeSide() == Player.Defaults.COMPUTER.getPlayer().getHomeSide() && destY > origin.getY();
 
             if (origin.getType() != Piece.Type.KING && kingOnlyMove)
                 throw new BoardMoveNotKingException("This piece is not a king!");
