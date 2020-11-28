@@ -20,6 +20,6 @@ public class BridgeListener extends EventListener {
 
     @Override
     public void onBridgeMessageSend(BridgeMessageSendEvent event) {
-
+        //TODO either add implementation or remove
     }
 }
