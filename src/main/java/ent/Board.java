@@ -258,6 +258,12 @@ public class Board extends Entity {
                 Tile tileOrigin = board.getTileAtIndex(((int) tileX), ((int) tileY));
                 Tile tileDest = board.getTileAtIndex(((int) destTileX), ((int) destTileY));
 
+                System.out.println("--------------");
+                System.out.println("origin playable: " + tileOrigin.isPlayable());
+                System.out.println("destination playable: " + tileDest.isPlayable());
+                System.out.println("origin checker state: " + tileOrigin.getPiece().getChecker());
+                System.out.println("destination player state: " + tileDest.getPiece().getPlayer().getName());
+
                 /*
                 Origin should be a playable tile.
                 Origin should have a valid checker.
@@ -269,7 +275,8 @@ public class Board extends Entity {
                         tileDest.isPlayable() &&
                         tileOrigin.getPiece().getChecker() != null &&
                         tileDest.getPiece().getPlayer() == Player.Defaults.NONE.getPlayer()) {
-                    System.out.println(tileDest.getPiece().getPlayer().getName());
+//                    System.out.println(tileDest.getPiece().getPlayer().getName());
+                    board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(), tileDest.getPiece().getY());
 
                     //TODO if destX/Y is further than 1 tile away, void, unless it involves a capture
                 }

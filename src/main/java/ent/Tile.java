@@ -106,6 +106,7 @@ public class Tile extends Entity {
     public void delete() {
         this.node.getChildren().remove(piece.getChecker());
         piece.deleteFromBoard();
+        piece.delete();
     }
 
     /**
