@@ -1,10 +1,12 @@
  /*
- * Copyright (c) Jake Dean, 2020.
- *
- * This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
- * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
- * Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
- */
+  * Copyright (c) Jake Dean, 2020.
+  *
+  * This work is licensed under the Creative Commons
+  * Attribution-NonCommercial-NoDerivatives 4.0 International License.
+  * To view a copy of this license, visit http://creativecommons
+  * .org/licenses/by-nc-nd/4.0/ or send a letter to
+  * Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+  */
 
  package fx.controllers;
 
@@ -33,7 +35,8 @@
  public class Main extends Application {
      public static Board mainBoard;
 
-     public static void main(String[] args) throws IOException, EventProtocolMismatchException, URISyntaxException {
+     public static void main(String[] args) throws IOException,
+             EventProtocolMismatchException, URISyntaxException {
          launch(args);
 
 
@@ -45,7 +48,8 @@
 
          new BoardUpdateProtocol("boardupdate", "");
 
-         Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard, mainBoard)));
+         Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard
+                 , mainBoard)));
      }
 
      //JavaFX does not support JavaFX without this method.
@@ -59,19 +63,23 @@
 
      public static void bootPyServer() {
          //         File pyFile = new File("Main.py").getCanonicalFile();
-//         Runtime.getRuntime().exec("python /c start python " + pyFile.getAbsolutePath());
+//         Runtime.getRuntime().exec("python /c start python " + pyFile
+//         .getAbsolutePath());
 //         Runtime.getRuntime().exec("cmd /k");
 
-//         ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/K", "Start", "python", Main.class.getResource
+//         ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/K",
+//         "Start", "python", Main.class.getResource
 //         ("/Main.py")));
 
-//         String absolutePath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+//         String absolutePath = new File(Main.class.getProtectionDomain()
+//         .getCodeSource().getLocation().toURI())
 //         .getAbsolutePath();
 
 
 //         File pyMain = new File("./Main.py");
 
-//         ProcessBuilder builder = new ProcessBuilder("python", pyMain.getAbsolutePath());
+//         ProcessBuilder builder = new ProcessBuilder("python", pyMain
+//         .getAbsolutePath());
 
 //         Process process = builder.start();
 
@@ -85,7 +93,8 @@
 
      @Override
      public void start(Stage primaryStage) throws IOException {
-         FXMLLoader loader = new FXMLLoader(getClass().getResource("/Main.fxml"));
+         FXMLLoader loader = new FXMLLoader(getClass().getResource("/Main" +
+                 ".fxml"));
          Scene s = new Scene(loader.load());
 
          primaryStage.setScene(s);
@@ -124,7 +133,8 @@
          mainBoard.getTileAtIndex(3, 3).init();
 
          try {
-             //This is an example of manually moving pieces around the board and simulating a capture
+             //This is an example of manually moving pieces around the board
+             // and simulating a capture
              mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(3, 3).getPiece(), 4, 4);
              mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(5, 5).getPiece(), 3, 3);
              mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(0, 2).getPiece(), 1, 3);
