@@ -19,15 +19,15 @@ public class Player extends Entity {
     private String name;
     private Color colour;
 
-    public HomeSide getHomeSide() {
-        return homeSide;
-    }
-
     public Player(HomeSide homeSide, String name, Color colour) {
         this.homeSide = homeSide;
         this.name = name;
         this.colour = colour;
         this.id = UUID.randomUUID();
+    }
+
+    public HomeSide getHomeSide() {
+        return homeSide;
     }
 
     public ArrayList<Piece> getCapturedPieces() {

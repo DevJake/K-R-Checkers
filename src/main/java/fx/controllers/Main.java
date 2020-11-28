@@ -14,7 +14,6 @@
  import comms.protocol.ProtocolManager;
  import ent.Board;
  import ent.Player;
- import ent.Tile;
  import err.EventProtocolMismatchException;
  import event.BoardUpdateEvent;
  import event.Event;
@@ -58,7 +57,7 @@
                  color.getOpacity());
      }
 
-     public static void bootPyServer(){
+     public static void bootPyServer() {
          //         File pyFile = new File("Main.py").getCanonicalFile();
 //         Runtime.getRuntime().exec("python /c start python " + pyFile.getAbsolutePath());
 //         Runtime.getRuntime().exec("cmd /k");
@@ -114,8 +113,14 @@
 
 
          mainBoard.init(canvas);
-         mainBoard.getRow(3).forEach(it -> {it.delete(); it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());});
-         mainBoard.getRow(4).forEach(it -> {it.delete(); it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());});
+         mainBoard.getRow(3).forEach(it -> {
+             it.delete();
+             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
+         });
+         mainBoard.getRow(4).forEach(it -> {
+             it.delete();
+             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
+         });
          mainBoard.getTileAtIndex(3, 3).init();
 
          try {

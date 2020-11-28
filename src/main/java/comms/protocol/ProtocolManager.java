@@ -12,11 +12,9 @@ import comms.MessageContainer;
 import err.EventProtocolMismatchException;
 import event.Event;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ProtocolManager {
     private static final HashSet<Protocol> protocols = new HashSet<>();
@@ -27,7 +25,8 @@ public class ProtocolManager {
     }
 
     public static <E extends Event> Protocol getProtocolFor(Class<E> event) {
-        List<Protocol> select = protocols.stream().filter(p -> p.getEventClass() == event).collect(Collectors.toList());//Might need to
+        List<Protocol> select =
+                protocols.stream().filter(p -> p.getEventClass() == event).collect(Collectors.toList());//Might need to
 // use instanceof
         if (select.size() <= 0)
             return null;

@@ -8,10 +8,8 @@
 
 package err;
 
-import ent.Piece;
-
 public class BoardMoveNotKingException extends BoardMoveException {
-        public BoardMoveNotKingException(String message) {
+    public BoardMoveNotKingException(String message) {
         super(message);
     }
 }

@@ -5,6 +5,13 @@
 #  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
 #  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 #
+
+#
+#
+#  This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
+#  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
+#  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+#
 import uuid
 from enum import Enum
 from uuid import UUID
@@ -60,22 +67,22 @@ class Board:
 
 
 class Message:
-    def __init__(self, message: str, id: UUID = uuid.uuid4(), response_code: UUID = None, header:str = "", footer:str = ""):
+    def __init__(self, message: str, id: UUID = uuid.uuid4(), response_code: UUID = None, header: str = "",
+                 footer: str = ""):
         self.header = header
         self.footer = footer
         self.id = id
         self.message = message
         self.response_code = response_code
 
-
-    def set_header(self, header:str):
+    def set_header(self, header: str):
         self.header = header
         return self
 
-    def set_footer(self, footer:str):
-        self.footer =footer
+    def set_footer(self, footer: str):
+        self.footer = footer
         return self
 
-    def set_response_code(self, response_code:UUID):
+    def set_response_code(self, response_code: UUID):
         self.response_code = response_code
         return self

@@ -276,7 +276,8 @@ public class Board extends Entity {
                         tileOrigin.getPiece().getChecker() != null &&
                         tileDest.getPiece().getPlayer() == Player.Defaults.NONE.getPlayer()) {
 //                    System.out.println(tileDest.getPiece().getPlayer().getName());
-                    board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(), tileDest.getPiece().getY());
+                    board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
+                            tileDest.getPiece().getY());
 
                     //TODO if destX/Y is further than 1 tile away, void, unless it involves a capture
                 }
