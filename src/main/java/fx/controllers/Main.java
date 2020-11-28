@@ -42,7 +42,24 @@
 
          Event.Manager.registerListener(new BridgeListener());
 
-//         File pyFile = new File("Main.py").getCanonicalFile();
+         Bridge.open();
+
+         new BoardUpdateProtocol("boardupdate", "");
+
+         Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard, mainBoard)));
+     }
+
+     //JavaFX does not support JavaFX without this method.
+     public static String toRGBString(Color color) {
+         return String.format("rgba(%d, %d, %d, %f)",
+                 ((int) (255 * color.getRed())),
+                 ((int) (255 * color.getGreen())),
+                 ((int) (255 * color.getBlue())),
+                 color.getOpacity());
+     }
+
+     public static void bootPyServer(){
+         //         File pyFile = new File("Main.py").getCanonicalFile();
 //         Runtime.getRuntime().exec("python /c start python " + pyFile.getAbsolutePath());
 //         Runtime.getRuntime().exec("cmd /k");
 
@@ -64,21 +81,6 @@
 //             System.out.println("Calling shutdown hook...");
 //             process.destroy();
 //         }));
-
-         Bridge.open();
-
-         new BoardUpdateProtocol("boardupdate", "");
-
-         Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard, mainBoard)));
-     }
-
-     //JavaFX does not support JavaFX without this method.
-     public static String toRGBString(Color color) {
-         return String.format("rgba(%d, %d, %d, %f)",
-                 ((int) (255 * color.getRed())),
-                 ((int) (255 * color.getGreen())),
-                 ((int) (255 * color.getBlue())),
-                 color.getOpacity());
      }
 
 
