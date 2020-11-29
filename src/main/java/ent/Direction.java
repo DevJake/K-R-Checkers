@@ -8,9 +8,10 @@
 
 package ent;
 
-/*
-The directions a piece can move in. These movements are relative to the piece; 'forwards' is defined as the direction
- towards the opponent's baseline/King's Row
+/**
+ * The directions a {@link Piece} can move in. These movements are relative to the Piece; 'forwards' is defined as
+ * the direction towards the opponent's baseline/King's Row, backwards being the native {@link Player Player's} own
+ * baseline/King's Row.
  */
 public enum Direction {
     FORWARD_LEFT,
