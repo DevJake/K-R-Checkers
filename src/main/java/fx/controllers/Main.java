@@ -62,8 +62,8 @@
       * String-formats JavaFX Color classes in to strings that can be passed
       * in to JavaFX Node instances.
       *
-      * @param color Color - The Color class to be converted.
-      * @return String - The formatted string representation of the Color
+      * @param color {@link Color} - The Color class to be converted.
+      * @return {@link String} - The formatted string representation of the Color
       */
      public static String toRGBString(Color color) {
          return String.format("rgba(%d, %d, %d, %f)",

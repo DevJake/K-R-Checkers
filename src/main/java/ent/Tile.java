@@ -208,10 +208,10 @@ public class Tile extends Entity {
     }
 
     /**
-     * This methods intends to completely delete all information about this Tile and the Piece it contains. This is
+     * This method intends to completely delete all information about this Tile and the Piece it contains. This is
      * done when a Piece is either moved (calling delete on the origin Tile) or a Piece is captured.
      * <p>
-     * The {@link #node|node's} checker is destroyed, then {@link Piece#deleteFromBoard()} and {@link Piece#delete()}
+     * The {@link #node node's} checker is destroyed, then {@link Piece#deleteFromBoard()} and {@link Piece#delete()}
      * are executed.
      */
     public void delete() {
