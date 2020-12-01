@@ -63,6 +63,7 @@
       * in to JavaFX Node instances.
       *
       * @param color {@link Color} - The Color class to be converted.
+      *
       * @return {@link String} - The formatted string representation of the Color
       */
      public static String toRGBString(Color color) {
@@ -116,6 +117,7 @@
       * tiles that need to be removed, and other configuration settings.
       *
       * @param primaryStage The Stage to be displayed.
+      *
       * @throws IOException Throws if the FXMLLoader fails to load the fxml file describing the Scene for the Stage.
       */
      @Override

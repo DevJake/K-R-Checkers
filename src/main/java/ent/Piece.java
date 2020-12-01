@@ -60,6 +60,7 @@ public class Piece {
      * @param player {@link Player} - The player who owns this Piece.
      * @param type   {@link Type} - The Type of this Piece - this controls the logic for which directions this piece
      *               is allowed to move in.
+     *
      * @see #init()
      * @see Board
      */
@@ -164,6 +165,7 @@ public class Piece {
      * @param player {@link Player} - The new Player instance to claim ownership of this Piece. This should not be
      *               the Player who captures this Piece, as that should instead be denoted using
      *               {@link #setCapturedBy(Player)}.
+     *
      * @see #setCapturedBy(Player)
      */
     public void setPlayer(Player player) {

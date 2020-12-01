@@ -222,6 +222,7 @@ public class Tile extends Entity {
 
     /**
      * @param direction The {@link Direction} in which to attempt a move
+     *
      * @return Boolean - If the move was successful
      */
     public boolean makeMove(Direction direction) {

@@ -167,6 +167,7 @@ public class Bridge {
      * Message is appended to the {@link #queue}.
      *
      * @param message {@link comms.MessageContainer.Message} - The Message instance to be sent.
+     *
      * @throws IOException Thrown if the Bridge is not currently initialised/not open.
      */
     public static void send(MessageContainer.Message message) throws IOException {
