@@ -19,14 +19,87 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This class is the main source of all game-board interaction, control and management. This outer class primarily
+ * aims to store and manage metadata required as the bare minimum for the board. For example, this includes storing
+ * the 2D array used for mapping {@link Tile} instances, helper methods for retrieving explicit collections of Tiles
+ * - such as {@link #getPlayableTiles()} and {@link #getKingsWall(Player)} - and other important metadata such as the
+ * board's width and height.
+ * <p>
+ * Within this class are three subclasses, each with their own explicit purpose:
+ * {@link BoardManager}
+ * {@link Movement}
+ * {@link Builder}
+ * <p>
+ * Each of these serves an important purpose, as is discussed in their respective documentation.
+ * <p>
+ * The constructor for this class is very important in correctly constructing a new board. It contains lots of
+ * error-avoidance procedures and safety measures to ensure consistency in mapping parameters to behaviour.
+ * <p>
+ * Arguably, the most valuable behaviour of this class is abstracted interaction with the {@link #tiles} 2D array.
+ * Direct interaction can prove difficult, as the array uses x/y coordinates - atypical to row/column coordinates
+ * used in most games. Row/column coordinates are the equivalent of inverse y/x.
+ * <p>
+ * Whilst abstracting interaction between these two systems is difficult, constructing a new {@link #tiles} array
+ * requires direct conversion between these coordinate systems. An example of this complexity is shown in
+ * {@link #getWithOffset(boolean)}.
+ */
 public class Board extends Entity {
+    /**
+     * This nested {@link ArrayList} structure is used for storing the {@link Tile} instances that represent the
+     * Board's contents.
+     * <p>
+     * Usage of ArrayLists was favoured due to their classes providing helpful functions, such as
+     * {@link ArrayList#size()}. Combined with the complexity of the game, this would prove to increase efficiency in
+     * executing moves, querying the board, and other complex calculations. Furthermore, specific tiles can be easily
+     * accessed with the {@link ArrayList#get(int)} methods.
+     *
+     * @see Tile
+     * @see ArrayList
+     */
     private final ArrayList<ArrayList<Tile>> tiles;
+    /**
+     * The {@link Color} of playable {@link Tile} pieces.
+     */
     private final Color playableTilesColour;
+    /**
+     * The {@link Color} of unplayable {@link Tile} pieces.
+     */
     private final Color unplayableTilesColour;
+    /**
+     * The calculated width of the Board, assigned in the constructor.
+     */
     private final int width;
+    /**
+     * The calculated height of the Board, assigned in the constructor.
+     */
     private final int height;
+    /**
+     * The {@link BoardManager} instance associated with this Board.
+     */
     private final BoardManager manager;
 
+    /**
+     * The constructor serves a very important role in constructing a new instance. Typically, the structure of
+     * inbound data is not supplied by a direct instantiation call, but instead via the
+     * {@link Builder#build(ArrayList)} method of the {@link Builder}. This constructor focuses less on validating
+     * parameters (done by the Builder), but instead on performing post-construction Board manipulation. For example,
+     * establishing which {@link Tile Tiles} are and aren't playable, assigning them the correct respective
+     * {@link Color}, and removing metadata from unplayable {@link Piece Pieces}.
+     * <p>
+     * The constructor also create a new {@link BoardManager} instance, assigning it to the {@link #manager} variable.
+     *
+     * @param tiles                 {@link ArrayList} - A two-dimensional nested ArrayList object, containing
+     *                              {@link Tile} objects that represent the structure of the Board.
+     * @param playableTilesColour   {@link Color} - The Color to be assigned to playable {@link Tile Tiles}. Playable
+     *                              tiles are those that the {@link Player} can interact with.
+     * @param unplayableTilesColour {@link Color} - The Color to be assigned to unplayable {@link Tile Tiles}.
+     *
+     * @see Builder
+     * @see Tile
+     * @see Color
+     * @see Piece
+     */
     public Board(ArrayList<ArrayList<Tile>> tiles, Color playableTilesColour, Color unplayableTilesColour) {
         this.tiles = tiles;
         this.playableTilesColour = playableTilesColour;
