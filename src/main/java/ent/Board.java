@@ -127,10 +127,28 @@ public class Board extends Entity {
         return manager;
     }
 
+    /**
+     * Each {@link Tile} has an {@link Tile#init()} method, that performs essential setup behaviour. This method acts
+     * as a helper function to iteratively call this function on all Tiles within the {@link #tiles} variable.
+     *
+     * @see Tile
+     * @see Tile#init()
+     */
     public void init() {
         tiles.forEach(t0 -> t0.forEach(Tile::init));
     }
 
+    /**
+     * This method performs important initialisation steps required for Board behaviour. Namely, initialisation and
+     * attachment of event listeners within the {@link Movement} nested class to this Board's {@link Pane} node, and
+     * the functionality outlined within {@link #init()}.
+     *
+     * @param canvas {@link Pane} - The Pane node in which the Board renders and should therefore be used for
+     *               identifying mouse interaction events.
+     *
+     * @see Movement
+     * @see Pane
+     */
     public void init(Pane canvas) {
         init();
         Movement.init(canvas, this);
@@ -157,10 +175,36 @@ public class Board extends Entity {
         return unplayableTilesColour;
     }
 
+    /**
+     * Returns the given {@link Tile} entity at the specified x and y coordinates. Notably, the structure of the
+     * nested {@link ArrayList} structure used within the {@link #tiles} variable means that, despite representing an
+     * x/y coordinate system, must be referenced using y/x notation. This method is used to abstract away the
+     * potential confusion this may cause.
+     *
+     * @param x Int - The x coordinate of the {@link Tile} to be retrieved.
+     * @param y Int - The y coordinate of the {@link Tile} to be retrieved.
+     *
+     * @return {@link Tile} - The given {@link Tile} entity at the specified x and y coordinates.
+     *
+     * @see Tile
+     * @see #tiles
+     */
     public Tile getTileAtIndex(int x, int y) {
         return tiles.get(y).get(x);
     }
 
+    /**
+     * This method performs the same abstraction functionality as {@link #getTileAtIndex(int, int)}, but instead
+     * updates the internal {@link Piece} instance for the {@link Tile} at the given coordinates.
+     *
+     * @param x     Int - The x coordinate of the {@link Tile} to be updated.
+     * @param y     Int - The y coordinate of the {@link Tile} to be updated.
+     * @param piece {@link Piece} - The new Piece instance to be used for replacement.
+     *
+     * @see Tile
+     * @see #getTileAtIndex(int, int)
+     * @see Piece
+     */
     public void setTileAtIndex(int x, int y, Piece piece) {
         tiles.get(y).get(x).setPiece(piece);
     }
@@ -181,10 +225,24 @@ public class Board extends Entity {
         return tiles;
     }
 
+    /**
+     * @param n Int - The integer index for the row to be retrieved.
+     *
+     * @return {@link List<Tile>} - A List object containing the {@link Tile Tiles} contained in row *n*.
+     */
     public List<Tile> getRow(int n) {
         return tiles.get(n);
     }
 
+    /**
+     * Unlike the simplicity found in retrieving a specific row, retrieving a given column requires collecting all
+     * {@link Tile} entities at a given index of each row. This method simplifies the column-retrieval process by
+     * using Java's {@link java.util.stream.Stream} library.
+     *
+     * @param n Int - The integer index for the column to be retrieved.
+     *
+     * @return {@link List<Tile>} - A List object containing the {@link Tile Tiles} contained in column *n*.
+     */
     public List<Tile> getColumn(int n) {
         return tiles.stream().map(t -> t.get(n)).collect(Collectors.toList());
     }
@@ -194,14 +252,24 @@ public class Board extends Entity {
     }
 
     /**
-     * Returns how many uncaptured pieces currently remain on the board
+     * Returns how many uncaptured {@link Piece Pieces} currently remain on the Board
      *
-     * @return Int - How many uncaptured pieces remain on the board.
+     * @return Int - How many uncaptured {@link Piece Pieces} remain on the Board.
+     *
+     * @see Tile
+     * @see Piece#getCapturedBy()
      */
     public int getTotalPieces() { //TODO Unit test
         return tiles.stream().mapToInt(row -> (int) row.stream().filter(tile -> tile.getPiece().getCapturedBy() == null).count()).sum();
     }
 
+    /**
+     * This method toggles the visibility of the x/y coordinates for each {@link Tile}. If enabled, a
+     * {@link javafx.scene.control.Label} is displayed on top of each Tile's {@link StackPane}, showing the x/y
+     * coordinates for that Tile.
+     *
+     * @param show Boolean - If the coordinate Labels should be displayed.
+     */
     public void setShowCoordinates(boolean show) {
         getPlayableTiles().forEach(t -> {
             if (show)
@@ -211,10 +279,37 @@ public class Board extends Entity {
         });
     }
 
+    /**
+     * This method returns the back row - otherwise titled the King's Row - of a {@link Player}. This is the back-most
+     * row of the board, relative to that Player's origin side. Moving a {@link Piece} on top the King's Row results
+     * in it being made a {@link ent.Piece.Type#KING KING}.
+     *
+     * @param player {@link Player} - The Player to use for determining the orientation of the back row.
+     *
+     * @return {@link List<Tile>} - A List of {@link Tile} instances that compose the back row/King's Row for the
+     * given {@link Player Player's} team.
+     *
+     * @see ent.Piece.Type#KING
+     * @see Piece
+     * @see Player
+     * @see Tile
+     */
     public List<Tile> getKingsWall(Player player) {
         return getRow(getKingsWallRow(player));
     }
 
+    /**
+     * This method performs the same functionality as {@link #getKingsWall(Player)}, but instead returns the integer
+     * index of the row, in respect to the {@link ent.Player.HomeSide} of the specified {@link Player}.
+     *
+     * @param player {@link Player} - The Player to determine the {@link ent.Player.HomeSide} of.
+     *
+     * @return Int - The integer index of the King's Wall for the given {@link Player}.
+     *
+     * @see Player
+     * @see ent.Player.HomeSide
+     * @see #getKingsWall(Player)
+     */
     public int getKingsWallRow(Player player) {
         if (player.getHomeSide() == Player.HomeSide.TOP) {
             return 0;
@@ -231,6 +326,16 @@ public class Board extends Entity {
                 '}';
     }
 
+    /**
+     * This class serves as a preliminary means of constructing new {@link Board} instances with minimal information
+     * via a chainable method call sequence - a 'builder' class pattern.
+     * <p>
+     * Furthermore, the {@link #build(ArrayList)} method is responsible for constructing the nested {@link ArrayList}
+     * structure required for the {@link Board#tiles} variable. As mentioned in {@link Board Board's} constructor,
+     * it's important to convert the row/column coordinate system to the x/y coordinate system used by the game.
+     * Given that row/column coordinates behave inversely to x/y, the build method is responsible for applying this
+     * complex conversion.
+     */
     public static class Builder {
         private final Color colourHuman = Color.RED;
         private final Color colourMachine = Color.PINK;
@@ -247,11 +352,24 @@ public class Board extends Entity {
             return this;
         }
 
-        /*
-        A 'Board' is represented as an ArrayList of ArrayLists. The first ArrayList contains the data for each row.
-        To do this, the height metric is used to initialise the board row-by-row. This allows for a given piece
-        on the board to be indexed by an (x,y) pair.
-        */
+        /**
+         * A 'Board' is represented as a series of nested {@link ArrayList} objects. The first ArrayList contains the
+         * {@link Node} instances for each row. First, we use the height metric to initialise a temporary 2D array
+         * row-by-row. To convert this row/column system to the preferable x/y system, we then need to invert it.
+         * This method performs the same operation in an efficient method, iterating through every value of the
+         * provided parameter, inverting coordinates in-situ.
+         * <p>
+         * This allows for a given piece on the board to be indexed by an (x,y) pair.
+         *
+         * @param children {@link ArrayList<Node>} - The row/column base version of {@link Node} entities to be used
+         *                 for the board. This will be converted to an x/y coordinate system.
+         *
+         * @return {@link Board} - A new {@link Board} instance, now using the x/y coordinate system.
+         *
+         * @see Node
+         * @see Board
+         * @see ArrayList
+         */
         public Board build(ArrayList<Node> children) {
             ArrayList<ArrayList<Tile>> outer = new ArrayList<>();
 
@@ -285,20 +403,58 @@ public class Board extends Entity {
         }
     }
 
+    /**
+     * This class is responsible for handling all interaction events relating to the {@link Board} instance. This
+     * includes {@link javafx.scene.input.MouseEvent} instances which are used for determining drag-and-drop gameplay
+     * mechanics.
+     * <p>
+     * The means for implementing drag-and-drop is by drawing a line from the origin {@link Piece} to the destination
+     * {@link Tile}, then executing the move upon mouse click release.
+     */
     private static class Movement {
+        /**
+         * This variable is re-instantiated each time the mouse is de-pressed. It simply stores the line used to be
+         * drawing between origin and destination {@link Tile Tiles}.
+         */
         private static Line line = getNewLine();
+        /**
+         * The centered click origin x coordinate.
+         */
         private static double beginX;
+        /**
+         * The centered click origin y coordinate.
+         */
         private static double beginY;
+        /**
+         * The true click origin x coordinate.
+         */
         private static double tileX;
+        /**
+         * The true click origin y coordinate.
+         */
         private static double tileY;
 
         public Movement(Pane canvas) {
 
         }
 
+        /**
+         * This method initialises the movement listeners, associating each listener with the provided {@link Pane},
+         * directing output to the {@link Board}.
+         *
+         * @param canvas {@link Pane} - The Pane to be monitored for mouse interactions.
+         * @param board  {@link Board} - The Board instance to be controlled via mouse interactions.
+         *
+         * @see Pane
+         * @see Board
+         */
         public static void init(Pane canvas, Board board) {
             canvas.getChildren().add(line);
 
+            /*
+            This method is fired when the mouse is dragged. This doesn't record the initial location of the mouse
+            before dragging, so this method only updates the end location of the line.
+             */
             canvas.onMouseDraggedProperty().set(event -> {
                 line.setEndX(event.getSceneX());
                 line.setEndY(event.getSceneY());
@@ -308,20 +464,35 @@ public class Board extends Entity {
                     line.setVisible(true);
             });
 
+            /*
+            This method is fired when the user initially presses the mouse. Here, we calculate what Tile was clicked,
+             determine the centre coordinates of that tile, and assign the start of our line to that central x/y
+             position.
+             */
             canvas.onMousePressedProperty().set(event -> {
                 tileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
                 tileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
 
                 beginX = (tileX * (canvas.getWidth() / 8)) + 50;
                 beginY = canvas.getHeight() - (tileY * (canvas.getHeight() / 8)) - 50;
+                //Our board is only ever 8x8 tiles in size, so we can divide our x and y mouse coordinates by 8ths to
+                // create new uniform coordinates.
 
                 line.setStartX(beginX);
                 line.setStartY(beginY);
-
             });
 
 
             //TODO shit's broke yo, fix it; Might be, no longer sure lol
+            /*
+            This method is fired when the user ends a mouse click. Here, we end the drag-and-drop operation. We
+            calculate the origin and final x/y coordinates of the mouse drag operation, identifying the relevant
+            Piece object for each. Then, we validate the movement, ensuring it is feasible. Finally, we execute the
+            move by calling #getManager()#makeMove(origin, destination).
+
+            After executing the move, we destroy the line that's being rendered on the Pane, replacing it with a new
+            line.
+             */
             canvas.onMouseClickedProperty().set(event -> {
                 double destTileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
                 double destTileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
@@ -361,6 +532,12 @@ public class Board extends Entity {
             });
         }
 
+        /**
+         * This method simply creates and returns a new {@link Line} instance using hard-coded parameters.
+         *
+         * @return {@link Line} - A new Line instance with 'null' coordinates (effectively invisible), no visibility,
+         * and a stroke width of 5.
+         */
         private static Line getNewLine() {
             Line line = new Line(0, 0, 0, 0);
             line.setVisible(false);
@@ -368,7 +545,7 @@ public class Board extends Entity {
             return line;
         }
     }
-
+    
     public class BoardManager {
         private final Board board;
 
