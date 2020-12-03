@@ -10,8 +10,8 @@ package event;
 
 import comms.MessageContainer;
 
-/*
-Called when the AI opponent plays a given move.
+/**
+ * Called when the A.I. {@link ent.Player} plays a given move.
  */
 public class AIPlayMoveEvent extends Event {
     private final MessageContainer.Message message;

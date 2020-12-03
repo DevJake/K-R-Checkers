@@ -10,6 +10,9 @@ package event;
 
 import comms.MessageContainer;
 
+/**
+ * Called when the Human {@link ent.Player} plays a given move.
+ */
 public class PlayerMakeMoveEvent extends Event {
     private final MessageContainer.Message message;
 
