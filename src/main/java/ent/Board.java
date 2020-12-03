@@ -123,6 +123,11 @@ public class Board extends Entity {
         this.manager = new BoardManager(this);
     }
 
+    /**
+     * Gets manager.
+     *
+     * @return the manager
+     */
     public BoardManager getManager() {
         return manager;
     }
@@ -132,7 +137,7 @@ public class Board extends Entity {
      * as a helper function to iteratively call this function on all Tiles within the {@link #tiles} variable.
      *
      * @see Tile
-     * @see Tile#init()
+     * @see Tile#init() Tile#init()
      */
     public void init() {
         tiles.forEach(t0 -> t0.forEach(Tile::init));
@@ -155,22 +160,47 @@ public class Board extends Entity {
 
     }
 
+    /**
+     * Gets tiles.
+     *
+     * @return the tiles
+     */
     public ArrayList<ArrayList<Tile>> getTiles() { //TODO remove
         return tiles;
     }
 
+    /**
+     * Gets height.
+     *
+     * @return the height
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * Gets width.
+     *
+     * @return the width
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * Gets playable tiles colour.
+     *
+     * @return the playable tiles colour
+     */
     public Color getPlayableTilesColour() {
         return playableTilesColour;
     }
 
+    /**
+     * Gets unplayable tiles colour.
+     *
+     * @return the unplayable tiles colour
+     */
     public Color getUnplayableTilesColour() {
         return unplayableTilesColour;
     }
@@ -187,7 +217,7 @@ public class Board extends Entity {
      * @return {@link Tile} - The given {@link Tile} entity at the specified x and y coordinates.
      *
      * @see Tile
-     * @see #tiles
+     * @see #tiles #tiles
      */
     public Tile getTileAtIndex(int x, int y) {
         return tiles.get(y).get(x);
@@ -202,13 +232,18 @@ public class Board extends Entity {
      * @param piece {@link Piece} - The new Piece instance to be used for replacement.
      *
      * @see Tile
-     * @see #getTileAtIndex(int, int)
+     * @see #getTileAtIndex(int, int) #getTileAtIndex(int, int)
      * @see Piece
      */
     public void setTileAtIndex(int x, int y, Piece piece) {
         tiles.get(y).get(x).setPiece(piece);
     }
 
+    /**
+     * Gets playable tiles.
+     *
+     * @return the playable tiles
+     */
     public List<Tile> getPlayableTiles() {
         return getWithOffset(false);
     }
@@ -226,6 +261,8 @@ public class Board extends Entity {
     }
 
     /**
+     * Gets row.
+     *
      * @param n Int - The integer index for the row to be retrieved.
      *
      * @return {@link List<Tile>} - A List object containing the {@link Tile Tiles} contained in row *n*.
@@ -247,6 +284,11 @@ public class Board extends Entity {
         return tiles.stream().map(t -> t.get(n)).collect(Collectors.toList());
     }
 
+    /**
+     * Gets unplayable tiles.
+     *
+     * @return the unplayable tiles
+     */
     public List<Tile> getUnplayableTiles() {
         return getWithOffset(true);
     }
@@ -257,7 +299,7 @@ public class Board extends Entity {
      * @return Int - How many uncaptured {@link Piece Pieces} remain on the Board.
      *
      * @see Tile
-     * @see Piece#getCapturedBy()
+     * @see Piece#getCapturedBy() Piece#getCapturedBy()
      */
     public int getTotalPieces() { //TODO Unit test
         return tiles.stream().mapToInt(row -> (int) row.stream().filter(tile -> tile.getPiece().getCapturedBy() == null).count()).sum();
@@ -289,7 +331,7 @@ public class Board extends Entity {
      * @return {@link List<Tile>} - A List of {@link Tile} instances that compose the back row/King's Row for the
      * given {@link Player Player's} team.
      *
-     * @see ent.Piece.Type#KING
+     * @see ent.Piece.Type#KING ent.Piece.Type#KING
      * @see Piece
      * @see Player
      * @see Tile
@@ -308,7 +350,7 @@ public class Board extends Entity {
      *
      * @see Player
      * @see ent.Player.HomeSide
-     * @see #getKingsWall(Player)
+     * @see #getKingsWall(Player) #getKingsWall(Player)
      */
     public int getKingsWallRow(Player player) {
         if (player.getHomeSide() == Player.HomeSide.TOP) {
@@ -342,11 +384,25 @@ public class Board extends Entity {
         private Color evenTilesColour = Color.WHITE;
         private Color oddTilesColour = Color.BLACK;
 
+        /**
+         * Sets even tiles colour.
+         *
+         * @param evenTilesColour the even tiles colour
+         *
+         * @return the even tiles colour
+         */
         public Builder setEvenTilesColour(Color evenTilesColour) {
             this.evenTilesColour = evenTilesColour;
             return this;
         }
 
+        /**
+         * Sets odd tiles colour.
+         *
+         * @param oddTilesColour the odd tiles colour
+         *
+         * @return the odd tiles colour
+         */
         public Builder setOddTilesColour(Color oddTilesColour) {
             this.oddTilesColour = oddTilesColour;
             return this;
@@ -434,6 +490,11 @@ public class Board extends Entity {
          */
         private static double tileY;
 
+        /**
+         * Instantiates a new Movement.
+         *
+         * @param canvas the canvas
+         */
         public Movement(Pane canvas) {
 
         }
@@ -545,19 +606,63 @@ public class Board extends Entity {
             return line;
         }
     }
-    
+
+    /**
+     * This class is responsible for managing complex, essentials behaviour relating to the {@link Board}. For
+     * example, the movement of pieces - coordinated by the {@link Movement} class - requires a complex series of
+     * validity checks on multiple {@link Tile Tiles}, {@link Piece Pieces} and {@link Player Players}.
+     * <p>
+     * By using this class, complex behaviour can be abstracted away in to much simpler method calls.
+     *
+     * @see Movement
+     * @see Tile
+     * @see Piece
+     * @see Player
+     */
     public class BoardManager {
+        /**
+         * The {@link Board} instance to be managed throughout this class.
+         */
         private final Board board;
 
         private BoardManager(Board board) {
             this.board = board;
         }
 
+        /**
+         * This method simply returns a Boolean marking if the {@link Tile} at the given x,y coordinates is occupied
+         * by an uncaptured, valid {@link Piece} instance.
+         *
+         * @param x Int - The integer, x coordinate of the {@link Tile} to be evaluated for occupational status.
+         * @param y Int - The integer, y coordinate of the {@link Tile} to be evaluated for occupational status.
+         *
+         * @return Boolean - if the {@link Tile} at the given x,y coordinates is occupied by an uncaptured, valid
+         * {@link Piece} instance.
+         *
+         * @see Tile
+         * @see Piece
+         * @see Piece#getChecker()
+         * @see Piece#getCapturedBy()
+         */
         private boolean isOccupied(int x, int y) {
             return board.getTileAtIndex(x, y).getPiece().getChecker() != null && board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null;
         }
 
-        //Make a move from x,y to x,y
+        /**
+         * This method attempts to execute a move from origin(x,y) to destination(x,y). The process is considerably
+         * complex given the large array of requirements for a {@link Piece} to be eligible to move.
+         * <p>
+         * Initially, this method determines if the move is a capturing move, in that it attempts to move exactly two
+         * diagonal spaces away. Next, we determine the direction of movement, either left-up, right-up, left-down or
+         * right-down. Of this list, the last two moves are reserved only for {@link ent.Piece.Type#KING}
+         * {@link Piece Pieces} - another factor we must check.
+         *
+         * @param origin {@link Piece} - The origin Piece that we're attempting to move.
+         * @param toX    Int - The integer x of the destination coordinates for the given origin Piece.
+         * @param toY    Int - The integer y of the destination coordinates for the given origin Piece.
+         *
+         * @see ent.Piece.Type#KING ent.Piece.Type#KING
+         */
         public void makeMove(Piece origin, int toX, int toY) {
             boolean capturing = Math.abs(origin.getX() - toX) == 2 && Math.abs(origin.getY() - toY) == 2;
 
@@ -583,7 +688,17 @@ public class Board extends Entity {
             }
         }
 
-        //Attempt to execute a move left+up of the origin
+        /**
+         * This method determines if a move in the left-up direction is valid. If the move is not capturing, only the
+         * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
+         * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
+         * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
+         * possible.
+         *
+         * @param origin        {@link Piece} - The Piece from which this move originates.
+         * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
+         *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
+         */
         private void checkLeftUp(Piece origin, boolean capturingMove) {
             int destX = origin.getX() - (capturingMove ? 2 : 1);
             int destY = origin.getY() + (capturingMove ? 2 : 1);
@@ -598,7 +713,17 @@ public class Board extends Entity {
             finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
         }
 
-        //Attempt to execute a move left+down of the origin
+        /**
+         * This method determines if a move in the left-down direction is valid. If the move is not capturing, only the
+         * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
+         * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
+         * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
+         * possible.
+         *
+         * @param origin        {@link Piece} - The Piece from which this move originates.
+         * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
+         *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
+         */
         private void checkLeftDown(Piece origin, boolean capturingMove) {
             int destX = origin.getX() - (capturingMove ? 2 : 1);
             int destY = origin.getY() - (capturingMove ? 2 : 1);
@@ -614,7 +739,17 @@ public class Board extends Entity {
         }
 
 
-        //Attempt to execute a move right+up of the origin
+        /**
+         * This method determines if a move in the right-up direction is valid. If the move is not capturing, only the
+         * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
+         * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
+         * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
+         * possible.
+         *
+         * @param origin        {@link Piece} - The Piece from which this move originates.
+         * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
+         *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
+         */
         private void checkRightUp(Piece origin, boolean capturingMove) {
             int destX = origin.getX() + (capturingMove ? 2 : 1);
             int destY = origin.getY() + (capturingMove ? 2 : 1);
@@ -628,7 +763,17 @@ public class Board extends Entity {
             finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
         }
 
-        //Attempt to execute a move right+down of the origin
+        /**
+         * This method determines if a move in the right-down direction is valid. If the move is not capturing, only the
+         * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
+         * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
+         * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
+         * possible.
+         *
+         * @param origin        {@link Piece} - The Piece from which this move originates.
+         * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
+         *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
+         */
         private void checkRightDown(Piece origin, boolean capturingMove) {
             int destX = origin.getX() + (capturingMove ? 2 : 1);
             int destY = origin.getY() - (capturingMove ? 2 : 1);
@@ -642,6 +787,63 @@ public class Board extends Entity {
             finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
         }
 
+        /**
+         * This method takes in the results of many prior calculations and performs final validity checks before
+         * executing the move. These checks - and their respective {@link RuntimeException} classes - are as follows:
+         * <p>
+         * {@link BoardMoveInvalidOriginException}:
+         * The origin {@link Piece} should be valid. The {@link Tile} it resides on should return true for
+         * {@link #isOccupied(int, int)}.
+         * <p>
+         * {@link BoardMoveInvalidDestinationException}:
+         * The destination {@link Tile} should not be occupied. See {@link #isOccupied(int, int)}.
+         * <p>
+         * {@link BoardMoveException}:
+         * The attempted move must not exceed more than two tiles in the given diagonal axis. This is checked
+         * irrespective of if the move is labelled as a capturing move.
+         * <p>
+         * {@link BoardMoveMissingPieceException}:
+         * If the move is a capturing move, the {@link Tile} located in-between the origin and destination Tiles must
+         * be occupied. See {@link #isOccupied(int, int)}.
+         * <p>
+         * {@link BoardMoveSelfCaptureException}:
+         * The origin {@link Piece} cannot attempt a capturing move if the Piece to be captured is owned by the same
+         * {@link Player}.
+         * <p>
+         * {@link BoardMoveNotKingException}:
+         * The origin {@link Piece} cannot perform this action because the attempted direction of movement is towards
+         * the {@link Player Player's} {@link ent.Player.HomeSide}. Whilst this is possible, the Piece to be moved is
+         * not of {@link ent.Piece.Type} {@link ent.Piece.Type#KING}.
+         *
+         * @param origin        {@link Piece} - The Piece that we're validating the attempted movement of.
+         * @param destX         Int - The integer x value of the destination {@link Tile} coordinates.
+         * @param destY         Int - The integer y value of the destination {@link Tile} coordinates.
+         * @param midX          Int - The integer x value of the {@link Piece Piece's} coordinates that this maneuver
+         *                      is attempting to capture. Applicable if capturingMove is true.
+         * @param midY          Int - The integer y value of the {@link Piece Piece's} coordinates that this maneuver
+         *                      is attempting to capture. Applicable if capturingMove is true.
+         * @param capturingMove Boolean - If this move is attempting to capture a {@link Piece}. Defined by x/y
+         *                      destination coordinates having a +/- difference of two to the origin Piece's x/y
+         *                      coordinates.
+         * @param trial         Boolean - If this move should be executed once it passes validation checks. This is a
+         *                      means of purely testing if a move is valid, without re-implementing validity checks.
+         *                      If this method is called from a try-catch statement, each given
+         *                      {@link BoardMoveException} instance can be captured. If one is thrown, we know that
+         *                      the move would not be valid, and why so.
+         *
+         * @see #isOccupied(int, int)
+         * @see Piece
+         * @see Tile
+         * @see Player
+         * @see ent.Player.HomeSide
+         * @see ent.Piece.Type
+         * @see BoardMoveInvalidOriginException
+         * @see BoardMoveInvalidDestinationException
+         * @see BoardMoveException
+         * @see BoardMoveMissingPieceException
+         * @see BoardMoveSelfCaptureException
+         * @see BoardMoveNotKingException
+         */
         private void finalCheck(Piece origin, int destX, int destY, int midX, int midY, boolean capturingMove,
                                 boolean trial) {
 
@@ -684,6 +886,23 @@ public class Board extends Entity {
                 executeMove(origin, destX, destY, capturing);
         }
 
+        /**
+         * This method is responsible for the actual execution of a move. All validity is assumed, as this is called
+         * directly from {@link #finalCheck(Piece, int, int, int, int, boolean, boolean)}. Quite simply, the origin
+         * {@link Piece} is removed from its origin. The destination {@link Tile} is updated with the old Piece.
+         * <p>
+         * Once this method has completed execution of movement, the {@link #doAutoCapture(Piece)} method is called.
+         *
+         * @param origin   {@link Piece} - The Piece to be moved.
+         * @param destX    Int - The integer x coordinate of the destination {@link Tile}.
+         * @param destY    Int - The integer y coordinate of the destination {@link Tile}.
+         * @param captured {@link Piece} - The Piece that has been captured during this process. This is required so
+         *                 that the capturing {@link Player} can be accredited with this Piece and the
+         *                 Piece removed from play.
+         *
+         * @see Piece#getCapturedBy()
+         * @see #finalCheck(Piece, int, int, int, int, boolean, boolean)
+         */
         private void executeMove(Piece origin, int destX, int destY, Piece captured) {
             if (captured != null) {
                 origin.getPlayer().getCapturedPieces().add(captured);
@@ -701,6 +920,20 @@ public class Board extends Entity {
             //TODO check for a winning state
         }
 
+        /**
+         * Per the rules of Checkers, a {@link Piece} is mandated to make a capturing move if a capturing move is
+         * possible. This method is responsible for enforcing this policy.
+         * <p>
+         * First, all diagonal axis around the given Piece are checked for eligibility as a capturing move. The
+         * validity performed for this is executed via {@link #finalCheck(Piece, int, int, int, int, boolean, boolean)}.
+         * <p>
+         * Once we've aggregated a {@link List} of valid moves, we then filter our moves to a single move using a
+         * {@link java.util.stream.Stream}, isolate the move and execute it.
+         *
+         * @param piece {@link Piece} - The Piece we should enforce auto-capturing policies against.
+         *
+         * @see #finalCheck(Piece, int, int, int, int, boolean, boolean)
+         */
         private void doAutoCapture(Piece piece) {
             Player opponent = piece.getPlayer().getName().equals(Player.Defaults.COMPUTER.getPlayer().getName()) ?
                     Player.Defaults.HUMAN.getPlayer() : Player.Defaults.COMPUTER.getPlayer();
