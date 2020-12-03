@@ -12,6 +12,9 @@ import comms.MessageContainer;
 import event.Event;
 import event.PlayerMakeMoveEvent;
 
+/**
+ * Represents a {@link ent.Board} movement executed by the Human {@link ent.Player}.
+ */
 public class PlayerMakeMoveProtocol extends Protocol {
     public PlayerMakeMoveProtocol(String header, String footer) {
         super(header, footer, PlayerMakeMoveEvent.class);

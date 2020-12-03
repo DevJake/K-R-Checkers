@@ -12,6 +12,9 @@ import comms.MessageContainer;
 import event.AIPlayMoveEvent;
 import event.Event;
 
+/**
+ * Represents a {@link ent.Board} movement executed by the A.I. {@link ent.Player}.
+ */
 public class AIMakeMoveProtocol extends Protocol {
     public AIMakeMoveProtocol(String header, String footer) {
         super(header, footer, AIPlayMoveEvent.class);
