@@ -10,6 +10,10 @@ package util;
 
 import ent.Board;
 
+/**
+ * A utility class for printing consistently-formatted representations of certain objects. This is useful for both
+ * debugging and user interaction purposes.
+ */
 public class PrintUtil {
     public static String asFormatted(Board board) {
         return "";
