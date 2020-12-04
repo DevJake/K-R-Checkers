@@ -10,6 +10,9 @@ package err;
 
 import ent.Piece;
 
+/**
+ * An exception for {@link ent.Board} moves with an invalid origin {@link ent.Tile} or {@link Piece}.
+ */
 public class BoardMoveInvalidOriginException extends BoardMoveException {
     private Piece origin;
     private int destX;

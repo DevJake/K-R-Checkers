@@ -32,6 +32,10 @@
  import java.net.URISyntaxException;
  import java.util.ArrayList;
 
+ /**
+  * The Main class. As with all JavaFX applications, this is required, as it's responsible for constructing and
+  * displaying the GUI.
+  */
  public class Main extends Application {
      public static Board mainBoard;
 
@@ -53,6 +57,15 @@
      }
 
      //JavaFX does not support JavaFX without this method.
+
+     /**
+      * String-formats JavaFX Color classes in to strings that can be passed
+      * in to JavaFX Node instances.
+      *
+      * @param color {@link Color} - The Color class to be converted.
+      *
+      * @return {@link String} - The formatted string representation of the Color
+      */
      public static String toRGBString(Color color) {
          return String.format("rgba(%d, %d, %d, %f)",
                  ((int) (255 * color.getRed())),
@@ -61,6 +74,13 @@
                  color.getOpacity());
      }
 
+     /**
+      * Boots the python server. This method is complex because the python server files are shipped *inside* the fat
+      * jar. This results in them being very difficult to execute.
+      * <p>
+      * The work around to painfully extracting then executing them is to launch a new cmd prompt and pass in their
+      * location... which can be difficult to get, as their location is not static.
+      */
      public static void bootPyServer() {
          //         File pyFile = new File("Main.py").getCanonicalFile();
 //         Runtime.getRuntime().exec("python /c start python " + pyFile
@@ -90,7 +110,16 @@
 //         }));
      }
 
-
+     /**
+      * Starts the GUI.
+      * <p>
+      * This method is also used to perform essential game setup code, like constructing the board, removing rows of
+      * tiles that need to be removed, and other configuration settings.
+      *
+      * @param primaryStage The Stage to be displayed.
+      *
+      * @throws IOException Throws if the FXMLLoader fails to load the fxml file describing the Scene for the Stage.
+      */
      @Override
      public void start(Stage primaryStage) throws IOException {
          FXMLLoader loader = new FXMLLoader(getClass().getResource("/Main" +

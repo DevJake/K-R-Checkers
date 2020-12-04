@@ -12,12 +12,27 @@ import event.BridgeMessageReceiveEvent;
 import event.BridgeMessageSendEvent;
 import event.EventListener;
 
+/**
+ * This class is an implementation of the {@link EventListener} event distribution system. This implementation serves
+ * to respond explicitly to events originating from actions taken by the {@link Bridge} class.
+ *
+ * @see EventListener
+ * @see Bridge
+ * @see BridgeMessageReceiveEvent
+ * @see BridgeMessageSendEvent
+ */
 public class BridgeListener extends EventListener {
+    /**
+     * @param event {@link BridgeMessageReceiveEvent} - The BridgeMessageReceiveEvent instance.
+     */
     @Override
     public void onBridgeMessageReceived(BridgeMessageReceiveEvent event) {
         System.out.println("Received new message via The Bridge!! :: " + event.getMessage().getMessage());
     }
 
+    /**
+     * @param event {@link BridgeMessageSendEvent} - The BridgeMessageSendEvent instance.
+     */
     @Override
     public void onBridgeMessageSend(BridgeMessageSendEvent event) {
         //TODO either add implementation or remove

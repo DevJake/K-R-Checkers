@@ -8,5 +8,8 @@
 
 package ent;
 
+/**
+ * This class serves as a simple superclass to all classes that represent information to be used on the {@link Board}.
+ */
 public class Entity {
 }

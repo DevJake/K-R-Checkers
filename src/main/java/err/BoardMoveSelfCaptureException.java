@@ -8,6 +8,12 @@
 
 package err;
 
+import ent.Piece;
+
+/**
+ * An exception for {@link ent.Board} moves where an attempt to capture sees a non-opponent ('friendly')
+ * {@link Piece} being captured.
+ */
 public class BoardMoveSelfCaptureException extends BoardMoveException {
     public BoardMoveSelfCaptureException(String message) {
         super(message);

@@ -10,8 +10,8 @@ package event;
 
 import ent.Board;
 
-/*
-Called when the AI opponent plays a given move.
+/**
+ * Called when the {@link Board} has any change in state.
  */
 public class BoardUpdateEvent extends Event {
     private final Board oldBoard;

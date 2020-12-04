@@ -8,6 +8,11 @@
 
 package err;
 
+import ent.Piece;
+
+/**
+ * An exception for {@link ent.Board} moves where a required {@link Piece} was not present.
+ */
 public class BoardMoveMissingPieceException extends BoardMoveException {
     public BoardMoveMissingPieceException(String message) {
         super(message);

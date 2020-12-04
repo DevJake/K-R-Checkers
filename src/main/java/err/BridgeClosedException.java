@@ -8,6 +8,11 @@
 
 package err;
 
+/**
+ * An exception for the {@link comms.Bridge} in which an attempt to interact with or send
+ * {@link comms.MessageContainer.Message} instances via the {@link comms.Bridge} is not possible, due to no inbound
+ * and outbound connections being made.
+ */
 public class BridgeClosedException extends RuntimeException {
     public BridgeClosedException(String message) {
     }

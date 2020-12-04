@@ -13,6 +13,9 @@ import err.EventProtocolMismatchException;
 import event.BoardUpdateEvent;
 import event.Event;
 
+/**
+ * Represents any form of state change to the {@link ent.Board}.
+ */
 public class BoardUpdateProtocol extends Protocol {
     public BoardUpdateProtocol(String header, String footer) {
         super(header, footer, BoardUpdateEvent.class);

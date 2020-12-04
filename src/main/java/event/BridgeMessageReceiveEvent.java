@@ -10,6 +10,9 @@ package event;
 
 import comms.MessageContainer;
 
+/**
+ * Called when the {@link comms.Bridge} receives any form of {@link comms.MessageContainer.Message}.
+ */
 public class BridgeMessageReceiveEvent extends Event {
     private final MessageContainer.Message message;
 

@@ -8,6 +8,12 @@
 
 package err;
 
+import event.Event;
+
+/**
+ * An exception for {@link Event Events} in which an Event is fired, but its existence is unknown to the
+ * {@link Event.Manager}. This results in any {@link event.EventListener} instances being unable to receive the Event.
+ */
 public class UnregisteredEventException extends RuntimeException {
     public UnregisteredEventException(String message) {
     }

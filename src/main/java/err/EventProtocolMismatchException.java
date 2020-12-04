@@ -11,6 +11,12 @@ package err;
 import comms.protocol.Protocol;
 import event.Event;
 
+/**
+ * An exception for {@link Event Events} and {@link Protocol Protocols} in which a {@link Protocol} is not able to
+ * correctly interpret or handle the supplied {@link Event}. The Event is supplied by the
+ * {@link comms.protocol.ProtocolManager}, which is responsible for pairing Events and Protocols together, then
+ * correctly distributing new Events to their corresponding Protocol, and vice-versa.
+ */
 public class EventProtocolMismatchException extends Exception {
     public EventProtocolMismatchException(String message) {
         super(message);

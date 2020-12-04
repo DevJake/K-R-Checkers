@@ -10,6 +10,11 @@ package comms;
 
 import java.util.UUID;
 
+/**
+ * This class serves as a container for {@link Message} objects. This container only contains meta-information that's
+ * typically derived from *interactions* with the Message. For example, we store the {@link State} of the Message -
+ * the direction of network travel across the {@link Bridge} that was responsible for this Message's creation.
+ */
 public class MessageContainer {
     private final State state;
 
@@ -22,6 +27,16 @@ public class MessageContainer {
         OUTBOUND
     }
 
+    /**
+     * Every Message is provisioned with a random {@link UUID}, the {@link String} message/payload, and the
+     * {@link UUID} of the Message it is in response to.
+     * <p>
+     * The 'response UUID' structure allows for Message chaining from both local and foreign parties used within the
+     * {@link Bridge}. It's also useful for tracking 'ping pong' style networking.
+     *
+     * @see comms.Bridge.Mode#CONTINUOUS
+     * @see comms.Bridge.Mode#PONG
+     */
     public static class Message {
         private final UUID id;
         private final String message;
