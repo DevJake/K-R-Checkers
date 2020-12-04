@@ -10,6 +10,9 @@ package err;
 
 import ent.Piece;
 
+/**
+ * An exception for generic illegal moves within the {@link ent.Board}.
+ */
 public class BoardMoveException extends RuntimeException {
     private Piece origin;
     private int destX;
