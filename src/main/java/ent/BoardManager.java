@@ -9,6 +9,7 @@
 package ent;
 
 import err.*;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,11 +110,8 @@ public class BoardManager {
         int destX = origin.getX() - (capturingMove ? 2 : 1);
         int destY = origin.getY() + (capturingMove ? 2 : 1);
 
-        int midX = origin.getX() - (capturingMove ? 2 : 1);
-        int midY = origin.getY() + (capturingMove ? 2 : 1);
-
-
-        finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
+        finalCheck(origin, destX, destY, capturingMove, capturingMove ? Direction.FORWARD_LEFT_CAPTURE :
+                Direction.FORWARD_LEFT, false);
     }
 
     /**
@@ -131,11 +129,8 @@ public class BoardManager {
         int destX = origin.getX() - (capturingMove ? 2 : 1);
         int destY = origin.getY() - (capturingMove ? 2 : 1);
 
-        int midX = origin.getX() - (capturingMove ? 2 : 1);
-        int midY = origin.getY() - (capturingMove ? 2 : 1);
-
-
-        finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
+        finalCheck(origin, destX, destY, capturingMove, capturingMove ? Direction.BACKWARD_LEFT_CAPTURE :
+                Direction.BACKWARD_LEFT, false);
     }
 
 
@@ -154,10 +149,8 @@ public class BoardManager {
         int destX = origin.getX() + (capturingMove ? 2 : 1);
         int destY = origin.getY() + (capturingMove ? 2 : 1);
 
-        int midX = origin.getX() + (capturingMove ? 2 : 1);
-        int midY = origin.getY() + (capturingMove ? 2 : 1);
-
-        finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
+        finalCheck(origin, destX, destY, capturingMove, capturingMove ? Direction.FORWARD_RIGHT_CAPTURE :
+                Direction.FORWARD_RIGHT, false);
     }
 
     /**
@@ -175,10 +168,23 @@ public class BoardManager {
         int destX = origin.getX() + (capturingMove ? 2 : 1);
         int destY = origin.getY() - (capturingMove ? 2 : 1);
 
-        int midX = origin.getX() + (capturingMove ? 2 : 1);
-        int midY = origin.getY() - (capturingMove ? 2 : 1);
+        finalCheck(origin, destX, destY, capturingMove, capturingMove ? Direction.BACKWARD_RIGHT_CAPTURE :
+                Direction.BACKWARD_RIGHT, false);
+    }
 
-        finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
+    private Pair<Integer, Integer> getCapturingMidCoords(Piece origin, Direction direction) {
+        switch (direction) {
+            case FORWARD_LEFT_CAPTURE:
+                return new Pair<>(origin.getX() - 2, origin.getY() + 2);
+            case FORWARD_RIGHT_CAPTURE:
+                return new Pair<>(origin.getX() + 2, origin.getY() + 2);
+            case BACKWARD_LEFT_CAPTURE:
+                return new Pair<>(origin.getX() - 2, origin.getY() - 2);
+            case BACKWARD_RIGHT_CAPTURE:
+                return new Pair<>(origin.getX() + 2, origin.getY() - 2);
+            default:
+                return null;
+        }
     }
 
     /**
@@ -212,10 +218,6 @@ public class BoardManager {
      * @param origin        {@link Piece} - The Piece that we're validating the attempted movement of.
      * @param destX         Int - The integer x value of the destination {@link Tile} coordinates.
      * @param destY         Int - The integer y value of the destination {@link Tile} coordinates.
-     * @param midX          Int - The integer x value of the {@link Piece Piece's} coordinates that this maneuver
-     *                      is attempting to capture. Applicable if capturingMove is true.
-     * @param midY          Int - The integer y value of the {@link Piece Piece's} coordinates that this maneuver
-     *                      is attempting to capture. Applicable if capturingMove is true.
      * @param capturingMove Boolean - If this move is attempting to capture a {@link Piece}. Defined by x/y
      *                      destination coordinates having a +/- difference of two to the origin Piece's x/y
      *                      coordinates.
@@ -238,9 +240,17 @@ public class BoardManager {
      * @see BoardMoveSelfCaptureException
      * @see BoardMoveNotKingException
      */
-    private void finalCheck(Piece origin, int destX, int destY, int midX, int midY, boolean capturingMove,
+    private void finalCheck(Piece origin, int destX, int destY, boolean capturingMove, Direction direction,
                             boolean trial) {
 
+        int midX = 0;
+        int midY = 0;
+
+        if (capturingMove) {
+            Pair<Integer, Integer> midCoords = getCapturingMidCoords(origin, direction);
+            midX = midCoords.getKey();
+            midY = midCoords.getValue();
+        }
 
         if (!isOccupied(origin.getX(), origin.getY()))
             throw new BoardMoveInvalidOriginException(origin, destX, destY);
