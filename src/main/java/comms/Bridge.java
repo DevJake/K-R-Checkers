@@ -155,6 +155,8 @@ public class Bridge {
 
     /**
      * Terminates the server instance... terminates listening for any incoming traffic.
+     *
+     * @throws IOException If the {@link #inboundSocket} could not be closed.
      */
     public static void close() throws IOException {
         if (inboundSocket != null) {

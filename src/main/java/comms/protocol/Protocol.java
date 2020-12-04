@@ -77,7 +77,7 @@ public abstract class Protocol<E extends Event> {
      *                   if left blank, is replaced with the name of the implementing class.
      * @param footer     String - The footer/suffix to be used by this Protocol implementation. This is not mandatory
      *                   and if left blank, is replaced with the name of the implementing class.
-     * @param eventClass {@link Class<E>} - The generic class of the {@link Event} subclass that this Protocol will
+     * @param eventClass {@link Class} - The generic class of the {@link Event} subclass that this Protocol will
      *                   be expected to handle encoding and decoding for.
      *
      * @see ProtocolManager

@@ -265,7 +265,7 @@ public class Board extends Entity {
      *
      * @param n Int - The integer index for the row to be retrieved.
      *
-     * @return {@link List<Tile>} - A List object containing the {@link Tile Tiles} contained in row *n*.
+     * @return {@link List} - A List object containing the {@link Tile Tiles} contained in row *n*.
      */
     public List<Tile> getRow(int n) {
         return tiles.get(n);
@@ -278,7 +278,7 @@ public class Board extends Entity {
      *
      * @param n Int - The integer index for the column to be retrieved.
      *
-     * @return {@link List<Tile>} - A List object containing the {@link Tile Tiles} contained in column *n*.
+     * @return {@link List} - A List object containing the {@link Tile Tiles} contained in column *n*.
      */
     public List<Tile> getColumn(int n) {
         return tiles.stream().map(t -> t.get(n)).collect(Collectors.toList());
@@ -328,7 +328,7 @@ public class Board extends Entity {
      *
      * @param player {@link Player} - The Player to use for determining the orientation of the back row.
      *
-     * @return {@link List<Tile>} - A List of {@link Tile} instances that compose the back row/King's Row for the
+     * @return {@link List} - A List of {@link Tile} instances that compose the back row/King's Row for the
      * given {@link Player Player's} team.
      *
      * @see ent.Piece.Type#KING ent.Piece.Type#KING
@@ -417,7 +417,7 @@ public class Board extends Entity {
          * <p>
          * This allows for a given piece on the board to be indexed by an (x,y) pair.
          *
-         * @param children {@link ArrayList<Node>} - The row/column base version of {@link Node} entities to be used
+         * @param children {@link ArrayList} - The row/column base version of {@link Node} entities to be used
          *                 for the board. This will be converted to an x/y coordinate system.
          *
          * @return {@link Board} - A new {@link Board} instance, now using the x/y coordinate system.
