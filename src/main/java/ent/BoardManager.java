@@ -109,11 +109,8 @@ public class BoardManager {
         int destX = origin.getX() - (capturingMove ? 2 : 1);
         int destY = origin.getY() + (capturingMove ? 2 : 1);
 
-        int midX = origin.getX();
-        int midY = origin.getY();
-
-        midX -= (capturingMove ? 2 : 1);
-        midY += (capturingMove ? 2 : 1);
+        int midX = origin.getX() - (capturingMove ? 2 : 1);
+        int midY = origin.getY() + (capturingMove ? 2 : 1);
 
 
         finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
@@ -134,11 +131,8 @@ public class BoardManager {
         int destX = origin.getX() - (capturingMove ? 2 : 1);
         int destY = origin.getY() - (capturingMove ? 2 : 1);
 
-        int midX = origin.getX();
-        int midY = origin.getY();
-
-        midX -= (capturingMove ? 2 : 1);
-        midY -= (capturingMove ? 2 : 1);
+        int midX = origin.getX() - (capturingMove ? 2 : 1);
+        int midY = origin.getY() - (capturingMove ? 2 : 1);
 
 
         finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
@@ -160,11 +154,8 @@ public class BoardManager {
         int destX = origin.getX() + (capturingMove ? 2 : 1);
         int destY = origin.getY() + (capturingMove ? 2 : 1);
 
-        int midX = origin.getX();
-        int midY = origin.getY();
-
-        midX += (capturingMove ? 2 : 1);
-        midY += (capturingMove ? 2 : 1);
+        int midX = origin.getX() + (capturingMove ? 2 : 1);
+        int midY = origin.getY() + (capturingMove ? 2 : 1);
 
         finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
     }
@@ -184,11 +175,8 @@ public class BoardManager {
         int destX = origin.getX() + (capturingMove ? 2 : 1);
         int destY = origin.getY() - (capturingMove ? 2 : 1);
 
-        int midX = origin.getX();
-        int midY = origin.getY();
-
-        midX += (capturingMove ? 2 : 1);
-        midY -= (capturingMove ? 2 : 1);
+        int midX = origin.getX() + (capturingMove ? 2 : 1);
+        int midY = origin.getY() - (capturingMove ? 2 : 1);
 
         finalCheck(origin, destX, destY, midX, midY, capturingMove, false);
     }
