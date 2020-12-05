@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+import static fx.controllers.Main.mainBoard;
 import static fx.controllers.Main.toRGBString;
 
 /**
@@ -44,7 +45,7 @@ public class Tile extends Entity {
      * @see Label
      * @see Player
      * @see #init()
-     * @see #delete()
+     * @see #deleteOccupyingPiece()
      */
     private final StackPane node;
     /**
@@ -132,7 +133,7 @@ public class Tile extends Entity {
      * A new Circle is only included if {@link #isPlayable()} returns true.
      */
     public void init() {
-        this.node.getChildren().removeAll();
+        this.node.getChildren().clear();
 
         if (isPlayable) {
             this.node.getChildren().add(piece.init().getChecker());
@@ -168,8 +169,10 @@ public class Tile extends Entity {
      * @see #showLabel()
      */
     public void removeLabel() {
-        this.node.getChildren().remove(label);
-        this.label = null;
+        if (label != null) {
+            this.node.getChildren().remove(label);
+            this.label = null;
+        }
     }
 
     /**
@@ -214,13 +217,13 @@ public class Tile extends Entity {
      * This method intends to completely delete all information about this Tile and the Piece it contains. This is
      * done when a Piece is either moved (calling delete on the origin Tile) or a Piece is captured.
      * <p>
-     * The {@link #node node's} checker is destroyed, then {@link Piece#deleteFromBoard()} and {@link Piece#delete()}
+     * The {@link #node node's} checker is destroyed, then {@link Piece#deleteChecker()} and {@link Piece#deletePiece()}
      * are executed.
      */
-    public void delete() {
-        this.node.getChildren().remove(piece.getChecker());
-        piece.deleteFromBoard();
-        piece.delete();
+    public void deleteOccupyingPiece(boolean keepLabel) {
+        if (keepLabel) this.node.getChildren().remove(piece.getChecker());
+        else this.node.getChildren().clear();
+        piece.deletePiece();
     }
 
     /**

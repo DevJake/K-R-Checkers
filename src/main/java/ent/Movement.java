@@ -128,20 +128,21 @@ class Movement {
             Destination should be an empty tile.
             Destination should be a playable tile.
              */
-            if (tileOrigin.isPlayable() &&
-                    tileDest.isPlayable() &&
-                    tileOrigin.getPiece().getChecker() != null &&
-                    tileDest.getPiece().getPlayer() == Player.Defaults.NONE.getPlayer()) {
-//                    System.out.println(tileDest.getPiece().getPlayer().getName());
-                board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
-                        tileDest.getPiece().getY());
-
-                //TODO if destX/Y is further than 1 tile away, void, unless it involves a capture
-            }
-
+//            if (
+//                    tileOrigin.isPlayable() && tileDest.isPlayable() && tileOrigin.getPiece().getChecker() != null &&
+//                            tileDest.getPiece().getPlayer() == Player.Defaults.NONE.getPlayer()) {
+////                    System.out.println(tileDest.getPiece().getPlayer().getName());
+//                board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
+//                        tileDest.getPiece().getY());
+//
+//                //TODO if destX/Y is further than 1 tile away, void, unless it involves a capture
+//            }
             canvas.getChildren().remove(line);
             line = getNewLine();
             canvas.getChildren().add(line);
+
+            board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(), tileDest.getPiece().getY());
+
         });
     }
 

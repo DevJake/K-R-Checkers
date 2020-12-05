@@ -9,6 +9,7 @@
 package ent;
 
 import err.*;
+import fx.controllers.Main;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public class BoardManager {
      * @see Piece#getCapturedBy()
      */
     private boolean isOccupied(int x, int y) {
+        System.out.println("checker not null " + (board.getTileAtIndex(x, y).getPiece().getChecker() != null));
+        System.out.println("captured by null " + (board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null));
+
         return board.getTileAtIndex(x, y).getPiece().getChecker() != null && board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null;
     }
 
@@ -175,13 +179,13 @@ public class BoardManager {
     private Pair<Integer, Integer> getCapturingMidCoords(Piece origin, Direction direction) {
         switch (direction) {
             case FORWARD_LEFT_CAPTURE:
-                return new Pair<>(origin.getX() - 2, origin.getY() + 2);
+                return new Pair<>(origin.getX() - 1, origin.getY() + 1);
             case FORWARD_RIGHT_CAPTURE:
-                return new Pair<>(origin.getX() + 2, origin.getY() + 2);
+                return new Pair<>(origin.getX() + 1, origin.getY() + 1);
             case BACKWARD_LEFT_CAPTURE:
-                return new Pair<>(origin.getX() - 2, origin.getY() - 2);
+                return new Pair<>(origin.getX() - 1, origin.getY() - 1);
             case BACKWARD_RIGHT_CAPTURE:
-                return new Pair<>(origin.getX() + 2, origin.getY() - 2);
+                return new Pair<>(origin.getX() + 1, origin.getY() - 1);
             default:
                 return null;
         }
@@ -249,6 +253,11 @@ public class BoardManager {
             Pair<Integer, Integer> midCoords = getCapturingMidCoords(origin, direction);
             midX = midCoords.getKey();
             midY = midCoords.getValue();
+
+            System.out.println("Now capturing!");
+            System.out.println("midX=" + midX);
+            System.out.println("midY=" + midY);
+            System.out.println("Direction=" + direction);
         }
 
         if (!isOccupied(origin.getX(), origin.getY()))
@@ -267,18 +276,21 @@ public class BoardManager {
 
 
         if (capturingMove) {
-            if (isOccupied(midX, midY))
-                throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existent " +
-                        "piece! x:" + midX + ", y: " + midY);
+            if (!isOccupied(midX, midY))
+                throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existent piece! " +
+                        "x:" + midX + ", y: " + midY);
+
             if (board.getTileAtIndex(midX, midY).getPiece().getPlayer() == origin.getPlayer())
                 throw new BoardMoveSelfCaptureException("Attempting to capture a member of your team! x:" + midX + "," +
-                        " y: "
-                        + midY);
+                        " y: " + midY);
         }
 
-        boolean kingOnlyMove = origin.getPlayer().getHomeSide() == Player.Defaults.HUMAN.getPlayer().getHomeSide() ?
-                destY < origin.getY() :
-                origin.getPlayer().getHomeSide() == Player.Defaults.COMPUTER.getPlayer().getHomeSide() && destY > origin.getY();
+        //Determines if this move requires the origin Piece to be a KING
+        boolean kingOnlyMove =
+                origin.getPlayer().getHomeSide() == Player.Defaults.HUMAN.getPlayer().getHomeSide() ?
+                        destY < origin.getY() :
+                        origin.getPlayer().getHomeSide() == Player.Defaults.COMPUTER.getPlayer().getHomeSide() &&
+                                destY > origin.getY();
 
         if (origin.getType() != Piece.Type.KING && kingOnlyMove)
             throw new BoardMoveNotKingException("This piece is not a king!");
@@ -308,20 +320,30 @@ public class BoardManager {
      */
     private void executeMove(Piece origin, int destX, int destY, Piece captured) {
         if (captured != null) {
+            System.out.println("capturing move, deleting....");
+            System.out.println(captured.getX());
+            System.out.println(captured.getY());
+
             origin.getPlayer().getCapturedPieces().add(captured);
             board.getTileAtIndex(captured.getX(), captured.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
             captured.deletePiece(); //TODO Add to capturer's captured pieces list
         }
 
+        System.out.println(origin.getColour());
+
+
+        Piece p2 = new Piece(destX, destY, origin.getColour(), origin.getPlayer(), origin.getType());
         board.getTileAtIndex(origin.getX(), origin.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
+
         board.getTileAtIndex(destX, destY).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
+        board.getTileAtIndex(destX, destY).setPiece(p2);
         board.getTileAtIndex(destX, destY).init();
-        board.getTileAtIndex(origin.getX(), origin.getY()).delete();
+
 
         //TODO force capturing of neighbours
         //TODO force auto-crowning of piece if it's on the back board
 
-        doAutoCapture(origin); //TODO might not be working, check
+//        doAutoCapture(origin); //TODO might not be working, check
 
         //TODO check for a winning state
     }

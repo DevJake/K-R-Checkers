@@ -97,9 +97,9 @@ public class Piece {
      * Makes a piece no longer visible to the {@link Board}. This is done by setting the internal {@link #checker} to
      * null.
      */
-    public void deleteFromBoard() {
-        checker = null;
-    }
+//    public void deleteChecker() {
+//        this.checker = new Circle(); //TODO perhaps remove this method
+//    }
 
     /**
      * Completely deletes a piece from the board, including all information about the piece, such as the owner,
@@ -110,10 +110,11 @@ public class Piece {
      * @see Color
      * @see Type
      */
-    public void delete() {
-        setPlayer(Player.Defaults.NONE.getPlayer());
-        setColour(null);
-        setType(null);
+    public void deletePiece() {
+        this.checker = null;
+//        setPlayer(Player.Defaults.NONE.getPlayer());
+//        setColour(null);
+//        setType(null);
     }
 
     /**
@@ -122,7 +123,7 @@ public class Piece {
      * @return This Piece. Ideal for chaining actions with a builder-esque syntax.
      */
     public Piece init() {
-        checker = new Circle(30, colour);
+        this.checker = new Circle(30, colour);
         return this;
     }
 
