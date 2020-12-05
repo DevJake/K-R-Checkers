@@ -387,8 +387,8 @@ public class Board extends Entity {
      * complex conversion.
      */
     public static class Builder {
-        private final Color colourHuman = Color.RED;
-        private final Color colourMachine = Color.PINK;
+        //        private final Color colourHuman = Color.RED;
+//        private final Color colourMachine = Color.PINK;
         private Color evenTilesColour = Color.WHITE;
         private Color oddTilesColour = Color.BLACK;
         private boolean showLabels = false;
@@ -454,10 +454,10 @@ public class Board extends Entity {
 
                     if (i - 2 < 3) {
                         tile.getPiece().setPlayer(Player.Defaults.HUMAN.getPlayer());
-                        tile.getPiece().setColour(colourHuman);
+                        tile.getPiece().setColour(Player.Defaults.HUMAN.getPlayer().getColour());
                     } else {
                         tile.getPiece().setPlayer(Player.Defaults.COMPUTER.getPlayer());
-                        tile.getPiece().setColour(colourMachine);
+                        tile.getPiece().setColour(Player.Defaults.COMPUTER.getPlayer().getColour());
                     }
                 }
 

@@ -144,9 +144,13 @@
          GridPane gridPane = (GridPane) s.lookup("#gridPane");
          gridPane.setGridLinesVisible(true);
 
+         Player.Defaults.HUMAN.getPlayer().setColour(Color.rgb(255, 204, 223));
+         Player.Defaults.COMPUTER.getPlayer().setColour(Color.rgb(255, 0, 128));
+
          mainBoard = new Board.Builder()
-                 .setEvenTilesColour(Color.FORESTGREEN)
-                 .setOddTilesColour(Color.ORANGE)
+                 .setEvenTilesColour(Color.rgb(150, 150, 150))
+                 .setOddTilesColour(Color.rgb(245, 175, 200))
+                 .setShowLabels(true)
                  .build(new ArrayList<>(gridPane.getChildren()));
 
 
