@@ -110,7 +110,7 @@ public class BoardManager {
         int destX = origin.getX() - (capturingMove ? 2 : 1);
         int destY = origin.getY() + (capturingMove ? 2 : 1);
 
-        finalCheck(origin, destX, destY, capturingMove, capturingMove ? Direction.FORWARD_LEFT_CAPTURE :
+        validityChecks(origin, destX, destY, capturingMove, capturingMove ? Direction.FORWARD_LEFT_CAPTURE :
                 Direction.FORWARD_LEFT, false);
     }
 
@@ -129,7 +129,7 @@ public class BoardManager {
         int destX = origin.getX() - (capturingMove ? 2 : 1);
         int destY = origin.getY() - (capturingMove ? 2 : 1);
 
-        finalCheck(origin, destX, destY, capturingMove, capturingMove ? Direction.BACKWARD_LEFT_CAPTURE :
+        validityChecks(origin, destX, destY, capturingMove, capturingMove ? Direction.BACKWARD_LEFT_CAPTURE :
                 Direction.BACKWARD_LEFT, false);
     }
 
@@ -149,7 +149,7 @@ public class BoardManager {
         int destX = origin.getX() + (capturingMove ? 2 : 1);
         int destY = origin.getY() + (capturingMove ? 2 : 1);
 
-        finalCheck(origin, destX, destY, capturingMove, capturingMove ? Direction.FORWARD_RIGHT_CAPTURE :
+        validityChecks(origin, destX, destY, capturingMove, capturingMove ? Direction.FORWARD_RIGHT_CAPTURE :
                 Direction.FORWARD_RIGHT, false);
     }
 
@@ -168,7 +168,7 @@ public class BoardManager {
         int destX = origin.getX() + (capturingMove ? 2 : 1);
         int destY = origin.getY() - (capturingMove ? 2 : 1);
 
-        finalCheck(origin, destX, destY, capturingMove, capturingMove ? Direction.BACKWARD_RIGHT_CAPTURE :
+        validityChecks(origin, destX, destY, capturingMove, capturingMove ? Direction.BACKWARD_RIGHT_CAPTURE :
                 Direction.BACKWARD_RIGHT, false);
     }
 
@@ -240,9 +240,8 @@ public class BoardManager {
      * @see BoardMoveSelfCaptureException
      * @see BoardMoveNotKingException
      */
-    private void finalCheck(Piece origin, int destX, int destY, boolean capturingMove, Direction direction,
-                            boolean trial) {
-
+    private void validityChecks(Piece origin, int destX, int destY, boolean capturingMove, Direction direction,
+                                boolean trial) {
         int midX = 0;
         int midY = 0;
 
@@ -292,7 +291,7 @@ public class BoardManager {
 
     /**
      * This method is responsible for the actual execution of a move. All validity is assumed, as this is called
-     * directly from {@link #finalCheck(Piece, int, int, boolean, Direction, boolean)}. Quite simply, the origin
+     * directly from {@link #validityChecks(Piece, int, int, boolean, Direction, boolean)}. Quite simply, the origin
      * {@link Piece} is removed from its origin. The destination {@link Tile} is updated with the old Piece.
      * <p>
      * Once this method has completed execution of movement, the {@link #doAutoCapture(Piece)} method is called.
@@ -305,7 +304,7 @@ public class BoardManager {
      *                 Piece removed from play.
      *
      * @see Piece#getCapturedBy()
-     * @see #finalCheck(Piece, int, int, boolean, Direction, boolean)
+     * @see #validityChecks(Piece, int, int, boolean, Direction, boolean)
      */
     private void executeMove(Piece origin, int destX, int destY, Piece captured) {
         if (captured != null) {
@@ -332,14 +331,15 @@ public class BoardManager {
      * possible. This method is responsible for enforcing this policy.
      * <p>
      * First, all diagonal axis around the given Piece are checked for eligibility as a capturing move. The
-     * validity performed for this is executed via {@link #finalCheck(Piece, int, int, boolean, Direction, boolean)}.
+     * validity performed for this is executed via
+     * {@link #validityChecks(Piece, int, int, boolean, Direction, boolean)}.
      * <p>
      * Once we've aggregated a {@link List} of valid moves, we then filter our moves to a single move using a
      * {@link java.util.stream.Stream}, isolate the move and execute it.
      *
      * @param piece {@link Piece} - The Piece we should enforce auto-capturing policies against.
      *
-     * @see #finalCheck(Piece, int, int, boolean, Direction, boolean)
+     * @see #validityChecks(Piece, int, int, boolean, Direction, boolean)
      */
     private void doAutoCapture(Piece piece) {
         Player opponent = piece.getPlayer().getName().equals(Player.Defaults.COMPUTER.getPlayer().getName()) ?
@@ -358,7 +358,7 @@ public class BoardManager {
          */
 
         try {
-            finalCheck(piece, piece.getX() - 2, piece.getY() + 2, true, Direction.FORWARD_LEFT_CAPTURE, true);
+            validityChecks(piece, piece.getX() - 2, piece.getY() + 2, true, Direction.FORWARD_LEFT_CAPTURE, true);
             validMoves.add(true);
         } catch (BoardMoveException e) {
             validMoves.add(false);
@@ -369,7 +369,7 @@ public class BoardManager {
         Check which directions are valid to move in
          */
         try {
-            finalCheck(piece, piece.getX() - 2, piece.getY() - 2, true, Direction.BACKWARD_LEFT_CAPTURE, true);
+            validityChecks(piece, piece.getX() - 2, piece.getY() - 2, true, Direction.BACKWARD_LEFT_CAPTURE, true);
             validMoves.add(true);
         } catch (BoardMoveException e) {
             validMoves.add(false);
@@ -377,7 +377,7 @@ public class BoardManager {
         }
 
         try {
-            finalCheck(piece, piece.getX() + 2, piece.getY() + 2, true, Direction.FORWARD_RIGHT_CAPTURE, true);
+            validityChecks(piece, piece.getX() + 2, piece.getY() + 2, true, Direction.FORWARD_RIGHT_CAPTURE, true);
             validMoves.add(true);
         } catch (BoardMoveException e) {
             validMoves.add(false);
@@ -385,7 +385,7 @@ public class BoardManager {
         }
 
         try {
-            finalCheck(piece, piece.getX() + 2, piece.getY() - 2, true, Direction.BACKWARD_RIGHT_CAPTURE, true);
+            validityChecks(piece, piece.getX() + 2, piece.getY() - 2, true, Direction.BACKWARD_RIGHT_CAPTURE, true);
             validMoves.add(true);
         } catch (BoardMoveException e) {
             validMoves.add(false);
