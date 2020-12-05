@@ -140,6 +140,9 @@ public class Tile extends Entity {
             piece.getChecker().setStroke(Color.BLACK);
             piece.getChecker().setStrokeWidth(0.5);
         }
+
+        if (mainBoard.isShowLabels())
+            showLabel();
     }
 
     /**

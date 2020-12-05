@@ -310,9 +310,12 @@ public class BoardManager {
     private void executeMove(Piece origin, int destX, int destY, Piece captured) {
         if (captured != null) {
             origin.getPlayer().getCapturedPieces().add(captured);
-            captured.deleteFromBoard(); //TODO Add to capturer's captured pieces list
+            board.getTileAtIndex(captured.getX(), captured.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
+            captured.deletePiece(); //TODO Add to capturer's captured pieces list
         }
 
+        board.getTileAtIndex(origin.getX(), origin.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
+        board.getTileAtIndex(destX, destY).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
         board.getTileAtIndex(destX, destY).init();
         board.getTileAtIndex(origin.getX(), origin.getY()).delete();
 

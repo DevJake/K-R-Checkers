@@ -76,6 +76,11 @@ public class Board extends Entity {
      * The {@link BoardManager} instance associated with this Board.
      */
     private final BoardManager manager;
+    /**
+     * Should we display {@link javafx.scene.control.Label Labels} on top of the {@link #tiles}, indicating their x
+     * and y coordinates?
+     */
+    private boolean showLabels = false;
 
     /**
      * The constructor serves a very important role in constructing a new instance. Typically, the structure of
@@ -98,12 +103,14 @@ public class Board extends Entity {
      * @see Color
      * @see Piece
      */
-    public Board(ArrayList<ArrayList<Tile>> tiles, Color playableTilesColour, Color unplayableTilesColour) {
+    public Board(ArrayList<ArrayList<Tile>> tiles, Color playableTilesColour, Color unplayableTilesColour,
+                 Boolean showLabels) {
         this.tiles = tiles;
         this.playableTilesColour = playableTilesColour;
         this.unplayableTilesColour = unplayableTilesColour;
         this.width = tiles.get(0).size();
         this.height = tiles.size();
+        this.showLabels = showLabels;
 
         for (Tile tile : getPlayableTiles()) {
             tile.setPlayable(true);
@@ -115,10 +122,18 @@ public class Board extends Entity {
             // NONE is for tiles that have no occupying player.
 
             tile.setColour(getUnplayableTilesColour());
-            tile.delete();
+            tile.deleteOccupyingPiece(isShowLabels());
         }
 
         this.manager = new BoardManager(this);
+    }
+
+    public boolean isShowLabels() {
+        return showLabels;
+    }
+
+    public void setShowLabels(boolean showLabels) {
+        this.showLabels = showLabels;
     }
 
     /**
@@ -310,13 +325,8 @@ public class Board extends Entity {
      *
      * @param show Boolean - If the coordinate Labels should be displayed.
      */
-    public void setShowCoordinates(boolean show) {
-        getPlayableTiles().forEach(t -> {
-            if (show)
-                t.showLabel();
-            else
-                t.removeLabel();
-        });
+    public void renderAllLabels() {
+        getTiles().forEach(outer -> outer.forEach(Tile::showLabel));
     }
 
     /**
@@ -381,6 +391,12 @@ public class Board extends Entity {
         private final Color colourMachine = Color.PINK;
         private Color evenTilesColour = Color.WHITE;
         private Color oddTilesColour = Color.BLACK;
+        private boolean showLabels = false;
+
+        public Builder setShowLabels(boolean showLabels) {
+            this.showLabels = showLabels;
+            return this;
+        }
 
         /**
          * Sets even tiles colour.
@@ -451,7 +467,7 @@ public class Board extends Entity {
                 //TODO fix player type
             }
 
-            return new Board(outer, this.evenTilesColour, this.oddTilesColour);
+            return new Board(outer, this.evenTilesColour, this.oddTilesColour, showLabels);
 
 
         }

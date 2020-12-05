@@ -152,7 +152,7 @@
 
          mainBoard.init(canvas);
          mainBoard.getRow(3).forEach(it -> {
-             it.delete();
+             it.deleteOccupyingPiece(mainBoard.isShowLabels());
              it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
          });
          mainBoard.getRow(4).forEach(it -> {
@@ -176,7 +176,7 @@
          System.out.println(Player.Defaults.HUMAN.getPlayer().getCapturedPieces());
          System.out.println(Player.Defaults.COMPUTER.getPlayer().getCapturedPieces());
 
-         mainBoard.setShowCoordinates(true);
+//         mainBoard.renderAllLabels();
 
          System.out.println(mainBoard.getTiles().get(1));
 
