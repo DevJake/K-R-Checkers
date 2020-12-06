@@ -83,21 +83,21 @@ public class BoardManager {
         if (left) {
             if (up) {
                 //Left+up
-                validityChecks(origin, capturing, capturing ? Direction.FORWARD_LEFT_CAPTURE :
+                validityChecks(origin, capturing ? Direction.FORWARD_LEFT_CAPTURE :
                         Direction.FORWARD_LEFT, false);
             } else {
                 //Left+down
-                validityChecks(origin, capturing, capturing ? Direction.BACKWARD_LEFT_CAPTURE :
+                validityChecks(origin, capturing ? Direction.BACKWARD_LEFT_CAPTURE :
                         Direction.BACKWARD_LEFT, false);
             }
         } else {
             if (up) {
                 //Right+up
-                validityChecks(origin, capturing, capturing ? Direction.FORWARD_RIGHT_CAPTURE :
+                validityChecks(origin, capturing ? Direction.FORWARD_RIGHT_CAPTURE :
                         Direction.FORWARD_RIGHT, false);
             } else {
                 //Right+down
-                validityChecks(origin, capturing, capturing ? Direction.BACKWARD_RIGHT_CAPTURE :
+                validityChecks(origin, capturing ? Direction.BACKWARD_RIGHT_CAPTURE :
                         Direction.BACKWARD_RIGHT, false);
             }
         }
@@ -259,7 +259,7 @@ public class BoardManager {
      * @see BoardMoveSelfCaptureException
      * @see BoardMoveNotKingException
      */
-    private void validityChecks(Piece origin, boolean capturingMove, Direction direction,
+    private void validityChecks(Piece origin, Direction direction,
                                 boolean trial) {
         int destX = 0;
         int destY = 0;
@@ -272,15 +272,21 @@ public class BoardManager {
         int midX = 0;
         int midY = 0;
 
+        boolean capturingMove =
+                direction == Direction.FORWARD_LEFT_CAPTURE ||
+                        direction == Direction.BACKWARD_LEFT_CAPTURE ||
+                        direction == Direction.FORWARD_RIGHT_CAPTURE ||
+                        direction == Direction.BACKWARD_RIGHT_CAPTURE;
+
         if (capturingMove) {
             Pair<Integer, Integer> midCoords = getCapturingMidCoords(origin, direction);
             midX = midCoords.getKey();
             midY = midCoords.getValue();
 
-            System.out.println("Now capturing!");
-            System.out.println("midX=" + midX);
-            System.out.println("midY=" + midY);
-            System.out.println("Direction=" + direction);
+            //System.out.println("Now capturing!");
+            //System.out.println("midX=" + midX);
+            //System.out.println("midY=" + midY);
+            //System.out.println("Direction=" + direction);
         }
 
         if (!isOccupied(origin.getX(), origin.getY()))
@@ -343,16 +349,16 @@ public class BoardManager {
      */
     private void executeMove(Piece origin, int destX, int destY, Piece captured) {
         if (captured != null) {
-            System.out.println("capturing move, deleting....");
-            System.out.println(captured.getX());
-            System.out.println(captured.getY());
+            //System.out.println("capturing move, deleting....");
+            //System.out.println(captured.getX());
+            //System.out.println(captured.getY());
 
             origin.getPlayer().getCapturedPieces().add(captured);
             board.getTileAtIndex(captured.getX(), captured.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
             captured.deletePiece(); //TODO Add to capturer's captured pieces list
         }
 
-        System.out.println(origin.getColour());
+        //System.out.println(origin.getColour());
 
 
         Piece p2 = new Piece(destX, destY, origin.getColour(), origin.getPlayer(), origin.getType());
