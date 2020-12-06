@@ -83,98 +83,90 @@ public class BoardManager {
         if (left) {
             if (up) {
                 //Left+up
-                checkLeftUp(origin, capturing);
+                validityChecks(origin, capturing, capturing ? Direction.FORWARD_LEFT_CAPTURE :
+                        Direction.FORWARD_LEFT, false);
             } else {
                 //Left+down
-                checkLeftDown(origin, capturing);
+                validityChecks(origin, capturing, capturing ? Direction.BACKWARD_LEFT_CAPTURE :
+                        Direction.BACKWARD_LEFT, false);
             }
         } else {
             if (up) {
                 //Right+up
-                checkRightUp(origin, capturing);
+                validityChecks(origin, capturing, capturing ? Direction.FORWARD_RIGHT_CAPTURE :
+                        Direction.FORWARD_RIGHT, false);
             } else {
                 //Right+down
-                checkRightDown(origin, capturing);
+                validityChecks(origin, capturing, capturing ? Direction.BACKWARD_RIGHT_CAPTURE :
+                        Direction.BACKWARD_RIGHT, false);
             }
         }
     }
 
-    /**
-     * This method determines if a move in the left-up direction is valid. If the move is not capturing, only the
-     * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
-     * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
-     * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
-     * possible.
-     *
-     * @param origin        {@link Piece} - The Piece from which this move originates.
-     * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
-     *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
-     */
-    private void checkLeftUp(Piece origin, boolean capturingMove) {
-        int destX = origin.getX() - (capturingMove ? 2 : 1);
-        int destY = origin.getY() + (capturingMove ? 2 : 1);
-
-        validityChecks(origin, destX, destY, capturingMove, capturingMove ? Direction.FORWARD_LEFT_CAPTURE :
-                Direction.FORWARD_LEFT, false);
-    }
-
-    /**
-     * This method determines if a move in the left-down direction is valid. If the move is not capturing, only the
-     * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
-     * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
-     * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
-     * possible.
-     *
-     * @param origin        {@link Piece} - The Piece from which this move originates.
-     * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
-     *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
-     */
-    private void checkLeftDown(Piece origin, boolean capturingMove) {
-        int destX = origin.getX() - (capturingMove ? 2 : 1);
-        int destY = origin.getY() - (capturingMove ? 2 : 1);
-
-        validityChecks(origin, destX, destY, capturingMove, capturingMove ? Direction.BACKWARD_LEFT_CAPTURE :
-                Direction.BACKWARD_LEFT, false);
-    }
-
-
-    /**
-     * This method determines if a move in the right-up direction is valid. If the move is not capturing, only the
-     * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
-     * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
-     * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
-     * possible.
-     *
-     * @param origin        {@link Piece} - The Piece from which this move originates.
-     * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
-     *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
-     */
-    private void checkRightUp(Piece origin, boolean capturingMove) {
-        int destX = origin.getX() + (capturingMove ? 2 : 1);
-        int destY = origin.getY() + (capturingMove ? 2 : 1);
-
-        validityChecks(origin, destX, destY, capturingMove, capturingMove ? Direction.FORWARD_RIGHT_CAPTURE :
-                Direction.FORWARD_RIGHT, false);
-    }
-
-    /**
-     * This method determines if a move in the right-down direction is valid. If the move is not capturing, only the
-     * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
-     * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
-     * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
-     * possible.
-     *
-     * @param origin        {@link Piece} - The Piece from which this move originates.
-     * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
-     *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
-     */
-    private void checkRightDown(Piece origin, boolean capturingMove) {
-        int destX = origin.getX() + (capturingMove ? 2 : 1);
-        int destY = origin.getY() - (capturingMove ? 2 : 1);
-
-        validityChecks(origin, destX, destY, capturingMove, capturingMove ? Direction.BACKWARD_RIGHT_CAPTURE :
-                Direction.BACKWARD_RIGHT, false);
-    }
+//    /**
+//     * This method determines if a move in the left-up direction is valid. If the move is not capturing, only the
+//     * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
+//     * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
+//     * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
+//     * possible.
+//     *
+//     * @param origin        {@link Piece} - The Piece from which this move originates.
+//     * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
+//     *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
+//     */
+//    private void checkLeftUp(Piece origin, boolean capturingMove) {
+//        validityChecks(origin, capturingMove, capturingMove ? Direction.FORWARD_LEFT_CAPTURE :
+//                Direction.FORWARD_LEFT, false);
+//    }
+//
+//    /**
+//     * This method determines if a move in the left-down direction is valid. If the move is not capturing, only the
+//     * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
+//     * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
+//     * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
+//     * possible.
+//     *
+//     * @param origin        {@link Piece} - The Piece from which this move originates.
+//     * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
+//     *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
+//     */
+//    private void checkLeftDown(Piece origin, boolean capturingMove) {
+//        validityChecks(origin, capturingMove, capturingMove ? Direction.BACKWARD_LEFT_CAPTURE :
+//                Direction.BACKWARD_LEFT, false);
+//    }
+//
+//
+//    /**
+//     * This method determines if a move in the right-up direction is valid. If the move is not capturing, only the
+//     * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
+//     * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
+//     * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
+//     * possible.
+//     *
+//     * @param origin        {@link Piece} - The Piece from which this move originates.
+//     * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
+//     *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
+//     */
+//    private void checkRightUp(Piece origin, boolean capturingMove) {
+//        validityChecks(origin, capturingMove, capturingMove ? Direction.FORWARD_RIGHT_CAPTURE :
+//                Direction.FORWARD_RIGHT, false);
+//    }
+//
+//    /**
+//     * This method determines if a move in the right-down direction is valid. If the move is not capturing, only the
+//     * destination {@link Tile} coordinates are calculated. Otherwise, a capturing move sees both the destination
+//     * and mid-piece coordinates calculated. The 'mid-piece' refers to the {@link Piece} found in between the
+//     * two-long diagonal maneuver being made. Existence of this piece is mandatory for a capturing move to be
+//     * possible.
+//     *
+//     * @param origin        {@link Piece} - The Piece from which this move originates.
+//     * @param capturingMove Boolean - If this move attempts to be a capturing move -- does the destination x and
+//     *                      y coordinates displace the current x and y coordinates of the origin by +/- two units?
+//     */
+//    private void checkRightDown(Piece origin, boolean capturingMove) {
+//        validityChecks(origin, capturingMove, capturingMove ? Direction.BACKWARD_RIGHT_CAPTURE :
+//                Direction.BACKWARD_RIGHT, false);
+//    }
 
     private Pair<Integer, Integer> getCapturingMidCoords(Piece origin, Direction direction) {
         switch (direction) {
@@ -185,6 +177,29 @@ public class BoardManager {
             case BACKWARD_LEFT_CAPTURE:
                 return new Pair<>(origin.getX() - 1, origin.getY() - 1);
             case BACKWARD_RIGHT_CAPTURE:
+                return new Pair<>(origin.getX() + 1, origin.getY() - 1);
+            default:
+                return null;
+        }
+    }
+
+    private Pair<Integer, Integer> getDestinationCoords(Piece origin, Direction direction) {
+        switch (direction) {
+            case FORWARD_LEFT_CAPTURE:
+                return new Pair<>(origin.getX() - 2, origin.getY() + 2);
+            case FORWARD_RIGHT_CAPTURE:
+                return new Pair<>(origin.getX() + 2, origin.getY() + 2);
+            case BACKWARD_LEFT_CAPTURE:
+                return new Pair<>(origin.getX() - 2, origin.getY() - 2);
+            case BACKWARD_RIGHT_CAPTURE:
+                return new Pair<>(origin.getX() + 2, origin.getY() - 2);
+            case FORWARD_LEFT:
+                return new Pair<>(origin.getX() - 1, origin.getY() + 1);
+            case FORWARD_RIGHT:
+                return new Pair<>(origin.getX() + 1, origin.getY() + 1);
+            case BACKWARD_LEFT:
+                return new Pair<>(origin.getX() - 1, origin.getY() - 1);
+            case BACKWARD_RIGHT:
                 return new Pair<>(origin.getX() + 1, origin.getY() - 1);
             default:
                 return null;
@@ -244,8 +259,16 @@ public class BoardManager {
      * @see BoardMoveSelfCaptureException
      * @see BoardMoveNotKingException
      */
-    private void validityChecks(Piece origin, int destX, int destY, boolean capturingMove, Direction direction,
+    private void validityChecks(Piece origin, boolean capturingMove, Direction direction,
                                 boolean trial) {
+        int destX = 0;
+        int destY = 0;
+
+        Pair<Integer, Integer> destCoords = getDestinationCoords(origin, direction);
+
+        destX = destCoords.getKey();
+        destY = destCoords.getValue();
+
         int midX = 0;
         int midY = 0;
 
@@ -380,7 +403,7 @@ public class BoardManager {
          */
 
         try {
-            validityChecks(piece, piece.getX() - 2, piece.getY() + 2, true, Direction.FORWARD_LEFT_CAPTURE, true);
+//            validityChecks(piece, piece.getX() - 2, piece.getY() + 2, true, Direction.FORWARD_LEFT_CAPTURE, true);
             validMoves.add(true);
         } catch (BoardMoveException e) {
             validMoves.add(false);
@@ -391,7 +414,7 @@ public class BoardManager {
         Check which directions are valid to move in
          */
         try {
-            validityChecks(piece, piece.getX() - 2, piece.getY() - 2, true, Direction.BACKWARD_LEFT_CAPTURE, true);
+//            validityChecks(piece, piece.getX() - 2, piece.getY() - 2, true, Direction.BACKWARD_LEFT_CAPTURE, true);
             validMoves.add(true);
         } catch (BoardMoveException e) {
             validMoves.add(false);
@@ -399,7 +422,7 @@ public class BoardManager {
         }
 
         try {
-            validityChecks(piece, piece.getX() + 2, piece.getY() + 2, true, Direction.FORWARD_RIGHT_CAPTURE, true);
+//            validityChecks(piece, piece.getX() + 2, piece.getY() + 2, true, Direction.FORWARD_RIGHT_CAPTURE, true);
             validMoves.add(true);
         } catch (BoardMoveException e) {
             validMoves.add(false);
@@ -407,7 +430,7 @@ public class BoardManager {
         }
 
         try {
-            validityChecks(piece, piece.getX() + 2, piece.getY() - 2, true, Direction.BACKWARD_RIGHT_CAPTURE, true);
+//            validityChecks(piece, piece.getX() + 2, piece.getY() - 2, true, Direction.BACKWARD_RIGHT_CAPTURE, true);
             validMoves.add(true);
         } catch (BoardMoveException e) {
             validMoves.add(false);

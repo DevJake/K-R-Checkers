@@ -156,11 +156,9 @@
          mainBoard.init(canvas);
          mainBoard.getRow(3).forEach(it -> {
              it.deleteOccupyingPiece(mainBoard.isShowLabels());
-//             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
          });
          mainBoard.getRow(4).forEach(it -> {
              it.deleteOccupyingPiece(Main.mainBoard.isShowLabels());
-//             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
          });
 
          mainBoard.getTileAtIndex(3, 3).init();
