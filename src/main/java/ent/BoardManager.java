@@ -13,7 +13,9 @@ import fx.controllers.Main;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class is responsible for managing complex, essentials behaviour relating to the {@link Board}. For
@@ -53,8 +55,8 @@ public class BoardManager {
      * @see Piece#getCapturedBy()
      */
     private boolean isOccupied(int x, int y) {
-        System.out.println("checker not null " + (board.getTileAtIndex(x, y).getPiece().getChecker() != null));
-        System.out.println("captured by null " + (board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null));
+        //System.out.println("checker not null " + (board.getTileAtIndex(x, y).getPiece().getChecker() != null));
+        //System.out.println("captured by null " + (board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null));
 
         return board.getTileAtIndex(x, y).getPiece().getChecker() != null && board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null;
     }

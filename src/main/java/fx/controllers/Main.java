@@ -15,6 +15,7 @@
  import comms.protocol.BoardUpdateProtocol;
  import comms.protocol.ProtocolManager;
  import ent.Board;
+ import ent.GameManager;
  import ent.Player;
  import err.EventProtocolMismatchException;
  import event.BoardUpdateEvent;
@@ -31,6 +32,7 @@
  import java.io.IOException;
  import java.net.URISyntaxException;
  import java.util.ArrayList;
+ import java.util.Arrays;
 
  /**
   * The Main class. As with all JavaFX applications, this is required, as it's responsible for constructing and
@@ -38,6 +40,7 @@
   */
  public class Main extends Application {
      public static Board mainBoard;
+     public static GameManager gameManager;
 
      public static void main(String[] args) throws IOException, EventProtocolMismatchException, URISyntaxException {
          launch(args);
@@ -174,13 +177,19 @@
              exception.printStackTrace();
          }
 
-         System.out.println(mainBoard);
-         System.out.println(Player.Defaults.HUMAN.getPlayer().getCapturedPieces());
-         System.out.println(Player.Defaults.COMPUTER.getPlayer().getCapturedPieces());
+         gameManager = new GameManager(mainBoard, Arrays.asList(new Player[]{Player.Defaults.HUMAN.getPlayer(),
+                 Player.Defaults.COMPUTER.getPlayer()}.clone()), canvas);
+
+         gameManager.beginGame();
+
+
+//         System.out.println(mainBoard);
+         //System.out.println(Player.Defaults.HUMAN.getPlayer().getCapturedPieces());
+         //System.out.println(Player.Defaults.COMPUTER.getPlayer().getCapturedPieces());
 
 //         mainBoard.renderAllLabels();
 
-         System.out.println(mainBoard.getTiles().get(1));
+         //System.out.println(mainBoard.getTiles().get(1));
 
      }
  }
