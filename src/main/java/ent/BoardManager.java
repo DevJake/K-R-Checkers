@@ -462,4 +462,23 @@ public class BoardManager {
         if (Boolean.TRUE.equals(validMoves.get(3)))
             makeMove(piece, piece.getX() + 2, piece.getY() - 2);
     }
+
+    public List<Direction> getDirectionsOfCapture(Piece origin) {
+        return Arrays.stream(new Direction[]{
+                Direction.FORWARD_LEFT_CAPTURE,
+                Direction.FORWARD_RIGHT_CAPTURE,
+                Direction.BACKWARD_LEFT_CAPTURE,
+                Direction.BACKWARD_RIGHT_CAPTURE})
+                .filter(dir -> moveIsValid(origin, dir))
+                .collect(Collectors.toList());
+    }
+
+    private boolean moveIsValid(Piece origin, Direction direction) {
+        try {
+            validityChecks(origin, direction, true);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
