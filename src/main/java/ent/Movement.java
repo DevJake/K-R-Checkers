@@ -8,6 +8,7 @@
 
 package ent;
 
+import fx.controllers.Main;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
@@ -93,6 +94,17 @@ class Movement {
 
             line.setStartX(beginX);
             line.setStartY(beginY);
+
+
+            Piece clickedPiece = board.getTileAtIndex((int) tileX, (int) tileY).getPiece();
+            if (clickedPiece.getPlayer() != Main.gameManager.getLastPlayer()) {
+                Main.gameManager.setLastLockedPiece(clickedPiece);
+                Main.gameManager.setLastPlayer(clickedPiece.getPlayer());
+
+
+                double tileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
+                double tileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
+            }
         });
 
 
@@ -109,17 +121,17 @@ class Movement {
         canvas.onMouseClickedProperty().set(event -> {
             double destTileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
             double destTileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
-            System.out.println("actual- " + event.getX() + ":" + event.getY());
-            System.out.println("centered- " + destTileX + ":" + destTileY);
+            //System.out.println("actual- " + event.getX() + ":" + event.getY());
+            //System.out.println("centered- " + destTileX + ":" + destTileY);
 
             Tile tileOrigin = board.getTileAtIndex(((int) tileX), ((int) tileY));
             Tile tileDest = board.getTileAtIndex(((int) destTileX), ((int) destTileY));
 
-            System.out.println("--------------");
-            System.out.println("origin playable: " + tileOrigin.isPlayable());
-            System.out.println("destination playable: " + tileDest.isPlayable());
-            System.out.println("origin checker state: " + tileOrigin.getPiece().getChecker());
-            System.out.println("destination player state: " + tileDest.getPiece().getPlayer().getName());
+            //System.out.println("--------------");
+            //System.out.println("origin playable: " + tileOrigin.isPlayable());
+            //System.out.println("destination playable: " + tileDest.isPlayable());
+            //System.out.println("origin checker state: " + tileOrigin.getPiece().getChecker());
+            //System.out.println("destination player state: " + tileDest.getPiece().getPlayer().getName());
 
             /*
             Origin should be a playable tile.
@@ -141,7 +153,11 @@ class Movement {
             line = getNewLine();
             canvas.getChildren().add(line);
 
-            board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(), tileDest.getPiece().getY());
+            board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
+                    tileDest.getPiece().getY());
+
+
+            Main.gameManager.setEvalDone(false);
 
         });
     }
@@ -149,7 +165,8 @@ class Movement {
     /**
      * This method simply creates and returns a new {@link Line} instance using hard-coded parameters.
      *
-     * @return {@link Line} - A new Line instance with 'null' coordinates (effectively invisible), no visibility,
+     * @return {@link Line} - A new Line instance with 'null' coordinates (effectively invisible), no
+     * visibility,
      * and a stroke width of 5.
      */
     private static Line getNewLine() {
