@@ -8,7 +8,8 @@
 
 package ent;
 
-import java.awt.*;
+import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
 import java.util.UUID;
 

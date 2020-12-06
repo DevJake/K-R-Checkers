@@ -39,8 +39,7 @@
  public class Main extends Application {
      public static Board mainBoard;
 
-     public static void main(String[] args) throws IOException,
-             EventProtocolMismatchException, URISyntaxException {
+     public static void main(String[] args) throws IOException, EventProtocolMismatchException, URISyntaxException {
          launch(args);
 
 
@@ -144,30 +143,33 @@
          GridPane gridPane = (GridPane) s.lookup("#gridPane");
          gridPane.setGridLinesVisible(true);
 
+         Player.Defaults.HUMAN.getPlayer().setColour(Color.rgb(255, 204, 223));
+         Player.Defaults.COMPUTER.getPlayer().setColour(Color.rgb(255, 0, 128));
+
          mainBoard = new Board.Builder()
-                 .setEvenTilesColour(Color.FORESTGREEN)
-                 .setOddTilesColour(Color.ORANGE)
+                 .setEvenTilesColour(Color.rgb(150, 150, 150))
+                 .setOddTilesColour(Color.rgb(245, 175, 200))
+                 .setShowLabels(true)
                  .build(new ArrayList<>(gridPane.getChildren()));
 
 
          mainBoard.init(canvas);
          mainBoard.getRow(3).forEach(it -> {
-             it.delete();
-             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
+             it.deleteOccupyingPiece(mainBoard.isShowLabels());
          });
          mainBoard.getRow(4).forEach(it -> {
-             it.delete();
-             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
+             it.deleteOccupyingPiece(Main.mainBoard.isShowLabels());
          });
+
          mainBoard.getTileAtIndex(3, 3).init();
 
          try {
              //This is an example of manually moving pieces around the board
              // and simulating a capture
-             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(3, 3).getPiece(), 4, 4);
-             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(5, 5).getPiece(), 3, 3);
-             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(0, 2).getPiece(), 1, 3);
-             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(3, 5).getPiece(), 2, 4);
+//             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(3, 3).getPiece(), 4, 4);
+//             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(5, 5).getPiece(), 3, 3);
+//             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(0, 2).getPiece(), 1, 3);
+//             mainBoard.getManager().makeMove(mainBoard.getTileAtIndex(3, 5).getPiece(), 2, 4);
          } catch (RuntimeException exception) {
              exception.printStackTrace();
          }
@@ -176,7 +178,7 @@
          System.out.println(Player.Defaults.HUMAN.getPlayer().getCapturedPieces());
          System.out.println(Player.Defaults.COMPUTER.getPlayer().getCapturedPieces());
 
-         mainBoard.setShowCoordinates(true);
+//         mainBoard.renderAllLabels();
 
          System.out.println(mainBoard.getTiles().get(1));
 
