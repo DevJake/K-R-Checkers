@@ -58,7 +58,7 @@ public class BoardManager {
         //System.out.println("checker not null " + (board.getTileAtIndex(x, y).getPiece().getChecker() != null));
         //System.out.println("captured by null " + (board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null));
 
-        return board.getTileAtIndex(x, y).getPiece().getChecker() != null && board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null;
+        return board.getTileAtIndex(x, y).getPiece().getChecker() != null && board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null && board.getTileAtIndex(x, y).getPiece().getPlayer() != Player.Defaults.NONE.getPlayer();
     }
 
     /**
