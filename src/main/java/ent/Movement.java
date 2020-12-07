@@ -74,7 +74,7 @@ class Movement {
             line.setEndY(event.getSceneY());
 
             Tile tile = board.getTileAtIndex(((int) tileX), ((int) tileY));
-            if (tile.isPlayable() && tile.getPiece().getChecker() != null)
+            if (tile.isPlayable() && tile.getPiece().getChecker() != null && tile.getPiece().getPlayer() == Main.gameManager.getLastPlayer())
                 line.setVisible(true);
         });
 
@@ -92,19 +92,18 @@ class Movement {
             //Our board is only ever 8x8 tiles in size, so we can divide our x and y mouse coordinates by 8ths to
             // create new uniform coordinates.
 
-            line.setStartX(beginX);
-            line.setStartY(beginY);
-
 
             Piece clickedPiece = board.getTileAtIndex((int) tileX, (int) tileY).getPiece();
-            if (clickedPiece.getPlayer() != Main.gameManager.getLastPlayer()) {
+            if (clickedPiece.getPlayer() != Main.gameManager.getLastPlayer() && Main.gameManager.isEndMove()) {
                 Main.gameManager.setLastLockedPiece(clickedPiece);
                 Main.gameManager.setLastPlayer(clickedPiece.getPlayer());
+                Main.gameManager.setEndMove(false);
 
-
-                double tileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
-                double tileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
+                return;
             }
+
+            line.setStartX(beginX);
+            line.setStartY(beginY);
         });
 
 
@@ -126,6 +125,9 @@ class Movement {
 
             Tile tileOrigin = board.getTileAtIndex(((int) tileX), ((int) tileY));
             Tile tileDest = board.getTileAtIndex(((int) destTileX), ((int) destTileY));
+
+            if (tileOrigin.getPiece().getPlayer() != Main.gameManager.lastPlayer)
+                return;
 
             //System.out.println("--------------");
             //System.out.println("origin playable: " + tileOrigin.isPlayable());

@@ -23,8 +23,11 @@ public class GameManager {
     private final Queue<Player> playerQueue = new LinkedList<>();
     public Piece lastLockedPiece;
     public Player lastPlayer;
+    private List<Piece> moveablePieces = new ArrayList<>();
     private int round = 0;
     private boolean evalDone = false;
+    private boolean endMove = false;
+    private boolean remainingMove = true;
 
     public GameManager(Board board, List<Player> playerQueue, Pane canvas) {
         this.board = board;
@@ -80,6 +83,10 @@ public class GameManager {
         return next;
     }
 
+    public List<Piece> getMoveablePieces() {
+        return moveablePieces;
+    }
+
     private boolean isGameFinished() {
         //Check if one team has all pieces captured
         for (Player player : getPlayerQueue()) {
@@ -116,6 +123,14 @@ public class GameManager {
 
     }
 
+    public boolean isRemainingMove() {
+        return remainingMove;
+    }
+
+    public void setRemainingMove(boolean remainingMove) {
+        this.remainingMove = remainingMove;
+    }
+
     private void playRound() {
         /*
         1. Lock player
@@ -130,11 +145,39 @@ public class GameManager {
         if (this.evalDone || lastPlayer == null)
             return;
 
-        List<Piece> haveCaptures =
-                board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty()).collect(Collectors.toList()); //We're evaluating all of their pieces to see which ones have captures to be made
 
-        System.out.println("Captureable pieces: " + haveCaptures.size());
-        System.out.println("Capturables: " + haveCaptures);
+        if (lastLockedPiece == null) { //They've not yet chosen their Piece to be played
+            List<Piece> haveCaptures =
+                    board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty()).collect(Collectors.toList()); //We're evaluating all of their pieces to see which ones have captures to be made
+
+            System.out.println("Captureable pieces: " + haveCaptures.size());
+            System.out.println("Capturables: " + haveCaptures);
+
+            System.out.println(board.getPiecesOwnedBy(lastPlayer));
+
+            board.getPiecesOwnedBy(lastPlayer).forEach(p -> p.getChecker());
+
+            if (haveCaptures.size() > 0) {
+                //Restrict choice of next Piece to one of these Pieces
+
+                this.moveablePieces.clear();
+                this.moveablePieces = new ArrayList<>(haveCaptures);
+
+                for (Piece haveCapture : haveCaptures) {
+                    haveCapture.getChecker().getStrokeDashArray().addAll(5d, 5d);
+                }
+
+            }
+            this.evalDone = true;
+            return;
+        }
+
+        lastLockedPiece.getChecker().getStrokeDashArray().addAll(5d, 5d);
+
+
+        //No choice selection, until they've chosen their first Piece
+
+        //TODO once their turn ends, null the lastLockedPiece and update lastPlayer
 
 
         if (lastLockedPiece != null) { //The player has now chosen their starting piece
@@ -144,9 +187,21 @@ public class GameManager {
                 System.out.println(board.getManager().getDirectionsOfCapture(lastLockedPiece));
         }
 
-        this.evalDone = true;
 
+
+        this.evalDone = true;
+        this.endMove = true;
+        this.remainingMove = true;
+        lastPlayer = nextInQueue();
         round++;
+    }
+
+    public boolean isEndMove() {
+        return endMove;
+    }
+
+    public void setEndMove(boolean endMove) {
+        this.endMove = endMove;
     }
 
     public int getRound() {
