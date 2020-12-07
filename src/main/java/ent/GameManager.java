@@ -97,7 +97,7 @@ public class GameManager {
                 playRound();
 
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -124,15 +124,18 @@ public class GameManager {
     }
 
     public List<Piece> getCapturesFor() {
-        return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty()).collect(Collectors.toList()); //We're evaluating all of their pieces to see which ones have captures to be made
+        return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty()).collect(Collectors.toList());
+        //We're evaluating all of their pieces to see which ones have captures to be made
     }
 
     public List<Piece> getHopsFor() {
-        return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !getRemainingMoveDirections(piece).isEmpty()).collect(Collectors.toList()); //We're evaluating all of their pieces to see which ones have non-captures to be made
+        return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !getRemainingMoveDirections(piece).isEmpty()).collect(Collectors.toList());
+        //We're evaluating all of their pieces to see which ones have non-captures to be made
     }
 
     public List<Piece> getWithAnyMove() {
         return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty() || !getRemainingMoveDirections(piece).isEmpty()).distinct().collect(Collectors.toList());
+        //We're gathering all pieces that can make any form of move
     }
 
     public boolean onOpponentKingsRow(Piece piece) {

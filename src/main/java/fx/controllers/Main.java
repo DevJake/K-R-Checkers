@@ -16,6 +16,7 @@
  import comms.protocol.ProtocolManager;
  import ent.Board;
  import ent.GameManager;
+ import ent.Piece;
  import ent.Player;
  import err.EventProtocolMismatchException;
  import event.BoardUpdateEvent;
@@ -166,7 +167,9 @@
              it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
          });
 
-//         mainBoard.getTileAtIndex(3, 3).init();
+//         mainBoard.getTileAtIndex(2, 4).setPiece(new Piece(2, 4, Color.ORANGE, Player.Defaults.COMPUTER.getPlayer(),
+//                 Piece.Type.KING));
+//         mainBoard.getTileAtIndex(2, 4).init(); //How to add your own custom piece
 
          try {
              //This is an example of manually moving pieces around the board
