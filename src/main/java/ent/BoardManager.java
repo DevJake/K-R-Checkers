@@ -74,7 +74,7 @@ public class BoardManager {
      * @param toX    Int - The integer x of the destination coordinates for the given origin Piece.
      * @param toY    Int - The integer y of the destination coordinates for the given origin Piece.
      *
-     * @see Piece.Type#KING ent.Piece.Type#KING
+     * @see Piece.Type#KING
      */
     public void makeMove(Piece origin, int toX, int toY) {
         boolean capturing = Math.abs(origin.getX() - toX) == 2 && Math.abs(origin.getY() - toY) == 2;
@@ -475,7 +475,7 @@ public class BoardManager {
                 .collect(Collectors.toList());
     }
 
-    private boolean moveIsValid(Piece origin, Direction direction) {
+    public boolean moveIsValid(Piece origin, Direction direction) {
         try {
             validityChecks(origin, direction, true);
             return true;
