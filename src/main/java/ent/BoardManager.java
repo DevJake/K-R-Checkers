@@ -362,13 +362,30 @@ public class BoardManager {
 
         //System.out.println(origin.getColour());
 
+        Piece.Type type = origin.getType();
+        if (type == Piece.Type.MAN) {
+            if (origin.getPlayer().getHomeSide() == Player.HomeSide.BOTTOM && destY == 7)
+                type = Piece.Type.KING;
+            if (origin.getPlayer().getHomeSide() == Player.HomeSide.TOP && destY == 0)
+                type = Piece.Type.KING;
 
         Piece p2 = new Piece(destX, destY, origin.getColour(), origin.getPlayer(), origin.getType());
+        }
+        Piece p2 = new Piece(destX, destY, origin.getColour(), origin.getPlayer(), type);
+
+//        if (Main.gameManager.onOpponentKingsRow(destTile.getPiece())) {
+//            destTile.getPiece().makeKing();
+//        }
+
         board.getTileAtIndex(origin.getX(), origin.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
 
-        board.getTileAtIndex(destX, destY).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
-        board.getTileAtIndex(destX, destY).setPiece(p2);
-        board.getTileAtIndex(destX, destY).init();
+        Tile destTile = board.getTileAtIndex(destX, destY);
+        destTile.deleteOccupyingPiece(Main.mainBoard.isShowLabels());
+        destTile.setPiece(p2);
+        destTile.init();
+
+
+        //TODO regicide
 
 
         //TODO force capturing of neighbours

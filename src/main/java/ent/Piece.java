@@ -91,6 +91,7 @@ public class Piece {
      */
     public void makeKing() {
         this.type = Type.KING;
+        this.checker = new Circle(40, colour);
     }
 
     /**
@@ -123,7 +124,10 @@ public class Piece {
      * @return This Piece. Ideal for chaining actions with a builder-esque syntax.
      */
     public Piece init() {
-        this.checker = new Circle(30, colour);
+        if (type == Type.MAN)
+            this.checker = new Circle(30, colour);
+        else if (type == Type.KING)
+            this.checker = new Circle(40, colour);
         return this;
     }
 

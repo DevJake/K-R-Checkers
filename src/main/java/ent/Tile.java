@@ -11,6 +11,7 @@ package ent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 import static fx.controllers.Main.mainBoard;
 import static fx.controllers.Main.toRGBString;
@@ -48,6 +49,7 @@ public class Tile extends Entity {
      * @see #deleteOccupyingPiece()
      */
     private final StackPane node;
+    private final Circle kingStatus = new Circle(25, Color.rgb(0, 0, 0, 0));
     /**
      * The Color of this Tile.
      *
@@ -83,6 +85,9 @@ public class Tile extends Entity {
         this.colour = colour;
         this.node = node;
         this.piece = piece;
+
+        this.kingStatus.setStrokeWidth(3d);
+        this.kingStatus.setStroke(Color.BLACK);
 
 //        setupDrag();
 //        piece.getChecker().addEventHandler(new EventType<>(), new MouseDrag());
@@ -140,6 +145,10 @@ public class Tile extends Entity {
             piece.getChecker().radiusProperty().bind(node.widthProperty().divide(2).multiply(0.8));
             piece.getChecker().setStroke(Color.BLACK);
             piece.getChecker().setStrokeWidth(0.5);
+
+            if (piece.getType() == Piece.Type.KING) {
+                this.node.getChildren().add(kingStatus);
+            }
         }
 
         if (mainBoard.isShowLabels())
@@ -221,8 +230,10 @@ public class Tile extends Entity {
      * are executed.
      */
     public void deleteOccupyingPiece(boolean keepLabel) {
-        if (keepLabel) this.node.getChildren().remove(piece.getChecker());
-        else this.node.getChildren().clear();
+        if (keepLabel) {
+            this.node.getChildren().remove(piece.getChecker());
+            this.node.getChildren().remove(kingStatus);
+        } else this.node.getChildren().clear();
         piece.deletePiece();
     }
 
