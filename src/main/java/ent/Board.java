@@ -318,6 +318,11 @@ public class Board extends Entity {
         return tiles.stream().mapToInt(row -> (int) row.stream().filter(tile -> tile.getPiece().getCapturedBy() == null).count()).sum();
     }
 
+    //Gets all Pieces that a given Player owns.
+    public List<Piece> getPiecesOwnedBy(Player p) {
+        return this.getPlayableTiles().stream().filter(t -> t.getPiece().getPlayer() == p).map(t -> t.getPiece()).collect(Collectors.toList());
+    }
+
     /**
      * This method toggles the visibility of the x/y coordinates for each {@link Tile}. If enabled, a
      * {@link javafx.scene.control.Label} is displayed on top of each Tile's {@link StackPane}, showing the x/y

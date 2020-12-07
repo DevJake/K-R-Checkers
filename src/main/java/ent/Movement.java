@@ -8,6 +8,7 @@
 
 package ent;
 
+import fx.controllers.Main;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
@@ -42,6 +43,8 @@ class Movement {
      */
     private static double tileY;
 
+    private static boolean doRender = false;
+
     /**
      * Instantiates a new Movement.
      *
@@ -69,11 +72,14 @@ class Movement {
         before dragging, so this method only updates the end location of the line.
          */
         canvas.onMouseDraggedProperty().set(event -> {
+            if (!Movement.doRender)
+                return;
+
             line.setEndX(event.getSceneX());
             line.setEndY(event.getSceneY());
 
             Tile tile = board.getTileAtIndex(((int) tileX), ((int) tileY));
-            if (tile.isPlayable() && tile.getPiece().getChecker() != null)
+            if (tile.isPlayable() && tile.getPiece().getChecker() != null && tile.getPiece().getPlayer() == Main.gameManager.getLastPlayer())
                 line.setVisible(true);
         });
 
@@ -91,6 +97,11 @@ class Movement {
             //Our board is only ever 8x8 tiles in size, so we can divide our x and y mouse coordinates by 8ths to
             // create new uniform coordinates.
 
+
+            Piece clickedPiece = board.getTileAtIndex((int) tileX, (int) tileY).getPiece();
+            Movement.doRender =
+                    Main.gameManager.getMoveablePieces().contains(clickedPiece) && Main.gameManager.lastPlayer == clickedPiece.getPlayer();
+
             line.setStartX(beginX);
             line.setStartY(beginY);
         });
@@ -107,19 +118,26 @@ class Movement {
         line.
          */
         canvas.onMouseClickedProperty().set(event -> {
+            if (!Movement.doRender)
+                return;
+
             double destTileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
             double destTileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
-            System.out.println("actual- " + event.getX() + ":" + event.getY());
-            System.out.println("centered- " + destTileX + ":" + destTileY);
+            //System.out.println("actual- " + event.getX() + ":" + event.getY());
+            //System.out.println("centered- " + destTileX + ":" + destTileY);
 
             Tile tileOrigin = board.getTileAtIndex(((int) tileX), ((int) tileY));
             Tile tileDest = board.getTileAtIndex(((int) destTileX), ((int) destTileY));
 
-            System.out.println("--------------");
-            System.out.println("origin playable: " + tileOrigin.isPlayable());
-            System.out.println("destination playable: " + tileDest.isPlayable());
-            System.out.println("origin checker state: " + tileOrigin.getPiece().getChecker());
-            System.out.println("destination player state: " + tileDest.getPiece().getPlayer().getName());
+
+//            if (tileOrigin.getPiece().getPlayer() != Main.gameManager.lastPlayer)
+//                return;
+
+            //System.out.println("--------------");
+            //System.out.println("origin playable: " + tileOrigin.isPlayable());
+            //System.out.println("destination playable: " + tileDest.isPlayable());
+            //System.out.println("origin checker state: " + tileOrigin.getPiece().getChecker());
+            //System.out.println("destination player state: " + tileDest.getPiece().getPlayer().getName());
 
             /*
             Origin should be a playable tile.
@@ -137,19 +155,51 @@ class Movement {
 //
 //                //TODO if destX/Y is further than 1 tile away, void, unless it involves a capture
 //            }
-            canvas.getChildren().remove(line);
-            line = getNewLine();
-            canvas.getChildren().add(line);
 
-            board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(), tileDest.getPiece().getY());
 
+            if (Movement.doRender) {
+                System.out.println("Doddodoodo render");
+
+
+                canvas.getChildren().remove(line);
+                line = getNewLine();
+                canvas.getChildren().add(line);
+
+                boolean capturing =
+                        Math.abs(tileOrigin.getPiece().getX() - tileDest.getPiece().getX()) == 2 &&
+                                Math.abs(tileOrigin.getPiece().getY() - tileDest.getPiece().getY()) == 2;
+
+                System.out.println("Capturing=" + capturing);
+
+                if (!Main.gameManager.getCapturesFor().isEmpty() && !capturing) {
+                    return; //They are required to make a capturing move, and yet they are attempting not to...
+                }
+
+                try {
+                    board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
+                            tileDest.getPiece().getY());
+
+                    Main.gameManager.setLastLockedPiece(tileDest.getPiece());
+
+                    System.out.println(tileOrigin.getPiece().getX());
+                    System.out.println(tileDest.getPiece().getX());
+                    System.out.println(tileOrigin.getPiece().getY());
+                    System.out.println(tileDest.getPiece().getY());
+
+                    Main.gameManager.setExhaustedSingleMove(!capturing);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //TODO fire as event
+                }
+            }
         });
     }
 
     /**
      * This method simply creates and returns a new {@link Line} instance using hard-coded parameters.
      *
-     * @return {@link Line} - A new Line instance with 'null' coordinates (effectively invisible), no visibility,
+     * @return {@link Line} - A new Line instance with 'null' coordinates (effectively invisible), no
+     * visibility,
      * and a stroke width of 5.
      */
     private static Line getNewLine() {

@@ -15,6 +15,8 @@
  import comms.protocol.BoardUpdateProtocol;
  import comms.protocol.ProtocolManager;
  import ent.Board;
+ import ent.GameManager;
+ import ent.Piece;
  import ent.Player;
  import err.EventProtocolMismatchException;
  import event.BoardUpdateEvent;
@@ -31,6 +33,7 @@
  import java.io.IOException;
  import java.net.URISyntaxException;
  import java.util.ArrayList;
+ import java.util.Arrays;
 
  /**
   * The Main class. As with all JavaFX applications, this is required, as it's responsible for constructing and
@@ -38,6 +41,7 @@
   */
  public class Main extends Application {
      public static Board mainBoard;
+     public static GameManager gameManager;
 
      public static void main(String[] args) throws IOException, EventProtocolMismatchException, URISyntaxException {
          launch(args);
@@ -156,12 +160,16 @@
          mainBoard.init(canvas);
          mainBoard.getRow(3).forEach(it -> {
              it.deleteOccupyingPiece(mainBoard.isShowLabels());
+             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
          });
          mainBoard.getRow(4).forEach(it -> {
              it.deleteOccupyingPiece(Main.mainBoard.isShowLabels());
+             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
          });
 
-         mainBoard.getTileAtIndex(3, 3).init();
+//         mainBoard.getTileAtIndex(2, 4).setPiece(new Piece(2, 4, Color.ORANGE, Player.Defaults.COMPUTER.getPlayer(),
+//                 Piece.Type.KING));
+//         mainBoard.getTileAtIndex(2, 4).init(); //How to add your own custom piece
 
          try {
              //This is an example of manually moving pieces around the board
@@ -174,13 +182,19 @@
              exception.printStackTrace();
          }
 
-         System.out.println(mainBoard);
-         System.out.println(Player.Defaults.HUMAN.getPlayer().getCapturedPieces());
-         System.out.println(Player.Defaults.COMPUTER.getPlayer().getCapturedPieces());
+         gameManager = new GameManager(mainBoard, Arrays.asList(new Player[]{Player.Defaults.HUMAN.getPlayer(),
+                 Player.Defaults.COMPUTER.getPlayer()}.clone()), canvas);
+
+         gameManager.beginGame();
+
+
+//         System.out.println(mainBoard);
+         //System.out.println(Player.Defaults.HUMAN.getPlayer().getCapturedPieces());
+         //System.out.println(Player.Defaults.COMPUTER.getPlayer().getCapturedPieces());
 
 //         mainBoard.renderAllLabels();
 
-         System.out.println(mainBoard.getTiles().get(1));
+         //System.out.println(mainBoard.getTiles().get(1));
 
      }
  }

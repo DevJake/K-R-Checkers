@@ -12,8 +12,9 @@ import err.*;
 import fx.controllers.Main;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class is responsible for managing complex, essentials behaviour relating to the {@link Board}. For
@@ -53,10 +54,10 @@ public class BoardManager {
      * @see Piece#getCapturedBy()
      */
     private boolean isOccupied(int x, int y) {
-        System.out.println("checker not null " + (board.getTileAtIndex(x, y).getPiece().getChecker() != null));
-        System.out.println("captured by null " + (board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null));
+        //System.out.println("checker not null " + (board.getTileAtIndex(x, y).getPiece().getChecker() != null));
+        //System.out.println("captured by null " + (board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null));
 
-        return board.getTileAtIndex(x, y).getPiece().getChecker() != null && board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null;
+        return board.getTileAtIndex(x, y).getPiece().getChecker() != null && board.getTileAtIndex(x, y).getPiece().getCapturedBy() == null && board.getTileAtIndex(x, y).getPiece().getPlayer() != Player.Defaults.NONE.getPlayer();
     }
 
     /**
@@ -72,7 +73,7 @@ public class BoardManager {
      * @param toX    Int - The integer x of the destination coordinates for the given origin Piece.
      * @param toY    Int - The integer y of the destination coordinates for the given origin Piece.
      *
-     * @see Piece.Type#KING ent.Piece.Type#KING
+     * @see Piece.Type#KING
      */
     public void makeMove(Piece origin, int toX, int toY) {
         boolean capturing = Math.abs(origin.getX() - toX) == 2 && Math.abs(origin.getY() - toY) == 2;
@@ -83,21 +84,21 @@ public class BoardManager {
         if (left) {
             if (up) {
                 //Left+up
-                validityChecks(origin, capturing, capturing ? Direction.FORWARD_LEFT_CAPTURE :
+                validityChecks(origin, capturing ? Direction.FORWARD_LEFT_CAPTURE :
                         Direction.FORWARD_LEFT, false);
             } else {
                 //Left+down
-                validityChecks(origin, capturing, capturing ? Direction.BACKWARD_LEFT_CAPTURE :
+                validityChecks(origin, capturing ? Direction.BACKWARD_LEFT_CAPTURE :
                         Direction.BACKWARD_LEFT, false);
             }
         } else {
             if (up) {
                 //Right+up
-                validityChecks(origin, capturing, capturing ? Direction.FORWARD_RIGHT_CAPTURE :
+                validityChecks(origin, capturing ? Direction.FORWARD_RIGHT_CAPTURE :
                         Direction.FORWARD_RIGHT, false);
             } else {
                 //Right+down
-                validityChecks(origin, capturing, capturing ? Direction.BACKWARD_RIGHT_CAPTURE :
+                validityChecks(origin, capturing ? Direction.BACKWARD_RIGHT_CAPTURE :
                         Direction.BACKWARD_RIGHT, false);
             }
         }
@@ -259,7 +260,7 @@ public class BoardManager {
      * @see BoardMoveSelfCaptureException
      * @see BoardMoveNotKingException
      */
-    private void validityChecks(Piece origin, boolean capturingMove, Direction direction,
+    private void validityChecks(Piece origin, Direction direction,
                                 boolean trial) {
         int destX = 0;
         int destY = 0;
@@ -272,15 +273,21 @@ public class BoardManager {
         int midX = 0;
         int midY = 0;
 
+        boolean capturingMove =
+                direction == Direction.FORWARD_LEFT_CAPTURE ||
+                        direction == Direction.BACKWARD_LEFT_CAPTURE ||
+                        direction == Direction.FORWARD_RIGHT_CAPTURE ||
+                        direction == Direction.BACKWARD_RIGHT_CAPTURE;
+
         if (capturingMove) {
             Pair<Integer, Integer> midCoords = getCapturingMidCoords(origin, direction);
             midX = midCoords.getKey();
             midY = midCoords.getValue();
 
-            System.out.println("Now capturing!");
-            System.out.println("midX=" + midX);
-            System.out.println("midY=" + midY);
-            System.out.println("Direction=" + direction);
+            //System.out.println("Now capturing!");
+            //System.out.println("midX=" + midX);
+            //System.out.println("midY=" + midY);
+            //System.out.println("Direction=" + direction);
         }
 
         if (!isOccupied(origin.getX(), origin.getY()))
@@ -343,24 +350,46 @@ public class BoardManager {
      */
     private void executeMove(Piece origin, int destX, int destY, Piece captured) {
         if (captured != null) {
-            System.out.println("capturing move, deleting....");
-            System.out.println(captured.getX());
-            System.out.println(captured.getY());
+            //System.out.println("capturing move, deleting....");
+            //System.out.println(captured.getX());
+            //System.out.println(captured.getY());
 
             origin.getPlayer().getCapturedPieces().add(captured);
             board.getTileAtIndex(captured.getX(), captured.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
             captured.deletePiece(); //TODO Add to capturer's captured pieces list
         }
 
-        System.out.println(origin.getColour());
+        //System.out.println(origin.getColour());
+
+        Piece.Type type = origin.getType();
+        if (type == Piece.Type.MAN) {
+            if (origin.getPlayer().getHomeSide() == Player.HomeSide.BOTTOM && destY == 7)
+                type = Piece.Type.KING;
+            if (origin.getPlayer().getHomeSide() == Player.HomeSide.TOP && destY == 0)
+                type = Piece.Type.KING;
+
+            if (captured != null && captured.getType() == Piece.Type.KING)
+                type = Piece.Type.KING;
+
+            //TODO add events for a piece being made a KING by King's Row and KING by regicide
+        }
 
 
-        Piece p2 = new Piece(destX, destY, origin.getColour(), origin.getPlayer(), origin.getType());
+        Piece p2 = new Piece(destX, destY, origin.getColour(), origin.getPlayer(), type);
+
+//        if (Main.gameManager.onOpponentKingsRow(destTile.getPiece())) {
+//            destTile.getPiece().makeKing();
+//        }
+
         board.getTileAtIndex(origin.getX(), origin.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
 
-        board.getTileAtIndex(destX, destY).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
-        board.getTileAtIndex(destX, destY).setPiece(p2);
-        board.getTileAtIndex(destX, destY).init();
+        Tile destTile = board.getTileAtIndex(destX, destY);
+        destTile.deleteOccupyingPiece(Main.mainBoard.isShowLabels());
+        destTile.setPiece(p2);
+        destTile.init();
+
+
+        //TODO regicide
 
 
         //TODO force capturing of neighbours
@@ -386,74 +415,92 @@ public class BoardManager {
      *
      * @see #validityChecks(Piece, int, int, boolean, Direction, boolean)
      */
-    private void doAutoCapture(Piece piece) {
-        Player opponent = piece.getPlayer().getName().equals(Player.Defaults.COMPUTER.getPlayer().getName()) ?
-                Player.Defaults.HUMAN.getPlayer() : Player.Defaults.COMPUTER.getPlayer();
-        if (board.getKingsWallRow(opponent) == piece.getY() && piece.getType() == Piece.Type.MAN) {
-            piece.makeKing();
-            return; //Terminate all moves from here, since they've just been Crowned.
-        }
+//    private void doAutoCapture(Piece piece) {
+//        Player opponent = piece.getPlayer().getName().equals(Player.Defaults.COMPUTER.getPlayer().getName()) ?
+//                Player.Defaults.HUMAN.getPlayer() : Player.Defaults.COMPUTER.getPlayer();
+//        if (board.getKingsWallRow(opponent) == piece.getY() && piece.getType() == Piece.Type.MAN) {
+//            piece.makeKing();
+//            return; //Terminate all moves from here, since they've just been Crowned.
+//        }
+//
+//        ArrayList<Boolean> validMoves = new ArrayList<>();
+//        /*
+//        Left-Up
+//        Left-Down
+//        Right-Up
+//        Right-Down
+//         */
+//
+//        try {
+////            validityChecks(piece, piece.getX() - 2, piece.getY() + 2, true, Direction.FORWARD_LEFT_CAPTURE, true);
+//            validMoves.add(true);
+//        } catch (BoardMoveException e) {
+//            validMoves.add(false);
+//            //Do nothing
+//        }
+//
+//        /*
+//        Check which directions are valid to move in
+//         */
+//        try {
+////            validityChecks(piece, piece.getX() - 2, piece.getY() - 2, true, Direction.BACKWARD_LEFT_CAPTURE, true);
+//            validMoves.add(true);
+//        } catch (BoardMoveException e) {
+//            validMoves.add(false);
+//            //Do nothing
+//        }
+//
+//        try {
+////            validityChecks(piece, piece.getX() + 2, piece.getY() + 2, true, Direction.FORWARD_RIGHT_CAPTURE, true);
+//            validMoves.add(true);
+//        } catch (BoardMoveException e) {
+//            validMoves.add(false);
+//            //Do nothing
+//        }
+//
+//        try {
+////            validityChecks(piece, piece.getX() + 2, piece.getY() - 2, true, Direction.BACKWARD_RIGHT_CAPTURE, true);
+//            validMoves.add(true);
+//        } catch (BoardMoveException e) {
+//            validMoves.add(false);
+//            //Do nothing
+//        }
+//
+//        //The player has multiple options available... they must now decide which move to follow
+//        if (validMoves.stream().filter(t -> t.equals(Boolean.TRUE)).count() > 1) {
+//            //TODO it is now on the player to decide which move to take. Maybe fire event for this, including
+//            // which moves are valid. Also write a method to generate a list of Direction enums detailing which
+//            // moves are valid for a given piece
+//
+//            return;
+//        }
+//
+//        //There is now only one move possible. Find the move and execute it.
+//        if (Boolean.TRUE.equals(validMoves.get(0)))
+//            makeMove(piece, piece.getX() - 2, piece.getY() + 2);
+//        if (Boolean.TRUE.equals(validMoves.get(1)))
+//            makeMove(piece, piece.getX() - 2, piece.getY() - 2);
+//        if (Boolean.TRUE.equals(validMoves.get(2)))
+//            makeMove(piece, piece.getX() + 2, piece.getY() + 2);
+//        if (Boolean.TRUE.equals(validMoves.get(3)))
+//            makeMove(piece, piece.getX() + 2, piece.getY() - 2);
+//    }
+    public List<Direction> getDirectionsOfCapture(Piece origin) {
+        return Arrays.stream(new Direction[]{
+                Direction.FORWARD_LEFT_CAPTURE,
+                Direction.FORWARD_RIGHT_CAPTURE,
+                Direction.BACKWARD_LEFT_CAPTURE,
+                Direction.BACKWARD_RIGHT_CAPTURE})
+                .filter(dir -> moveIsValid(origin, dir))
+                .collect(Collectors.toList());
+    }
 
-        ArrayList<Boolean> validMoves = new ArrayList<>();
-        /*
-        Left-Up
-        Left-Down
-        Right-Up
-        Right-Down
-         */
-
+    public boolean moveIsValid(Piece origin, Direction direction) {
         try {
-//            validityChecks(piece, piece.getX() - 2, piece.getY() + 2, true, Direction.FORWARD_LEFT_CAPTURE, true);
-            validMoves.add(true);
-        } catch (BoardMoveException e) {
-            validMoves.add(false);
-            //Do nothing
+            validityChecks(origin, direction, true);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-
-        /*
-        Check which directions are valid to move in
-         */
-        try {
-//            validityChecks(piece, piece.getX() - 2, piece.getY() - 2, true, Direction.BACKWARD_LEFT_CAPTURE, true);
-            validMoves.add(true);
-        } catch (BoardMoveException e) {
-            validMoves.add(false);
-            //Do nothing
-        }
-
-        try {
-//            validityChecks(piece, piece.getX() + 2, piece.getY() + 2, true, Direction.FORWARD_RIGHT_CAPTURE, true);
-            validMoves.add(true);
-        } catch (BoardMoveException e) {
-            validMoves.add(false);
-            //Do nothing
-        }
-
-        try {
-//            validityChecks(piece, piece.getX() + 2, piece.getY() - 2, true, Direction.BACKWARD_RIGHT_CAPTURE, true);
-            validMoves.add(true);
-        } catch (BoardMoveException e) {
-            validMoves.add(false);
-            //Do nothing
-        }
-
-        //The player has multiple options available... they must now decide which move to follow
-        if (validMoves.stream().filter(t -> t.equals(Boolean.TRUE)).count() > 1) {
-            //TODO it is now on the player to decide which move to take. Maybe fire event for this, including
-            // which moves are valid. Also write a method to generate a list of Direction enums detailing which
-            // moves are valid for a given piece
-
-            return;
-        }
-
-        //There is now only one move possible. Find the move and execute it.
-        if (Boolean.TRUE.equals(validMoves.get(0)))
-            makeMove(piece, piece.getX() - 2, piece.getY() + 2);
-        if (Boolean.TRUE.equals(validMoves.get(1)))
-            makeMove(piece, piece.getX() - 2, piece.getY() - 2);
-        if (Boolean.TRUE.equals(validMoves.get(2)))
-            makeMove(piece, piece.getX() + 2, piece.getY() + 2);
-        if (Boolean.TRUE.equals(validMoves.get(3)))
-            makeMove(piece, piece.getX() + 2, piece.getY() - 2);
     }
 }
