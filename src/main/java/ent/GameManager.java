@@ -12,45 +12,31 @@ import event.Event;
 import event.GameCompletedEvent;
 import javafx.scene.layout.Pane;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameManager {
     private final Board board;
     private final Queue<Player> playerQueue = new LinkedList<>();
+    private final List<Piece> moveablePieces = new ArrayList<>();
     public Piece lastLockedPiece;
     public Player lastPlayer;
-    private List<Piece> moveablePieces = new ArrayList<>();
     private int round = 0;
-    private boolean evalDone = false;
+    private boolean allCapturesEvalDone = false;
     private boolean endMove = false;
-    private boolean remainingMove = true;
+    private boolean exhaustedSingleMove = false;
 
     public GameManager(Board board, List<Player> playerQueue, Pane canvas) {
         this.board = board;
         this.playerQueue.addAll(playerQueue);
-
-//        canvas.onMousePressedProperty().set(event -> {
-//            double tileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
-//            double tileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
-//
-//            Piece clickedPiece = board.getTileAtIndex((int) tileX, (int) tileY).getPiece();
-//            if (clickedPiece.getPlayer() != lastPlayer) {
-//                lastLockedPiece = clickedPiece;
-//                lastPlayer = lastLockedPiece.getPlayer();
-//            }
-//        });
     }
 
-    public boolean isEvalDone() {
-        return evalDone;
+    public boolean isAllCapturesEvalDone() {
+        return allCapturesEvalDone;
     }
 
-    public void setEvalDone(boolean evalDone) {
-        this.evalDone = evalDone;
+    public void setAllCapturesEvalDone(boolean allCapturesEvalDone) {
+        this.allCapturesEvalDone = allCapturesEvalDone;
     }
 
     public Player getLastPlayer() {
@@ -66,7 +52,10 @@ public class GameManager {
     }
 
     public void setLastLockedPiece(Piece lastLockedPiece) {
+        setMoveableNotice(this.moveablePieces, false);
+        this.moveablePieces.clear();
         this.lastLockedPiece = lastLockedPiece;
+        this.moveablePieces.add(lastLockedPiece);
     }
 
     public Board getBoard() {
@@ -101,6 +90,9 @@ public class GameManager {
         new Thread(() -> {
             lastPlayer = nextInQueue();
             while (!isGameFinished()) {
+                System.out.println(lastPlayer.getName());
+                System.out.println(lastLockedPiece);
+                System.out.println("Single move exhausted? " + hasExhaustedSingleMove());
 
                 playRound();
 
@@ -123,15 +115,47 @@ public class GameManager {
 
     }
 
-    public boolean isRemainingMove() {
-        return remainingMove;
+    public boolean hasExhaustedSingleMove() {
+        return exhaustedSingleMove;
     }
 
-    public void setRemainingMove(boolean remainingMove) {
-        this.remainingMove = remainingMove;
+    public void setExhaustedSingleMove(boolean exhaustedSingleMove) {
+        this.exhaustedSingleMove = exhaustedSingleMove;
+    }
+
+    public List<Piece> getCapturesFor() {
+        return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty()).collect(Collectors.toList()); //We're evaluating all of their pieces to see which ones have captures to be made
+    }
+
+    public List<Piece> getHopsFor() {
+        return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !getRemainingMoveDirections(piece).isEmpty()).collect(Collectors.toList()); //We're evaluating all of their pieces to see which ones have non-captures to be made
+    }
+
+    public List<Piece> getWithAnyMove() {
+        return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty() || !getRemainingMoveDirections(piece).isEmpty()).distinct().collect(Collectors.toList());
+    }
+
+    private List<Direction> getRemainingMoveDirections(Piece piece) {
+        return Arrays.stream(Direction.values()).filter(dir -> board.getManager().moveIsValid(piece, dir)).collect(Collectors.toList());
+    }
+
+    private void setMoveableNotice(List<Piece> pieces, boolean enabled) {
+        pieces.forEach(p -> {
+            if (p == null || p.getChecker() == null)
+                return;
+            if (enabled) {
+                p.getChecker().getStrokeDashArray().clear();
+                p.getChecker().getStrokeDashArray().addAll(5d, 5d);
+                p.getChecker().setStrokeWidth(2d);
+            } else {
+                p.getChecker().getStrokeDashArray().clear();
+                p.getChecker().setStrokeWidth(1d);
+            }
+        });
     }
 
     private void playRound() {
+        //TODO if a move must be capturing, it can only make a capturing move
         /*
         1. Lock player
             i. force auto-capturing
@@ -142,37 +166,47 @@ public class GameManager {
             i. if piece cannot be moved, terminate move
             ii. When their single move is exhausted, terminate move
          */
-        if (this.evalDone || lastPlayer == null)
-            return;
 
+        System.out.println("Remaining moves=" + getRemainingMoveDirections(lastLockedPiece).isEmpty());
+        System.out.println("Remaining moves=" + getRemainingMoveDirections(lastLockedPiece));
+        System.out.println("ExhaustedSingleMove=" + exhaustedSingleMove);
+        System.out.println("getCapturesFor=" + getCapturesFor());
 
-        if (lastLockedPiece == null) { //They've not yet chosen their Piece to be played
-            List<Piece> haveCaptures =
-                    board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty()).collect(Collectors.toList()); //We're evaluating all of their pieces to see which ones have captures to be made
+        if (exhaustedSingleMove)
+            setEndMove(true);
 
-            System.out.println("Captureable pieces: " + haveCaptures.size());
-            System.out.println("Capturables: " + haveCaptures);
+        if (getCapturesFor().isEmpty() && getRemainingMoveDirections(lastLockedPiece)
+                .isEmpty() && lastLockedPiece != null)
+            setEndMove(true);
 
-            System.out.println(board.getPiecesOwnedBy(lastPlayer));
-
-            board.getPiecesOwnedBy(lastPlayer).forEach(p -> p.getChecker());
-
-            if (haveCaptures.size() > 0) {
-                //Restrict choice of next Piece to one of these Pieces
-
-                this.moveablePieces.clear();
-                this.moveablePieces = new ArrayList<>(haveCaptures);
-
-                for (Piece haveCapture : haveCaptures) {
-                    haveCapture.getChecker().getStrokeDashArray().addAll(5d, 5d);
-                }
-
-            }
-            this.evalDone = true;
+        if (isEndMove()) { //If their move has ended, reset the game's state and prepare for the next player to play
+            endMove();
             return;
         }
 
-        lastLockedPiece.getChecker().getStrokeDashArray().addAll(5d, 5d);
+        if (lastPlayer == null)
+            return;
+
+        if (!this.allCapturesEvalDone) {
+            this.moveablePieces.clear();
+            //They've not yet chosen their Piece to be played, so we perform the initial check against all Pieces
+            setMoveableNotice(board.getPiecesOwnedBy(lastPlayer), false);
+
+            List<Piece> capturesFor = getCapturesFor();
+
+            if (capturesFor.size() > 0) {
+                //Restrict choice of next Piece to one of these Pieces
+                this.moveablePieces.addAll(capturesFor);
+            } else {
+                this.moveablePieces.addAll(getWithAnyMove());
+            }
+
+            this.allCapturesEvalDone = true;
+        } else {
+            this.moveablePieces.add(lastLockedPiece);
+        }
+
+        setMoveableNotice(this.moveablePieces, true);
 
 
         //No choice selection, until they've chosen their first Piece
@@ -180,21 +214,25 @@ public class GameManager {
         //TODO once their turn ends, null the lastLockedPiece and update lastPlayer
 
 
-        if (lastLockedPiece != null) { //The player has now chosen their starting piece
-            if (board.getManager().getDirectionsOfCapture(lastLockedPiece).size() == 0) {
-                System.out.println("No capturing moves available");
-            } else
-                System.out.println(board.getManager().getDirectionsOfCapture(lastLockedPiece));
-        }
+//        if (lastLockedPiece != null) { //The player has now chosen their starting piece
+//            if (board.getManager().getDirectionsOfCapture(lastLockedPiece).size() == 0) {
+//                System.out.println("No capturing moves available");
+//            } else
+//                System.out.println(board.getManager().getDirectionsOfCapture(lastLockedPiece));
+//        }
 
+        //TODO end their move if they cannot make a move
+    }
 
-
-        this.evalDone = true;
-        this.endMove = true;
-        this.remainingMove = true;
+    private void endMove() {
+        this.allCapturesEvalDone = false;
+        this.endMove = false;
+        this.exhaustedSingleMove = false;
+        this.lastLockedPiece = null;
         lastPlayer = nextInQueue();
         round++;
     }
+
 
     public boolean isEndMove() {
         return endMove;

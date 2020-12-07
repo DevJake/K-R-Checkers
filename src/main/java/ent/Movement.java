@@ -43,6 +43,8 @@ class Movement {
      */
     private static double tileY;
 
+    private static boolean doRender = false;
+
     /**
      * Instantiates a new Movement.
      *
@@ -70,6 +72,9 @@ class Movement {
         before dragging, so this method only updates the end location of the line.
          */
         canvas.onMouseDraggedProperty().set(event -> {
+            if (!Movement.doRender)
+                return;
+
             line.setEndX(event.getSceneX());
             line.setEndY(event.getSceneY());
 
@@ -94,13 +99,8 @@ class Movement {
 
 
             Piece clickedPiece = board.getTileAtIndex((int) tileX, (int) tileY).getPiece();
-            if (clickedPiece.getPlayer() != Main.gameManager.getLastPlayer() && Main.gameManager.isEndMove()) {
-                Main.gameManager.setLastLockedPiece(clickedPiece);
-                Main.gameManager.setLastPlayer(clickedPiece.getPlayer());
-                Main.gameManager.setEndMove(false);
-
-                return;
-            }
+            Movement.doRender =
+                    Main.gameManager.getMoveablePieces().contains(clickedPiece) && Main.gameManager.lastPlayer == clickedPiece.getPlayer();
 
             line.setStartX(beginX);
             line.setStartY(beginY);
@@ -118,6 +118,9 @@ class Movement {
         line.
          */
         canvas.onMouseClickedProperty().set(event -> {
+            if (!Movement.doRender)
+                return;
+
             double destTileX = Math.floor(event.getX() / (canvas.getWidth() / 8));
             double destTileY = Math.floor((canvas.getHeight() - event.getY()) / (canvas.getHeight() / 8));
             //System.out.println("actual- " + event.getX() + ":" + event.getY());
@@ -126,8 +129,9 @@ class Movement {
             Tile tileOrigin = board.getTileAtIndex(((int) tileX), ((int) tileY));
             Tile tileDest = board.getTileAtIndex(((int) destTileX), ((int) destTileY));
 
-            if (tileOrigin.getPiece().getPlayer() != Main.gameManager.lastPlayer)
-                return;
+
+//            if (tileOrigin.getPiece().getPlayer() != Main.gameManager.lastPlayer)
+//                return;
 
             //System.out.println("--------------");
             //System.out.println("origin playable: " + tileOrigin.isPlayable());
@@ -151,16 +155,43 @@ class Movement {
 //
 //                //TODO if destX/Y is further than 1 tile away, void, unless it involves a capture
 //            }
-            canvas.getChildren().remove(line);
-            line = getNewLine();
-            canvas.getChildren().add(line);
-
-            board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
-                    tileDest.getPiece().getY());
 
 
-            Main.gameManager.setEvalDone(false);
+            if (Movement.doRender) {
+                System.out.println("Doddodoodo render");
 
+
+                canvas.getChildren().remove(line);
+                line = getNewLine();
+                canvas.getChildren().add(line);
+
+                boolean capturing =
+                        Math.abs(tileOrigin.getPiece().getX() - tileDest.getPiece().getX()) == 2 &&
+                                Math.abs(tileOrigin.getPiece().getY() - tileDest.getPiece().getY()) == 2;
+
+                System.out.println("Capturing=" + capturing);
+
+                if (!Main.gameManager.getCapturesFor().isEmpty() && !capturing) {
+                    return; //They are required to make a capturing move, and yet they are attempting not to...
+                }
+
+                try {
+                    board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
+                            tileDest.getPiece().getY());
+
+                    Main.gameManager.setLastLockedPiece(tileDest.getPiece());
+
+                    System.out.println(tileOrigin.getPiece().getX());
+                    System.out.println(tileDest.getPiece().getX());
+                    System.out.println(tileOrigin.getPiece().getY());
+                    System.out.println(tileDest.getPiece().getY());
+
+                    Main.gameManager.setExhaustedSingleMove(!capturing);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //TODO fire as event
+                }
+            }
         });
     }
 
