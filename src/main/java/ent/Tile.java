@@ -111,12 +111,6 @@ public class Tile extends Entity {
         if (!playable)
             node.setOnDragDetected(event -> { //TODO delete
             });
-        else
-            setupDrag();
-//        piece.delete();
-    }
-
-    private void setupDrag() {
     }
 
     @Override
