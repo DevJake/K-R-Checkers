@@ -135,6 +135,13 @@ public class GameManager {
         return board.getPiecesOwnedBy(lastPlayer).stream().filter(piece -> !board.getManager().getDirectionsOfCapture(piece).isEmpty() || !getRemainingMoveDirections(piece).isEmpty()).distinct().collect(Collectors.toList());
     }
 
+    public boolean onOpponentKingsRow(Piece piece) {
+        return piece.getX() == (piece.getPlayer().getHomeSide() == Player.HomeSide.BOTTOM ?
+                board.getKingsWallRow(Player.Defaults.COMPUTER.getPlayer()) :
+                board.getKingsWallRow(Player.Defaults.HUMAN.getPlayer()));
+        //We're determining if the given piece is on the opposition's King's Row
+    }
+
     private List<Direction> getRemainingMoveDirections(Piece piece) {
         return Arrays.stream(Direction.values()).filter(dir -> board.getManager().moveIsValid(piece, dir)).collect(Collectors.toList());
     }
@@ -177,6 +184,9 @@ public class GameManager {
 
         if (getCapturesFor().isEmpty() && getRemainingMoveDirections(lastLockedPiece)
                 .isEmpty() && lastLockedPiece != null)
+            setEndMove(true);
+
+        if (lastLockedPiece != null && onOpponentKingsRow(lastLockedPiece) && lastLockedPiece.getType() != Piece.Type.KING && exhaustedSingleMove)
             setEndMove(true);
 
         if (isEndMove()) { //If their move has ended, reset the game's state and prepare for the next player to play

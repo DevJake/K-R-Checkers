@@ -12,7 +12,6 @@ import err.*;
 import fx.controllers.Main;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -369,8 +368,13 @@ public class BoardManager {
             if (origin.getPlayer().getHomeSide() == Player.HomeSide.TOP && destY == 0)
                 type = Piece.Type.KING;
 
-        Piece p2 = new Piece(destX, destY, origin.getColour(), origin.getPlayer(), origin.getType());
+            if (captured != null && captured.getType() == Piece.Type.KING)
+                type = Piece.Type.KING;
+
+            //TODO add events for a piece being made a KING by King's Row and KING by regicide
         }
+
+
         Piece p2 = new Piece(destX, destY, origin.getColour(), origin.getPlayer(), type);
 
 //        if (Main.gameManager.onOpponentKingsRow(destTile.getPiece())) {
