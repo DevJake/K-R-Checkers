@@ -394,77 +394,76 @@ public class BoardManager {
      *
      * @see #validityChecks(Piece, int, int, boolean, Direction, boolean)
      */
-    private void doAutoCapture(Piece piece) {
-        Player opponent = piece.getPlayer().getName().equals(Player.Defaults.COMPUTER.getPlayer().getName()) ?
-                Player.Defaults.HUMAN.getPlayer() : Player.Defaults.COMPUTER.getPlayer();
-        if (board.getKingsWallRow(opponent) == piece.getY() && piece.getType() == Piece.Type.MAN) {
-            piece.makeKing();
-            return; //Terminate all moves from here, since they've just been Crowned.
-        }
-
-        ArrayList<Boolean> validMoves = new ArrayList<>();
-        /*
-        Left-Up
-        Left-Down
-        Right-Up
-        Right-Down
-         */
-
-        try {
-//            validityChecks(piece, piece.getX() - 2, piece.getY() + 2, true, Direction.FORWARD_LEFT_CAPTURE, true);
-            validMoves.add(true);
-        } catch (BoardMoveException e) {
-            validMoves.add(false);
-            //Do nothing
-        }
-
-        /*
-        Check which directions are valid to move in
-         */
-        try {
-//            validityChecks(piece, piece.getX() - 2, piece.getY() - 2, true, Direction.BACKWARD_LEFT_CAPTURE, true);
-            validMoves.add(true);
-        } catch (BoardMoveException e) {
-            validMoves.add(false);
-            //Do nothing
-        }
-
-        try {
-//            validityChecks(piece, piece.getX() + 2, piece.getY() + 2, true, Direction.FORWARD_RIGHT_CAPTURE, true);
-            validMoves.add(true);
-        } catch (BoardMoveException e) {
-            validMoves.add(false);
-            //Do nothing
-        }
-
-        try {
-//            validityChecks(piece, piece.getX() + 2, piece.getY() - 2, true, Direction.BACKWARD_RIGHT_CAPTURE, true);
-            validMoves.add(true);
-        } catch (BoardMoveException e) {
-            validMoves.add(false);
-            //Do nothing
-        }
-
-        //The player has multiple options available... they must now decide which move to follow
-        if (validMoves.stream().filter(t -> t.equals(Boolean.TRUE)).count() > 1) {
-            //TODO it is now on the player to decide which move to take. Maybe fire event for this, including
-            // which moves are valid. Also write a method to generate a list of Direction enums detailing which
-            // moves are valid for a given piece
-
-            return;
-        }
-
-        //There is now only one move possible. Find the move and execute it.
-        if (Boolean.TRUE.equals(validMoves.get(0)))
-            makeMove(piece, piece.getX() - 2, piece.getY() + 2);
-        if (Boolean.TRUE.equals(validMoves.get(1)))
-            makeMove(piece, piece.getX() - 2, piece.getY() - 2);
-        if (Boolean.TRUE.equals(validMoves.get(2)))
-            makeMove(piece, piece.getX() + 2, piece.getY() + 2);
-        if (Boolean.TRUE.equals(validMoves.get(3)))
-            makeMove(piece, piece.getX() + 2, piece.getY() - 2);
-    }
-
+//    private void doAutoCapture(Piece piece) {
+//        Player opponent = piece.getPlayer().getName().equals(Player.Defaults.COMPUTER.getPlayer().getName()) ?
+//                Player.Defaults.HUMAN.getPlayer() : Player.Defaults.COMPUTER.getPlayer();
+//        if (board.getKingsWallRow(opponent) == piece.getY() && piece.getType() == Piece.Type.MAN) {
+//            piece.makeKing();
+//            return; //Terminate all moves from here, since they've just been Crowned.
+//        }
+//
+//        ArrayList<Boolean> validMoves = new ArrayList<>();
+//        /*
+//        Left-Up
+//        Left-Down
+//        Right-Up
+//        Right-Down
+//         */
+//
+//        try {
+////            validityChecks(piece, piece.getX() - 2, piece.getY() + 2, true, Direction.FORWARD_LEFT_CAPTURE, true);
+//            validMoves.add(true);
+//        } catch (BoardMoveException e) {
+//            validMoves.add(false);
+//            //Do nothing
+//        }
+//
+//        /*
+//        Check which directions are valid to move in
+//         */
+//        try {
+////            validityChecks(piece, piece.getX() - 2, piece.getY() - 2, true, Direction.BACKWARD_LEFT_CAPTURE, true);
+//            validMoves.add(true);
+//        } catch (BoardMoveException e) {
+//            validMoves.add(false);
+//            //Do nothing
+//        }
+//
+//        try {
+////            validityChecks(piece, piece.getX() + 2, piece.getY() + 2, true, Direction.FORWARD_RIGHT_CAPTURE, true);
+//            validMoves.add(true);
+//        } catch (BoardMoveException e) {
+//            validMoves.add(false);
+//            //Do nothing
+//        }
+//
+//        try {
+////            validityChecks(piece, piece.getX() + 2, piece.getY() - 2, true, Direction.BACKWARD_RIGHT_CAPTURE, true);
+//            validMoves.add(true);
+//        } catch (BoardMoveException e) {
+//            validMoves.add(false);
+//            //Do nothing
+//        }
+//
+//        //The player has multiple options available... they must now decide which move to follow
+//        if (validMoves.stream().filter(t -> t.equals(Boolean.TRUE)).count() > 1) {
+//            //TODO it is now on the player to decide which move to take. Maybe fire event for this, including
+//            // which moves are valid. Also write a method to generate a list of Direction enums detailing which
+//            // moves are valid for a given piece
+//
+//            return;
+//        }
+//
+//        //There is now only one move possible. Find the move and execute it.
+//        if (Boolean.TRUE.equals(validMoves.get(0)))
+//            makeMove(piece, piece.getX() - 2, piece.getY() + 2);
+//        if (Boolean.TRUE.equals(validMoves.get(1)))
+//            makeMove(piece, piece.getX() - 2, piece.getY() - 2);
+//        if (Boolean.TRUE.equals(validMoves.get(2)))
+//            makeMove(piece, piece.getX() + 2, piece.getY() + 2);
+//        if (Boolean.TRUE.equals(validMoves.get(3)))
+//            makeMove(piece, piece.getX() + 2, piece.getY() - 2);
+//    }
     public List<Direction> getDirectionsOfCapture(Piece origin) {
         return Arrays.stream(new Direction[]{
                 Direction.FORWARD_LEFT_CAPTURE,
