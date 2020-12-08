@@ -12,11 +12,13 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 public class Menu extends Application {
     public static Label playerScore;
     public static Label computerScore;
+    public TextArea errorLog;
 
     public static Label getPlayerScore() {
         return playerScore;
@@ -32,6 +34,14 @@ public class Menu extends Application {
 
     public static void setHumanScore(int newScore) {
         playerScore.setText(String.valueOf(newScore));
+    }
+
+    public TextArea getErrorLog() {
+        return errorLog;
+    }
+
+    public void setErrorLog(String message) {
+        this.errorLog.setText(message);
     }
 
     @Override
