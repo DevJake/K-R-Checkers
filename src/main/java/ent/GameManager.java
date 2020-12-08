@@ -10,6 +10,7 @@ package ent;
 
 import event.Event;
 import event.GameCompletedEvent;
+import fx.controllers.Menu;
 import javafx.scene.layout.Pane;
 
 import java.util.*;
@@ -108,6 +109,9 @@ public class GameManager {
                         getPlayerQueue().get(0);
                 Player loser = getPlayerQueue().get(0) == winner ? getPlayerQueue().get(1) : getPlayerQueue().get(0);
                 Event.Manager.fire(new GameCompletedEvent(winner, loser));
+
+                Menu.setErrorLog(winner.getName() + " has won this game! Check the Player Scores tab for information " +
+                        "on your scores...");
 
                 Thread.currentThread().interrupt();
             }
