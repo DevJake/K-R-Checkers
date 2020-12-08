@@ -14,6 +14,7 @@ import fx.controllers.Menu;
 import javafx.util.Pair;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -263,6 +264,9 @@ public class BoardManager {
      */
     private void validityChecks(Piece origin, Direction direction,
                                 boolean trial) {
+        if (!trial)
+            Menu.setErrorLog("");
+
         int destX = 0;
         int destY = 0;
 
@@ -291,29 +295,52 @@ public class BoardManager {
             //System.out.println("Direction=" + direction);
         }
 
-        if (!isOccupied(origin.getX(), origin.getY()))
+        if (!isOccupied(origin.getX(), origin.getY())) {
+            if (!trial)
+                Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() + "] " +
+                        "Invalid origin Piece! Choose another piece...");
             throw new BoardMoveInvalidOriginException(origin, destX, destY);
+        }
 
-        if (isOccupied(destX, destY))
+        if (isOccupied(destX, destY)) {
+            if (!trial)
+                Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() + "] " +
+                        "Invalid destination for this Piece! Choose another destination...");
             throw new BoardMoveInvalidDestinationException("Invalid destination, already occupied! x:" + destX +
                     "," +
                     " y: " + destY);
+        }
 
         int diffX = Math.abs(origin.getX() - destX);
         int diffY = Math.abs(origin.getY() - destY);
 
-        if (diffX == 0 || diffX > 2 || diffY == 0 || diffY > 2) //Filters for attempted moves that aren't diagonal
+        if (diffX == 0 || diffX > 2 || diffY == 0 || diffY > 2) { //Filters for attempted moves that aren't diagonal
+            if (!trial)
+                Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() + "] " +
+                        "You've attempted to move this piece greater than the allowed distance or in an " +
+                        "invalid " +
+                        "diagonal direction!");
             throw new BoardMoveException("Attempted move was too extreme, or not along a diagonal!");
+        }
 
 
         if (capturingMove) {
-            if (!isOccupied(midX, midY))
+            if (!isOccupied(midX, midY)) {
+                if (!trial)
+                    Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() + "] You're attempting to perform a capturing move, but there is no piece to " +
+                            "capture!");
                 throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existent piece! " +
                         "x:" + midX + ", y: " + midY);
+            }
 
-            if (board.getTileAtIndex(midX, midY).getPiece().getPlayer() == origin.getPlayer())
+            if (board.getTileAtIndex(midX, midY).getPiece().getPlayer() == origin.getPlayer()) {
+                if (!trial)
+                    Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() + "] You're attempting a capturing move, but the piece to be captured is a member of" +
+                            " " +
+                            "your own team!");
                 throw new BoardMoveSelfCaptureException("Attempting to capture a member of your team! x:" + midX + "," +
                         " y: " + midY);
+            }
         }
 
         //Determines if this move requires the origin Piece to be a KING
@@ -323,8 +350,12 @@ public class BoardManager {
                         origin.getPlayer().getHomeSide() == Player.Defaults.COMPUTER.getPlayer().getHomeSide() &&
                                 destY > origin.getY();
 
-        if (origin.getType() != Piece.Type.KING && kingOnlyMove)
+        if (origin.getType() != Piece.Type.KING && kingOnlyMove) {
+            if (!trial)
+                Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() + "] " +
+                        "You cannot move this piece in this direction... it's not a King!");
             throw new BoardMoveNotKingException("This piece is not a king!");
+        }
 
         Piece capturing = capturingMove ? board.getTileAtIndex(midX, midY).getPiece() : null;
 
@@ -396,16 +427,7 @@ public class BoardManager {
         destTile.setPiece(p2);
         destTile.init();
 
-
-        //TODO regicide
-
-
-        //TODO force capturing of neighbours
-        //TODO force auto-crowning of piece if it's on the back board
-
-//        doAutoCapture(origin); //TODO might not be working, check
-
-        //TODO check for a winning state
+//        doAutoCapture(origin);
     }
 
     /**

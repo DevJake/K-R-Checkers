@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 public class Menu extends Application {
     public static Label playerScore;
     public static Label computerScore;
-    public TextArea errorLog;
+    public static TextArea errorLog;
 
     public static Label getPlayerScore() {
         return playerScore;
@@ -36,12 +36,12 @@ public class Menu extends Application {
         playerScore.setText(String.valueOf(newScore));
     }
 
-    public TextArea getErrorLog() {
+    public static TextArea getErrorLog() {
         return errorLog;
     }
 
-    public void setErrorLog(String message) {
-        this.errorLog.setText(message);
+    public static void setErrorLog(String message) {
+        errorLog.setText(message);
     }
 
     @Override
@@ -61,5 +61,6 @@ public class Menu extends Application {
 
         playerScore = (Label) s.lookup("#playerScore");
         computerScore = (Label) s.lookup("#computerScore");
+        errorLog = (TextArea) s.lookup("#errorLog");
     }
 }
