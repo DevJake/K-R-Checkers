@@ -16,7 +16,6 @@
  import comms.protocol.ProtocolManager;
  import ent.Board;
  import ent.GameManager;
- import ent.Piece;
  import ent.Player;
  import err.EventProtocolMismatchException;
  import event.BoardUpdateEvent;
@@ -24,6 +23,7 @@
  import javafx.application.Application;
  import javafx.fxml.FXMLLoader;
  import javafx.scene.Scene;
+ import javafx.scene.control.Label;
  import javafx.scene.layout.GridPane;
  import javafx.scene.layout.Pane;
  import javafx.scene.paint.Color;
@@ -42,6 +42,24 @@
  public class Main extends Application {
      public static Board mainBoard;
      public static GameManager gameManager;
+     private static Label humanScore;
+     private static Label computerScore;
+
+     public static Label getHumanScore() {
+         return humanScore;
+     }
+
+     public static void setHumanScore(int newScore) {
+         Main.humanScore.setText(String.valueOf(newScore));
+     }
+
+     public static Label getComputerScore() {
+         return computerScore;
+     }
+
+     public static void setComputerScore(int newScore) {
+         Main.computerScore.setText(String.valueOf(newScore));
+     }
 
      public static void main(String[] args) throws IOException, EventProtocolMismatchException, URISyntaxException {
          launch(args);
@@ -124,7 +142,7 @@
       * @throws IOException Throws if the FXMLLoader fails to load the fxml file describing the Scene for the Stage.
       */
      @Override
-     public void start(Stage primaryStage) throws IOException {
+     public void start(Stage primaryStage) throws Exception {
          FXMLLoader loader = new FXMLLoader(getClass().getResource("/Main" +
                  ".fxml"));
          Scene s = new Scene(loader.load());
@@ -147,6 +165,15 @@
          GridPane gridPane = (GridPane) s.lookup("#gridPane");
          gridPane.setGridLinesVisible(true);
 
+
+         Menu menu = new Menu();
+         menu.start(new Stage());
+
+
+//         humanScore = (Label) s.lookup("#playerScore");
+//         computerScore = (Label) s.lookup("#computerScore");
+
+
          Player.Defaults.HUMAN.getPlayer().setColour(Color.rgb(255, 204, 223));
          Player.Defaults.COMPUTER.getPlayer().setColour(Color.rgb(255, 0, 128));
 
@@ -160,11 +187,11 @@
          mainBoard.init(canvas);
          mainBoard.getRow(3).forEach(it -> {
              it.deleteOccupyingPiece(mainBoard.isShowLabels());
-             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
+             it.getPiece().setPlayer(null);
          });
          mainBoard.getRow(4).forEach(it -> {
              it.deleteOccupyingPiece(Main.mainBoard.isShowLabels());
-             it.getPiece().setPlayer(Player.Defaults.NONE.getPlayer());
+             it.getPiece().setPlayer(null);
          });
 
 //         mainBoard.getTileAtIndex(2, 4).setPiece(new Piece(2, 4, Color.ORANGE, Player.Defaults.COMPUTER.getPlayer(),

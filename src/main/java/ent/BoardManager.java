@@ -10,6 +10,7 @@ package ent;
 
 import err.*;
 import fx.controllers.Main;
+import fx.controllers.Menu;
 import javafx.util.Pair;
 
 import java.util.Arrays;
@@ -355,6 +356,13 @@ public class BoardManager {
             //System.out.println(captured.getY());
 
             origin.getPlayer().getCapturedPieces().add(captured);
+
+            if (origin.getPlayer() == Player.Defaults.HUMAN.getPlayer())
+                Menu.setHumanScore(Integer.parseInt(Menu.getPlayerScore().getText()) + 1);
+            else
+                Menu.setComputerScore(Integer.parseInt(Menu.getComputerScore().getText()) + 1);
+
+
             board.getTileAtIndex(captured.getX(), captured.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
             captured.deletePiece(); //TODO Add to capturer's captured pieces list
         }
