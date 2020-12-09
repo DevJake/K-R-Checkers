@@ -7,11 +7,14 @@
 
 import socket
 import time
-from Entity import Message
-from event.Events import BridgeMessageSendEvent, Event
-from protocol.Protocols import BridgeMessageReceiveProtocol, BridgeMessageSendProtocol, OpponentMovePieceProtocol, \
-    ProtocolManager
 from threading import Timer
+
+from BoardStatusListener import BoardStatusListener
+from Entity import Message
+from event.Events import BridgeMessageSendEvent, Event, EventManager
+from protocol.Protocols import BoardUpdateStateProtocol, BridgeMessageReceiveProtocol, BridgeMessageSendProtocol, \
+    OpponentMovePieceProtocol, \
+    ProtocolManager
 
 
 class Bridge:
@@ -57,10 +60,12 @@ class Bridge:
 
             data = data.decode()
             # TODO decode to correct protocol, split off @ID
-
-            # ProtocolManager.decodeFor()
-
             print(data)
+
+            e = ProtocolManager.decodeFor(Message(data))
+
+            EventManager.fire(e)
+
         Bridge.__t = Timer(Bridge.refresh_timer, Bridge.__begin_listening)
         Bridge.__t.start()
 
@@ -83,6 +88,9 @@ class Bridge:
 ProtocolManager.register_protocol(OpponentMovePieceProtocol())
 ProtocolManager.register_protocol(BridgeMessageReceiveProtocol())
 ProtocolManager.register_protocol(BridgeMessageSendProtocol())
+ProtocolManager.register_protocol(BoardUpdateStateProtocol())
+
+EventManager.register_listener(BoardStatusListener())
 
 Bridge.boot()
 
