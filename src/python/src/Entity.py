@@ -11,8 +11,8 @@ from uuid import UUID
 
 
 class Player(Enum):
-    COMPUTER = 0
-    HUMAN = 1
+    COMPUTER = 'COMPUTER'
+    HUMAN = 'HUMAN'
 
     def __init__(self, is_player: bool):
         self.is_player = is_player
