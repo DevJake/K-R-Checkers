@@ -21,6 +21,10 @@ public class BoardUpdateProtocol extends Protocol {
         super(header, footer, BoardUpdateEvent.class);
     }
 
+    public BoardUpdateProtocol() {
+        super(BoardUpdateEvent.class);
+    }
+
     @Override
     public MessageContainer.Message encode(Event event) throws EventProtocolMismatchException {
         if (!(event instanceof BoardUpdateEvent))

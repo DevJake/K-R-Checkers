@@ -12,6 +12,10 @@
 
  import comms.Bridge;
  import comms.BridgeListener;
+ import comms.protocol.AIMakeMoveProtocol;
+ import comms.protocol.BoardUpdateProtocol;
+ import comms.protocol.PlayerMakeMoveProtocol;
+ import comms.protocol.ProtocolManager;
  import ent.Board;
  import ent.GameManager;
  import ent.Player;
@@ -59,9 +63,11 @@
      }
 
      public static void main(String[] args) throws IOException, EventProtocolMismatchException, URISyntaxException {
-
-
 //         PrintUtil.asFormatted(mainBoard);
+
+         ProtocolManager.registerProtocol(new AIMakeMoveProtocol());
+         ProtocolManager.registerProtocol(new BoardUpdateProtocol());
+         ProtocolManager.registerProtocol(new PlayerMakeMoveProtocol());
 
          Event.Manager.registerListener(new BridgeListener());
 

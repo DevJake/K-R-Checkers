@@ -84,11 +84,15 @@ public abstract class Protocol<E extends Event> {
      * @see ProtocolManager#registerProtocol(Protocol)
      */
     public Protocol(String header, String footer, Class<E> eventClass) {
-        this.header = header.isEmpty() ? eventClass.getName() : header;
-        this.footer = footer.isEmpty() ? eventClass.getName() : footer;
+        this.header = header.isEmpty() ? eventClass.getSimpleName() : header;
+        this.footer = footer.isEmpty() ? eventClass.getSimpleName() : footer;
         this.eventClass = eventClass;
+    }
 
-        ProtocolManager.registerProtocol(this);
+    public Protocol(Class<E> eventClass) {
+        this.header = eventClass.getSimpleName();
+        this.footer = eventClass.getSimpleName();
+        this.eventClass = eventClass;
     }
 
     public String getHeader() {

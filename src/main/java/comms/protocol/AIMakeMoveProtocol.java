@@ -20,6 +20,10 @@ public class AIMakeMoveProtocol extends Protocol {
         super(header, footer, AIPlayMoveEvent.class);
     }
 
+    public AIMakeMoveProtocol() {
+        super(AIPlayMoveEvent.class);
+    }
+
     @Override
     public MessageContainer.Message encode(Event event) {
         return null;
