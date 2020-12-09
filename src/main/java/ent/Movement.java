@@ -100,7 +100,7 @@ class Movement {
 
             Piece clickedPiece = board.getTileAtIndex((int) tileX, (int) tileY).getPiece();
             Movement.doRender =
-                    Main.gameManager.getMoveablePieces().contains(clickedPiece) && Main.gameManager.lastPlayer == clickedPiece.getPlayer();
+                    Main.gameManager.getMoveablePieces().contains(clickedPiece) && Main.gameManager.lastPlayer == Player.Defaults.HUMAN.getPlayer();
 
             line.setStartX(beginX);
             line.setStartY(beginY);

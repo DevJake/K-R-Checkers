@@ -91,9 +91,9 @@ public class GameManager {
         new Thread(() -> {
             lastPlayer = nextInQueue();
             while (!isGameFinished()) {
-                //System.out.println(lastPlayer.getName());
-                //System.out.println(lastLockedPiece);
-                //System.out.println("Single move exhausted? " + hasExhaustedSingleMove());
+                if (lastPlayer == Player.Defaults.COMPUTER.getPlayer()) {
+                    handleMachineMove();
+                }
 
                 playRound();
 
@@ -168,8 +168,11 @@ public class GameManager {
         });
     }
 
+    private void handleMachineMove() {
+        
+    }
+
     private void playRound() {
-        //TODO if a move must be capturing, it can only make a capturing move
         /*
         1. Lock player
             i. force auto-capturing
