@@ -327,7 +327,8 @@ public class BoardManager {
         if (capturingMove) {
             if (!isOccupied(midX, midY)) {
                 if (!trial)
-                    Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() + "] You're attempting to perform a capturing move, but there is no piece to " +
+                    Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() +
+                            "] You're attempting to perform a capturing move, but there is no piece to " +
                             "capture!");
                 throw new BoardMoveMissingPieceException("Attempting to perform a capture over non-existent piece! " +
                         "x:" + midX + ", y: " + midY);
@@ -335,7 +336,8 @@ public class BoardManager {
 
             if (board.getTileAtIndex(midX, midY).getPiece().getPlayer() == origin.getPlayer()) {
                 if (!trial)
-                    Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() + "] You're attempting a capturing move, but the piece to be captured is a member of" +
+                    Menu.setErrorLog("[" + origin.getPlayer().getName() + "] [" + Calendar.getInstance().getTime() +
+                            "] You're attempting a capturing move, but the piece to be captured is a member of" +
                             " " +
                             "your own team!");
                 throw new BoardMoveSelfCaptureException("Attempting to capture a member of your team! x:" + midX + "," +
@@ -394,8 +396,9 @@ public class BoardManager {
                 Menu.setComputerScore(Integer.parseInt(Menu.getComputerScore().getText()) + 1);
 
 
+            board.getTileAtIndex(captured.getX(), captured.getY()).getPiece().setPlayer(null);
             board.getTileAtIndex(captured.getX(), captured.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
-            captured.deletePiece(); //TODO Add to capturer's captured pieces list
+            captured.deletePiece();
         }
 
         //System.out.println(origin.getColour());
@@ -420,6 +423,7 @@ public class BoardManager {
 //            destTile.getPiece().makeKing();
 //        }
 
+        board.getTileAtIndex(origin.getX(), origin.getY()).getPiece().setPlayer(null);
         board.getTileAtIndex(origin.getX(), origin.getY()).deleteOccupyingPiece(Main.mainBoard.isShowLabels());
 
         Tile destTile = board.getTileAtIndex(destX, destY);
