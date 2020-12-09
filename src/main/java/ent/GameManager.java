@@ -8,11 +8,16 @@
 
 package ent;
 
+import comms.Bridge;
+import comms.protocol.ProtocolManager;
+import err.EventProtocolMismatchException;
+import event.BoardUpdateEvent;
 import event.Event;
 import event.GameCompletedEvent;
 import fx.controllers.Menu;
 import javafx.scene.layout.Pane;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,10 +31,19 @@ public class GameManager {
     private boolean allCapturesEvalDone = false;
     private boolean endMove = false;
     private boolean exhaustedSingleMove = false;
+    private boolean aiHandled = false;
 
     public GameManager(Board board, List<Player> playerQueue, Pane canvas) {
         this.board = board;
         this.playerQueue.addAll(playerQueue);
+    }
+
+    public boolean isAiHandled() {
+        return aiHandled;
+    }
+
+    public void setAiHandled(boolean aiHandled) {
+        this.aiHandled = aiHandled;
     }
 
     public boolean isAllCapturesEvalDone() {
@@ -92,7 +106,8 @@ public class GameManager {
             lastPlayer = nextInQueue();
             while (!isGameFinished()) {
                 if (lastPlayer == Player.Defaults.COMPUTER.getPlayer()) {
-                    handleMachineMove();
+                    if (!isAiHandled())
+                        handleMachineMove();
                 }
 
                 playRound();
@@ -169,7 +184,18 @@ public class GameManager {
     }
 
     private void handleMachineMove() {
-        
+        try {
+            Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(null, board)));
+        } catch (IOException | EventProtocolMismatchException e) {
+            e.printStackTrace();
+        }
+
+        /*
+        Set the last piece to that that the AI chooses, then call playRound. It should be a valid move already...
+
+        Next, call setAiHandled and set it true. Also, call endMove() to reset and prep for next player, the human
+         */
+        setAiHandled(true);
     }
 
     private void playRound() {
