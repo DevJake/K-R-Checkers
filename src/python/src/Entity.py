@@ -28,35 +28,58 @@ class Piece:
 
 
 class Board:
-    def __init__(self, representation: str) -> None:
-        self.__rep = representation
+    board = []
 
-    def get_dimensions(self):
-        pass
+    def __init__(self):
+        for i in range(8):
+            self.board.append([None] * 8)
+        # Creates a None-filled 8x8 array, representing our board
 
-    def get_piece_at(self, x: int, y: int) -> Piece:
-        pass
+    def as_string(self):
+        out = '['
+        for row in range(len(self.board[0])):  # rows 0 to 7
+            out += '['
+            for column in range(len(self.board[0])):  # columns 0 to 7
+                out += f"'{self.get_piece_at(column, 7-row)}'{', ' if column < 7 else ''}"
+            out += '], '
+        out += ']'
+        return out
 
-    def make_move(self, from_x, from_y, to_x, to_y):
-        piece_before = self.get_piece_at(from_x, from_y)
-        if not self.is_move_valid(piece_before, to_x, to_y):
-            return
+    def get_width(self):
+        return len(self.board[0])
 
-        piece_after = piece_before
-        piece_after.x = to_x
-        piece_after.y = to_y
+    def get_height(self):
+        return len(self.board[0][0])
 
-        self.__remove_piece_at(piece_before)
-        self.__place_piece_at(piece_after)
+    def get_piece_at(self, x: int, y: int) -> str:  # The string value is the type of player here
+        return self.board[7 - x][y]  # Indexes flipped to match the GUI board
 
-    def __remove_piece_at(self, piece: Piece) -> bool:
-        pass
+    def set_piece_at(self, x: int, y: int, type: Player):
+        self.board[7 - x][y] = type.value  # Indexes flipped to match the GUI board
 
-    def __place_piece_at(self, piece: Piece) -> bool:
-        pass
+    def delete_piece_at(self, x: int, y: int, type: Player):
+        self.board[7 - x][y] = None  # Indexes flipped to match the GUI board
+
+    # def make_move(self, from_x, from_y, to_x, to_y):
+    #     piece_before = self.get_piece_at(from_x, from_y)
+    #     if not self.is_move_valid(piece_before, to_x, to_y):
+    #         return
+    #
+    #     piece_after = piece_before
+    #     piece_after.x = to_x
+    #     piece_after.y = to_y
+    #
+    #     self.__remove_piece_at(piece_before)
+    #     self.__place_piece_at(piece_after)
+
+    # def __remove_piece_at(self, piece: Piece) -> bool:
+    #     pass
+    #
+    # def __place_piece_at(self, piece: Piece) -> bool:
+    #     pass
 
     def is_move_valid(self, piece: Piece, to_x: int, to_y: int) -> bool:
-        pass
+        pass  # TODO
 
 
 class Message:
