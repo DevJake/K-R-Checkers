@@ -118,6 +118,17 @@ public class Player extends Entity {
         this.colour = colour;
     }
 
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", capturedTiles=" + capturedTiles +
+                ", homeSide=" + homeSide +
+                ", name='" + name + '\'' +
+                ", colour=" + colour +
+                '}';
+    }
+
     /**
      * This enum is used to represent which side of the {@link Board} a Player originates their Pieces from. This is
      * used to determine where their King's Row is and the acceptable behaviour of their
