@@ -9,6 +9,7 @@
 package comms.protocol;
 
 import comms.MessageContainer;
+import ent.Board;
 import err.EventProtocolMismatchException;
 import event.BoardUpdateEvent;
 import event.Event;
@@ -27,10 +28,18 @@ public class BoardUpdateProtocol extends Protocol {
 
     @Override
     public MessageContainer.Message encode(Event event) throws EventProtocolMismatchException {
+        System.out.println("Got called");
         if (!(event instanceof BoardUpdateEvent))
             throw new EventProtocolMismatchException(this, event.getClass());
 
-        return new MessageContainer.Message("Placeholder!");
+
+        String oldBoard = ((BoardUpdateEvent) event).getOldBoard() == null ? "NULL" :
+                boardToString(((BoardUpdateEvent) event).getOldBoard());
+        String newBoard = ((BoardUpdateEvent) event).getNewBoard() == null ? "NULL" :
+                boardToString(((BoardUpdateEvent) event).getNewBoard());
+
+
+        return new MessageContainer.Message("[" + oldBoard + "]-[" + newBoard + "]");
     }
 
     @Override
@@ -38,5 +47,20 @@ public class BoardUpdateProtocol extends Protocol {
         return new BoardUpdateEvent(null, null);
     }
 
+    private String boardToString(Board board) {
+        StringBuilder sb = new StringBuilder();
 
+        board.getPlayableTiles().forEach(t -> {
+            if (t.getPiece() == null || t.getPiece().getPlayer() == null)
+                return;
+
+            sb.append("Tile:[");
+            sb.append("{").append("player_name:").append(t.getPiece().getPlayer().getName()).append("},");
+            sb.append("{").append("x_pos:").append(t.getPiece().getX()).append("},");
+            sb.append("{").append("y_pos:").append(t.getPiece().getY()).append("}");
+            sb.append("] ");
+        });
+
+        return sb.toString();
+    }
 }
