@@ -105,6 +105,9 @@ public class ProtocolManager {
      * @see comms.Bridge#send(MessageContainer.Message)
      */
     public static <E extends Event> MessageContainer.Message encodeFor(E event) throws EventProtocolMismatchException {
-        return getProtocolFor(event.getClass()).encode(event);
+        System.out.println(getProtocolFor(event.getClass()).getHeader().toLowerCase());
+        return new MessageContainer.Message(getProtocolFor(event.getClass()).getHeader().toLowerCase() + "://" +
+                getProtocolFor(event.getClass()).encode(event).getMessage() +
+                getProtocolFor(event.getClass()).getFooter().toLowerCase() + "//:");
     }
 }
