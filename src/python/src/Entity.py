@@ -79,3 +79,15 @@ class Message:
     def set_response_code(self, response_code: UUID):
         self.response_code = response_code
         return self
+
+
+class Direction(Enum):
+    FORWARD_LEFT = 0
+    FORWARD_RIGHT = 0
+    BACKWARD_LEFT = 0
+    BACKWARD_RIGHT = 0
+    FORWARD_LEFT_CAPTURE = 0
+    FORWARD_RIGHT_CAPTURE = 0
+    BACKWARD_LEFT_CAPTURE = 0
+    BACKWARD_RIGHT_CAPTURE = 0
+    # These are respective to the bottom of the board, even if moving pieces on the top of the board.
