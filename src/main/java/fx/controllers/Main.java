@@ -71,18 +71,14 @@
 
          Event.Manager.registerListener(new BridgeListener());
 
-         new Thread(new Runnable() {
-             @Override
-             public void run() {
-                 try {
-                     System.out.println("kill me");
-                     bootPyServer();
-                     Bridge.open();
-                 } catch (IOException | URISyntaxException e) {
-                     e.printStackTrace();
-                 }
-
+         new Thread(() -> {
+             try {
+                 bootPyServer();
+                 Bridge.open();
+             } catch (IOException | URISyntaxException e) {
+                 e.printStackTrace();
              }
+
          }).start();
 
 
@@ -121,12 +117,13 @@
       * location... which can be difficult to get, as their location is not static.
       */
      public static void bootPyServer() throws URISyntaxException, IOException {
-
-         String jarPath = new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile().getAbsolutePath();
+         String jarPath =
+                 new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile().getAbsolutePath();
 
 //         System.out.println(jarPath);
 
-         ProcessBuilder builder = new ProcessBuilder("cmd", "/k", "Start", "cmd", "/k", "python", jarPath + "/python/Server.py");
+         ProcessBuilder builder = new ProcessBuilder("cmd", "/k", "Start", "cmd", "/k", "python", jarPath + "/python" +
+                 "/Server.py");
 //
          Process process = builder.start();
          System.out.println("Booted the python server!");
