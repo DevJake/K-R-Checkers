@@ -190,12 +190,12 @@
 
          mainBoard.init(canvas);
          mainBoard.getRow(3).forEach(it -> {
-             it.deleteOccupyingPiece(mainBoard.isShowLabels());
              it.getPiece().setPlayer(null);
+             it.deleteOccupyingPiece(mainBoard.isShowLabels());
          });
          mainBoard.getRow(4).forEach(it -> {
-             it.deleteOccupyingPiece(Main.mainBoard.isShowLabels());
              it.getPiece().setPlayer(null);
+             it.deleteOccupyingPiece(Main.mainBoard.isShowLabels());
          });
 
 //         mainBoard.getTileAtIndex(2, 4).setPiece(new Piece(2, 4, Color.ORANGE, Player.Defaults.COMPUTER.getPlayer(),
