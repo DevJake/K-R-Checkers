@@ -20,7 +20,7 @@ class Bridge:
     outbound_port = 5001
     __outbound_socket: socket.socket
     __inbound_socket: socket.socket
-    refresh_timer: int = 0.5
+    refresh_timer: float = 0.5
     __t: Timer
 
     __is_closed: bool = False

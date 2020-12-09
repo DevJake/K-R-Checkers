@@ -6,6 +6,8 @@
 #  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 
 from abc import ABC, abstractmethod
+
+from Entity import Message
 from event.Events import BridgeMessageReceiveEvent, BridgeMessageSendEvent, Event, OpponentMovePieceEvent
 
 
