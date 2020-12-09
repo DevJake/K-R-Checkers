@@ -12,13 +12,10 @@
 
  import comms.Bridge;
  import comms.BridgeListener;
- import comms.protocol.BoardUpdateProtocol;
- import comms.protocol.ProtocolManager;
  import ent.Board;
  import ent.GameManager;
  import ent.Player;
  import err.EventProtocolMismatchException;
- import event.BoardUpdateEvent;
  import event.Event;
  import javafx.application.Application;
  import javafx.fxml.FXMLLoader;
@@ -28,8 +25,8 @@
  import javafx.scene.layout.Pane;
  import javafx.scene.paint.Color;
  import javafx.stage.Stage;
- import util.PrintUtil;
 
+ import java.io.File;
  import java.io.IOException;
  import java.net.URISyntaxException;
  import java.util.ArrayList;
@@ -62,19 +59,34 @@
      }
 
      public static void main(String[] args) throws IOException, EventProtocolMismatchException, URISyntaxException {
-         launch(args);
 
 
-         PrintUtil.asFormatted(mainBoard);
+//         PrintUtil.asFormatted(mainBoard);
 
          Event.Manager.registerListener(new BridgeListener());
 
-         Bridge.open();
+         new Thread(new Runnable() {
+             @Override
+             public void run() {
+                 try {
+                     System.out.println("kill me");
+                     bootPyServer();
+                     Bridge.open();
+                 } catch (IOException | URISyntaxException e) {
+                     e.printStackTrace();
+                 }
 
-         new BoardUpdateProtocol("boardupdate", "");
+             }
+         }).start();
 
-         Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard
-                 , mainBoard)));
+
+         launch(args);
+
+//         new BoardUpdateProtocol("boardupdate", "");
+//
+//         Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(mainBoard, mainBoard)));
+
+//         bootPyServer();
      }
 
      //JavaFX does not support JavaFX without this method.
@@ -102,33 +114,22 @@
       * The work around to painfully extracting then executing them is to launch a new cmd prompt and pass in their
       * location... which can be difficult to get, as their location is not static.
       */
-     public static void bootPyServer() {
-         //         File pyFile = new File("Main.py").getCanonicalFile();
-//         Runtime.getRuntime().exec("python /c start python " + pyFile
-//         .getAbsolutePath());
-//         Runtime.getRuntime().exec("cmd /k");
+     public static void bootPyServer() throws URISyntaxException, IOException {
 
-//         ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/K",
-//         "Start", "python", Main.class.getResource
-//         ("/Main.py")));
+         String jarPath = new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile().getAbsolutePath();
 
-//         String absolutePath = new File(Main.class.getProtectionDomain()
-//         .getCodeSource().getLocation().toURI())
-//         .getAbsolutePath();
+//         System.out.println(jarPath);
+
+         ProcessBuilder builder = new ProcessBuilder("cmd", "/k", "Start", "cmd", "/k", "python", jarPath + "/python/Server.py");
+//
+         Process process = builder.start();
+         System.out.println("Booted the python server!");
 
 
-//         File pyMain = new File("./Main.py");
-
-//         ProcessBuilder builder = new ProcessBuilder("python", pyMain
-//         .getAbsolutePath());
-
-//         Process process = builder.start();
-
-
-//         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//             System.out.println("Calling shutdown hook...");
-//             process.destroy();
-//         }));
+         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+             System.out.println("Calling shutdown hook...");
+             process.destroy();
+         }));
      }
 
      /**

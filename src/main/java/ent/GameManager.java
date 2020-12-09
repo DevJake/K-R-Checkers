@@ -91,9 +91,9 @@ public class GameManager {
         new Thread(() -> {
             lastPlayer = nextInQueue();
             while (!isGameFinished()) {
-                System.out.println(lastPlayer.getName());
-                System.out.println(lastLockedPiece);
-                System.out.println("Single move exhausted? " + hasExhaustedSingleMove());
+                //System.out.println(lastPlayer.getName());
+                //System.out.println(lastLockedPiece);
+                //System.out.println("Single move exhausted? " + hasExhaustedSingleMove());
 
                 playRound();
 
@@ -180,11 +180,6 @@ public class GameManager {
             i. if piece cannot be moved, terminate move
             ii. When their single move is exhausted, terminate move
          */
-
-        System.out.println("Remaining moves=" + getRemainingMoveDirections(lastLockedPiece).isEmpty());
-        System.out.println("Remaining moves=" + getRemainingMoveDirections(lastLockedPiece));
-        System.out.println("ExhaustedSingleMove=" + exhaustedSingleMove);
-        System.out.println("getCapturesFor=" + getCapturesFor());
 
         if (exhaustedSingleMove)
             setEndMove(true);
