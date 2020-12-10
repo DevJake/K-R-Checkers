@@ -179,6 +179,7 @@ class Movement {
                     board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
                             tileDest.getPiece().getY());
 
+
                     Main.gameManager.setLastLockedPiece(tileDest.getPiece());
 
                     //System.out.println(tileOrigin.getPiece().getX());

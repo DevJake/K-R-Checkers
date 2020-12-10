@@ -40,7 +40,9 @@ class Board:
         for row in range(len(self.board[0])):  # rows 0 to 7
             out += '['
             for column in range(len(self.board[0])):  # columns 0 to 7
-                out += f"'{self.get_piece_at(column, 7 - row)}'{', ' if column < 7 else ''}"
+                out += f"[player_type:{self.get_piece_at(column, 7 - row)}, pos_x:{column}, pos_y:{7 - row}]" \
+                       f" {', ' if column < 7 else ''}"
+
             out += '], '
         out += ']'
         return out

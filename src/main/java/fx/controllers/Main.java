@@ -10,12 +10,10 @@
 
  package fx.controllers;
 
+ import comms.BoardListener;
  import comms.Bridge;
  import comms.BridgeListener;
- import comms.protocol.AIMakeMoveProtocol;
- import comms.protocol.BoardUpdateProtocol;
- import comms.protocol.PlayerMakeMoveProtocol;
- import comms.protocol.ProtocolManager;
+ import comms.protocol.*;
  import ent.Board;
  import ent.GameManager;
  import ent.Player;

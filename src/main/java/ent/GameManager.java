@@ -14,7 +14,9 @@ import err.EventProtocolMismatchException;
 import event.BoardUpdateEvent;
 import event.Event;
 import event.GameCompletedEvent;
+import fx.controllers.Main;
 import fx.controllers.Menu;
+import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -27,6 +29,8 @@ public class GameManager {
     private final List<Piece> moveablePieces = new ArrayList<>();
     public Piece lastLockedPiece;
     public Player lastPlayer;
+    private int destX = 0;
+    private int destY = 0;
     private int round = 0;
     private boolean allCapturesEvalDone = false;
     private boolean endMove = false;
@@ -106,8 +110,8 @@ public class GameManager {
             lastPlayer = nextInQueue();
             while (!isGameFinished()) {
                 if (lastPlayer == Player.Defaults.COMPUTER.getPlayer()) {
-                    if (!isAiHandled())
-                        handleMachineMove();
+//                    if (!isAiHandled())
+                    handleMachineMove();
                 }
 
                 playRound();
@@ -164,7 +168,7 @@ public class GameManager {
         //We're determining if the given piece is on the opposition's King's Row
     }
 
-    private List<Direction> getRemainingMoveDirections(Piece piece) {
+    List<Direction> getRemainingMoveDirections(Piece piece) {
         return Arrays.stream(Direction.values()).filter(dir -> board.getManager().moveIsValid(piece, dir)).collect(Collectors.toList());
     }
 
@@ -184,6 +188,7 @@ public class GameManager {
     }
 
     private void handleMachineMove() {
+        doMachineRound();
         try {
             Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(null, board)));
         } catch (IOException | EventProtocolMismatchException e) {
@@ -195,7 +200,51 @@ public class GameManager {
 
         Next, call setAiHandled and set it true. Also, call endMove() to reset and prep for next player, the human
          */
-        setAiHandled(true);
+//        setAiHandled(true);
+        setEndMove(true);
+    }
+
+    public int getDestX() {
+        return destX;
+    }
+
+    public void setDestX(int destX) {
+        this.destX = destX;
+    }
+
+    public int getDestY() {
+        return destY;
+    }
+
+    public void setDestY(int destY) {
+        this.destY = destY;
+    }
+
+    private void doMachineRound() {
+        Random rand = new Random();
+//        Piece piece = Main.gameManager.getWithAnyMove().get(rand.nextInt(Main.gameManager.getWithAnyMove().size()));
+
+        List<Piece> directions = Main.gameManager.getHopsFor();
+
+        if (getCapturesFor().size() > 0)
+            directions = getCapturesFor();
+        Piece piece = directions.get(rand.nextInt(directions.size()));
+        Direction direction =
+                getRemainingMoveDirections(piece).get(rand.nextInt(getRemainingMoveDirections(piece).size()));
+
+        setDestX(piece.getX() + direction.getxChange());
+        setDestY(piece.getY() + direction.getyChange());
+
+//        Main.mainBoard.getManager().makeMove(piece, piece.getX() + direction.getxChange(),
+//                piece.getY() + direction.getyChange());
+
+//        System.out.println("Direction=" + direction);
+//        System.out.println("CoordsX=" + piece.getX());
+//        System.out.println("CoordsY=" + piece.getY());
+
+        Platform.runLater(() -> Main.mainBoard.getManager().makeMove(piece, Main.gameManager.getDestX(),
+                Main.gameManager.getDestY()));
+
     }
 
     private void playRound() {

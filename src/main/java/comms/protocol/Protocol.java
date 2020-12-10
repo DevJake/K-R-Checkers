@@ -84,14 +84,14 @@ public abstract class Protocol<E extends Event> {
      * @see ProtocolManager#registerProtocol(Protocol)
      */
     public Protocol(String header, String footer, Class<E> eventClass) {
-        this.header = header.isEmpty() ? eventClass.getSimpleName() : header;
-        this.footer = footer.isEmpty() ? eventClass.getSimpleName() : footer;
+        this.header = header.isEmpty() ? eventClass.getSimpleName().toLowerCase() : header;
+        this.footer = footer.isEmpty() ? eventClass.getSimpleName().toLowerCase() : footer;
         this.eventClass = eventClass;
     }
 
     public Protocol(Class<E> eventClass) {
-        this.header = eventClass.getSimpleName();
-        this.footer = eventClass.getSimpleName();
+        this.header = eventClass.getSimpleName().toLowerCase();
+        this.footer = eventClass.getSimpleName().toLowerCase();
         this.eventClass = eventClass;
     }
 
@@ -143,6 +143,6 @@ public abstract class Protocol<E extends Event> {
      * the prefix/header and suffix/footer expected by this Protocol's implementation. Otherwise, return false.
      */
     public boolean isMatchFor(MessageContainer.Message message) {
-        return message.getMessage().startsWith(header) && message.getMessage().endsWith(footer);
+        return message.getMessage().startsWith(header);
     }
 }

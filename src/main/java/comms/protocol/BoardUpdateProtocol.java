@@ -28,7 +28,7 @@ public class BoardUpdateProtocol extends Protocol {
 
     @Override
     public MessageContainer.Message encode(Event event) throws EventProtocolMismatchException {
-        System.out.println("Got called");
+//        System.out.println("Got called");
         if (!(event instanceof BoardUpdateEvent))
             throw new EventProtocolMismatchException(this, event.getClass());
 

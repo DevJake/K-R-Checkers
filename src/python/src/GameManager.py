@@ -5,6 +5,8 @@
 #  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
 #  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 #
+import sys
+
 import Entity as ent
 import Server as serv
 from event.Events import BoardValidMovesEvent
@@ -30,9 +32,36 @@ class Manager:
     # step #3.
     # 7. once we reach the desired depth, we take the branch with the highest heuristic score, take the moves it
     # makes, and submit them to the java code to be executed.
-
-    def predict(self, board: ent.Board) -> list:  # Returns a list of moves to be executed.
+    @staticmethod
+    def staticEvaluation(self):
         pass
+
+    @staticmethod
+    def predict(board: ent.Board, depth: int,
+                maximizing: bool, position: int, alpha: int = sys.maxsize, beta: int = sys.maxsize * -1) -> list:  #
+        # Returns a list of moves to be executed.
+        if (depth == 0):
+            return Manager.staticEvaluation(position)
+
+        if (maximizing):
+            maxEval = None
+            for child in range(position):
+                eval = Manager.predict(child, depth - 1, alpha, beta, False)
+                maxEval = max(maxEval, eval)
+                alpha = max(alpha, eval)
+                if (beta <= alpha):
+                    break
+            return maxEval
+
+        else:
+            minEval = None
+            for child in range(position):
+                eval = Manager.predict(child, depth - 1, alpha, beta, True)
+                minEval = min(minEval, eval)
+                beta = min(beta, eval)
+                if (beta <= alpha):
+                    break
+            return minEval
 
     @staticmethod
     def begin_game():
@@ -41,3 +70,4 @@ class Manager:
     @staticmethod
     def get_moves_for(board: ent.Board):
         print(serv.Bridge.send(BoardValidMovesEvent(board, None)))
+        Manager.predict(board, 8, True, 0)

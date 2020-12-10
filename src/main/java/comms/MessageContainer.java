@@ -39,18 +39,17 @@ public class MessageContainer {
      */
     public static class Message {
         private final UUID id;
-        private final String message;
         private final UUID responseCode;
-        /*
-        The UUID of the Message that this Message is responding to. Useful for tracking, as well as implementing
-        Ping Pong-esque behaviour.*/
+        private String message;
 
         public Message(String message, UUID responseCode) {
             this.id = UUID.randomUUID();
             this.message = message;
             this.responseCode = responseCode;
         }
-
+        /*
+        The UUID of the Message that this Message is responding to. Useful for tracking, as well as implementing
+        Ping Pong-esque behaviour.*/
 
         public Message(String message) {
             this.id = UUID.randomUUID();
@@ -68,6 +67,10 @@ public class MessageContainer {
 
         public String getMessage() {
             return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
         }
 
 
