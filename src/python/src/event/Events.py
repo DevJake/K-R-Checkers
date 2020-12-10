@@ -86,18 +86,20 @@ class EventManager:
 
     @staticmethod
     def fire(event: Event):
+        print("Firing new event...")
+        print(event)
         for listener in EventManager.__listeners:
-            if event is BridgeMessageReceiveEvent:
+            if isinstance(event, BridgeMessageSendEvent):
                 listener.on_bridge_send_message(event)
-            elif event is BridgeMessageReceiveEvent:
+            elif isinstance(event, BridgeMessageReceiveEvent):
                 listener.on_bridge_receive_message(event)
-            elif event is BoardUpdateStateEvent:
+            elif isinstance(event, BoardUpdateStateEvent):
                 listener.on_board_update_status(event)
-            elif event is OpponentMovePieceEvent:
+            elif isinstance(event, OpponentMovePieceEvent):
                 listener.on_opponent_move_piece(event)
-            elif event is OpponentCapturePieceEvent:
+            elif isinstance(event, OpponentCapturePieceEvent):
                 listener.on_opponent_capture_piece(event)
-            elif event is OpponentCaptureMultiplePiecesEvent:
+            elif isinstance(event, OpponentCaptureMultiplePiecesEvent):
                 listener.on_opponent_capture_multiple_pieces(event)
-            elif event is OpponentConvertToKingEvent:
+            elif isinstance(event, OpponentConvertToKingEvent):
                 listener.on_opponent_convert_to_king(event)
