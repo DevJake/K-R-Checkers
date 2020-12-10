@@ -9,13 +9,12 @@ import socket
 import time
 from threading import Timer
 
-from GameManager import BoardStatusListener
-from Entity import Message
-from event.Events import BridgeMessageSendEvent, Event, EventManager
-from protocol.Protocols import BoardUpdateStateProtocol, BoardValidMovesProtocol, BridgeMessageReceiveProtocol, \
-    BridgeMessageSendProtocol, \
-    OpponentMovePieceProtocol, \
-    ProtocolManager
+import BoardListeners
+import BoardListeners as bl
+import Entity as ent
+import GameManager as gm
+import event.Events as ev
+import protocol.Protocols as prot
 
 
 class Bridge:
@@ -63,37 +62,39 @@ class Bridge:
             # TODO decode to correct protocol, split off @ID
             print(data)
 
-            e = ProtocolManager.decodeFor(Message(data))
+            e = prot.ProtocolManager.decodeFor(ent.Message(data))
 
-            EventManager.fire(e)
+            ev.EventManager.fire(e)
 
         Bridge.__t = Timer(Bridge.refresh_timer, Bridge.__begin_listening)
         Bridge.__t.start()
 
     @staticmethod
-    def send(event: Event):
+    def send(event: ev.Event):
         print(f"Sending new message @{int(round(time.time() * 1000))}")
 
         s = socket.socket()
 
         s.connect((Bridge.host, Bridge.outbound_port))
 
-        print(ProtocolManager.encodeFor(event))
-        m: Message = ProtocolManager.encodeFor(event)
+        print(prot.ProtocolManager.encodeFor(event))
+        m: ent.Message = prot.ProtocolManager.encodeFor(event)
 
         print(f"Attempting to send a new Message...")
         s.send(f"{m.header}@{m.id}://{m.message}//:".encode())
         s.close()
 
 
-ProtocolManager.register_protocol(OpponentMovePieceProtocol())
-ProtocolManager.register_protocol(BridgeMessageReceiveProtocol())
-ProtocolManager.register_protocol(BridgeMessageSendProtocol())
-ProtocolManager.register_protocol(BoardUpdateStateProtocol())
-ProtocolManager.register_protocol(BoardValidMovesProtocol())
+prot.ProtocolManager.register_protocol(prot.OpponentMovePieceProtocol())
+prot.ProtocolManager.register_protocol(prot.BridgeMessageReceiveProtocol())
+prot.ProtocolManager.register_protocol(prot.BridgeMessageSendProtocol())
+prot.ProtocolManager.register_protocol(prot.BoardUpdateStateProtocol())
+prot.ProtocolManager.register_protocol(prot.BoardValidMovesProtocol())
 
-EventManager.register_listener(BoardStatusListener())
+ev.EventManager.register_listener(BoardListeners.BoardStatusListener())
 
 Bridge.boot()
 
-Bridge.send(BridgeMessageSendEvent(Message("Hello World!")))
+Bridge.send(ev.BridgeMessageSendEvent(ent.Message("Hello World!")))
+
+gm = gm.GameManager()
