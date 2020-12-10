@@ -54,6 +54,11 @@ class OpponentConvertToKingEvent(Event):
         self.converted = converted
 
 
+class BoardValidMovesEvent(Event):
+    def __init__(self, moveable_pieces: list):  # [(x,y, [Directions])] list(tuple(x, y, list()))
+        self.moveable_pieces = moveable_pieces
+
+
 class EventListener:
     def on_bridge_send_message(self, event: BridgeMessageSendEvent):
         pass
