@@ -68,8 +68,10 @@
          ProtocolManager.registerProtocol(new AIMakeMoveProtocol());
          ProtocolManager.registerProtocol(new BoardUpdateProtocol());
          ProtocolManager.registerProtocol(new PlayerMakeMoveProtocol());
+         ProtocolManager.registerProtocol(new BoardValidMovesProtocol());
 
          Event.Manager.registerListener(new BridgeListener());
+         Event.Manager.registerListener(new BoardListener());
 
          new Thread(() -> {
              try {

@@ -50,4 +50,7 @@ public class EventListener {
      */
     public void onBoardUpdate(BoardUpdateEvent event) {
     }
+
+    public void onBoardValidMoves(BoardValidMovesEvent event) {
+    }
 }
