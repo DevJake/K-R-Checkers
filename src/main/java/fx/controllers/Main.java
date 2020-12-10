@@ -115,6 +115,9 @@
       * <p>
       * The work around to painfully extracting then executing them is to launch a new cmd prompt and pass in their
       * location... which can be difficult to get, as their location is not static.
+      *
+      * @throws URISyntaxException
+      * @throws IOException
       */
      public static void bootPyServer() throws URISyntaxException, IOException {
          String jarPath =

@@ -99,7 +99,7 @@ public class Piece {
      * null.
      */
 //    public void deleteChecker() {
-//        this.checker = new Circle(); //TODO perhaps remove this method
+//        this.checker = new Circle();
 //    }
 
     /**

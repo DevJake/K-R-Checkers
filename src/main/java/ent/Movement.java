@@ -106,8 +106,6 @@ class Movement {
             line.setStartY(beginY);
         });
 
-
-        //TODO shit's broke yo, fix it; Might be, no longer sure lol
         /*
         This method is fired when the user ends a mouse click. Here, we end the drag-and-drop operation. We
         calculate the origin and final x/y coordinates of the mouse drag operation, identifying the relevant
@@ -152,8 +150,6 @@ class Movement {
 ////                    System.out.println(tileDest.getPiece().getPlayer().getName());
 //                board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
 //                        tileDest.getPiece().getY());
-//
-//                //TODO if destX/Y is further than 1 tile away, void, unless it involves a capture
 //            }
 
 
@@ -190,7 +186,6 @@ class Movement {
                     Main.gameManager.setExhaustedSingleMove(!capturing);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    //TODO fire as event
                 }
             }
         });

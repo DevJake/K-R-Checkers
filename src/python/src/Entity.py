@@ -81,7 +81,7 @@ class Board:
     #     pass
 
     def is_move_valid(self, piece: Piece, to_x: int, to_y: int) -> bool:
-        pass  # TODO
+        pass  #
 
 
 class Message:

@@ -262,6 +262,6 @@ public class Bridge {
      */
     public enum Mode {
         CONTINUOUS, //Allows for continuously sending packets
-        PONG //Must receive a response for sending the next packet //TODO impl.
+        PONG //Must receive a response for sending the next packet
     }
 }

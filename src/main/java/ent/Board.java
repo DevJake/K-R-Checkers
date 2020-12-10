@@ -97,6 +97,7 @@ public class Board extends Entity {
      * @param playableTilesColour   {@link Color} - The Color to be assigned to playable {@link Tile Tiles}. Playable
      *                              tiles are those that the {@link Player} can interact with.
      * @param unplayableTilesColour {@link Color} - The Color to be assigned to unplayable {@link Tile Tiles}.
+     * @param showLabels            Boolean - If labels should be shown on top of Pieces.
      *
      * @see Builder
      * @see Tile
@@ -178,7 +179,7 @@ public class Board extends Entity {
      *
      * @return the tiles
      */
-    public ArrayList<ArrayList<Tile>> getTiles() { //TODO remove
+    public ArrayList<ArrayList<Tile>> getTiles() {
         return tiles;
     }
 
@@ -314,7 +315,7 @@ public class Board extends Entity {
      * @see Tile
      * @see Piece#getCapturedBy() Piece#getCapturedBy()
      */
-    public int getTotalPieces() { //TODO Unit test
+    public int getTotalPieces() {
         return tiles.stream().mapToInt(row -> (int) row.stream().filter(tile -> tile.getPiece().getCapturedBy() == null).count()).sum();
     }
 
@@ -327,8 +328,6 @@ public class Board extends Entity {
      * This method toggles the visibility of the x/y coordinates for each {@link Tile}. If enabled, a
      * {@link javafx.scene.control.Label} is displayed on top of each Tile's {@link StackPane}, showing the x/y
      * coordinates for that Tile.
-     *
-     * @param show Boolean - If the coordinate Labels should be displayed.
      */
     public void renderAllLabels() {
         getTiles().forEach(outer -> outer.forEach(Tile::showLabel));
@@ -467,9 +466,6 @@ public class Board extends Entity {
                 }
 
                 outer.add(temp);
-
-
-                //TODO fix player type
             }
 
             return new Board(outer, this.evenTilesColour, this.oddTilesColour, showLabels);

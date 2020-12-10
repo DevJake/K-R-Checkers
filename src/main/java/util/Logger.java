@@ -9,7 +9,7 @@
 package util;
 
 /**
- * Util for logging actions and events within the runtime. TODO
+ * Util for logging actions and events within the runtime.
  */
 public class Logger {
 }

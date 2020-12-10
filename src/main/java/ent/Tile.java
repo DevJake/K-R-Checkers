@@ -111,7 +111,7 @@ public class Tile extends Entity {
     public void setPlayable(boolean playable) {
         isPlayable = playable;
         if (!playable)
-            node.setOnDragDetected(event -> { //TODO delete
+            node.setOnDragDetected(event -> {
             });
     }
 
@@ -222,8 +222,9 @@ public class Tile extends Entity {
      * This method intends to completely delete all information about this Tile and the Piece it contains. This is
      * done when a Piece is either moved (calling delete on the origin Tile) or a Piece is captured.
      * <p>
-     * The {@link #node node's} checker is destroyed, then {@link Piece#deleteChecker()} and {@link Piece#deletePiece()}
-     * are executed.
+     * The {@link #node node's} checker is destroyed, then {@link Piece#deletePiece()} is executed.
+     *
+     * @param keepLabel Boolean - If we should keep the label.
      */
     public void deleteOccupyingPiece(boolean keepLabel) {
         if (keepLabel) {
@@ -239,7 +240,6 @@ public class Tile extends Entity {
      * @return Boolean - If the move was successful.
      */
     public boolean makeMove(Direction direction) {
-//TODO Call legal-check methods on the Board
         return true;
     }
 

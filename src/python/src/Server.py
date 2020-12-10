@@ -56,7 +56,6 @@ class Bridge:
                 data += d
 
             data = data.decode()
-            # TODO decode to correct protocol, split off @ID
             print(data)
 
             e = prot.ProtocolManager.decodeFor(ent.Message(data))
@@ -80,4 +79,3 @@ class Bridge:
         print(f"Attempting to send a new Message...")
         s.send(f"{m.header}@{m.id}://{m.message}//:".encode())
         s.close()
-

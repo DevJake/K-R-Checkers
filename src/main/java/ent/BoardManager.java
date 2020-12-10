@@ -412,8 +412,6 @@ public class BoardManager {
 
             if (captured != null && captured.getType() == Piece.Type.KING)
                 type = Piece.Type.KING;
-
-            //TODO add events for a piece being made a KING by King's Row and KING by regicide
         }
 
 
@@ -440,14 +438,14 @@ public class BoardManager {
      * <p>
      * First, all diagonal axis around the given Piece are checked for eligibility as a capturing move. The
      * validity performed for this is executed via
-     * {@link #validityChecks(Piece, int, int, boolean, Direction, boolean)}.
+     * {@link #validityChecks(Piece, Direction, boolean)}.
      * <p>
      * Once we've aggregated a {@link List} of valid moves, we then filter our moves to a single move using a
      * {@link java.util.stream.Stream}, isolate the move and execute it.
      *
-     * @param piece {@link Piece} - The Piece we should enforce auto-capturing policies against.
+//     * @param piece {@link Piece} - The Piece we should enforce auto-capturing policies against.
      *
-     * @see #validityChecks(Piece, int, int, boolean, Direction, boolean)
+//     * @see #validityChecks(Piece, int, int, boolean, Direction, boolean)
      */
 //    private void doAutoCapture(Piece piece) {
 //        Player opponent = piece.getPlayer().getName().equals(Player.Defaults.COMPUTER.getPlayer().getName()) ?
@@ -502,9 +500,6 @@ public class BoardManager {
 //
 //        //The player has multiple options available... they must now decide which move to follow
 //        if (validMoves.stream().filter(t -> t.equals(Boolean.TRUE)).count() > 1) {
-//            //TODO it is now on the player to decide which move to take. Maybe fire event for this, including
-//            // which moves are valid. Also write a method to generate a list of Direction enums detailing which
-//            // moves are valid for a given piece
 //
 //            return;
 //        }

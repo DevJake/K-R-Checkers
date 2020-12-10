@@ -19,7 +19,7 @@ class Manager:
     # BoardValidMovesEvent - ask for valid moves (pieces the AI is allowed to move) and what directions we can
     # move them, for a given board state. We receive a list of tuples back xreceive the list back
 
-    # The root value is set when we receive a boardupdatestatusevent. TODO make sure this only fires when the
+    # The root value is set when we receive a boardupdatestatusevent.
     #  player successfully executes a move
 
     # 1. we set the root value

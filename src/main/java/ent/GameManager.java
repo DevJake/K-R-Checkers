@@ -301,8 +301,6 @@ public class GameManager {
 
         //No choice selection, until they've chosen their first Piece
 
-        //TODO once their turn ends, null the lastLockedPiece and update lastPlayer
-
 
 //        if (lastLockedPiece != null) { //The player has now chosen their starting piece
 //            if (board.getManager().getDirectionsOfCapture(lastLockedPiece).size() == 0) {
@@ -310,8 +308,6 @@ public class GameManager {
 //            } else
 //                System.out.println(board.getManager().getDirectionsOfCapture(lastLockedPiece));
 //        }
-
-        //TODO end their move if they cannot make a move
     }
 
     private void endMove() {
