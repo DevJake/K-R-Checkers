@@ -9,7 +9,8 @@ import re
 from abc import ABC, abstractmethod
 
 from Entity import Board, Message, Piece, Player
-from event.Events import BoardUpdateStateEvent, BridgeMessageReceiveEvent, BridgeMessageSendEvent, Event, \
+from event.Events import BoardUpdateStateEvent, BoardValidMovesEvent, BridgeMessageReceiveEvent, BridgeMessageSendEvent, \
+    Event, \
     OpponentMovePieceEvent
 
 
@@ -36,9 +37,12 @@ class Protocol(ABC):
         return expected is type(received)
 
     def strip_message(self, message: Message):
-        return Message(message.message.replace(self.header, '', 1).replace('://', '', 1).replace(self.footer, '',
-                                                                                                 1).replace('//:', '',
-                                                                                                            1))
+        m = Message(message.message.replace(self.header, '', 1).replace('://', '', 1))
+
+        m = Message(re.sub('//:$', '', m.message))
+        m = Message(re.sub(f'{self.footer}$', '', m.message))
+
+        return m
 
 
 class EventProtocolMismatchException(Exception):
@@ -108,15 +112,12 @@ def decode_board(board: str) -> Board:
 
     b = Board()
 
-    shift = False
-    count = 0
     for match in p.findall(board):
         player_type = match[0]
         pos_x = match[1]
         pos_y = match[2]
 
         b.set_piece_at(int(pos_x), int(pos_y), Player.HUMAN if player_type == 'HUMAN' else Player.COMPUTER)
-        count += 1
 
     return b
 
@@ -124,20 +125,21 @@ def decode_board(board: str) -> Board:
 class BoardUpdateStateProtocol(Protocol):
     def __init__(self, footer: str = "") -> None:
         header = 'BoardUpdateEvent'
-        super().__init__(BoardUpdateStateEvent, header, footer)
-
+        super().__init__(BoardUpdateStateEvent, header, 'boardupdateevent')
 
     def decode(self, message: Message) -> Event:
+        message = self.strip_message(message)
+        print("Matching against... " + message.message)
         p = re.compile('(\[.+])-(\[.+])')
+        m = p.match(message.message)
 
-        before_board = p.match(message.message)[0]
-        after_board = p.match(message.message)[1]
+        before_board = m.group(1)
+        after_board = m.group(2)
 
         before_board = None if (before_board.__contains__('NULL')) else decode_board(before_board)
         after_board = None if (after_board.__contains__('NULL')) else decode_board(after_board)
 
         return BoardUpdateStateEvent(before_board, after_board)
-
 
     def encode(self, event: Event) -> Message:
         if not Protocol.is_type(BoardUpdateStateEvent, event):
