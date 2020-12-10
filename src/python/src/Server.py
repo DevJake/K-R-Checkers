@@ -7,11 +7,11 @@
 
 import socket
 import time
-from Entity import Message
-from event.Events import BridgeMessageSendEvent, Event
-from protocol.Protocols import BridgeMessageReceiveProtocol, BridgeMessageSendProtocol, OpponentMovePieceProtocol, \
-    ProtocolManager
 from threading import Timer
+
+import Entity as ent
+import event.Events as ev
+import protocol.Protocols as prot
 
 
 class Bridge:
@@ -20,7 +20,7 @@ class Bridge:
     outbound_port = 5001
     __outbound_socket: socket.socket
     __inbound_socket: socket.socket
-    refresh_timer: int = 0.5
+    refresh_timer: float = 0.5
     __t: Timer
 
     __is_closed: bool = False
@@ -57,33 +57,27 @@ class Bridge:
 
             data = data.decode()
             # TODO decode to correct protocol, split off @ID
-
-            # ProtocolManager.decodeFor()
-
             print(data)
+
+            e = prot.ProtocolManager.decodeFor(ent.Message(data))
+
+            ev.EventManager.fire(e)
+
         Bridge.__t = Timer(Bridge.refresh_timer, Bridge.__begin_listening)
         Bridge.__t.start()
 
     @staticmethod
-    def send(event: Event):
+    def send(event: ev.Event):
         print(f"Sending new message @{int(round(time.time() * 1000))}")
 
         s = socket.socket()
 
         s.connect((Bridge.host, Bridge.outbound_port))
 
-        print(ProtocolManager.encodeFor(event))
-        m: Message = ProtocolManager.encodeFor(event)
+        print(prot.ProtocolManager.encodeFor(event))
+        m: ent.Message = prot.ProtocolManager.encodeFor(event)
 
         print(f"Attempting to send a new Message...")
         s.send(f"{m.header}@{m.id}://{m.message}//:".encode())
         s.close()
 
-
-ProtocolManager.register_protocol(OpponentMovePieceProtocol())
-ProtocolManager.register_protocol(BridgeMessageReceiveProtocol())
-ProtocolManager.register_protocol(BridgeMessageSendProtocol())
-
-Bridge.boot()
-
-Bridge.send(BridgeMessageSendEvent(Message("Hello World!")))

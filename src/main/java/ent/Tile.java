@@ -13,6 +13,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.beans.Transient;
+
 import static fx.controllers.Main.mainBoard;
 import static fx.controllers.Main.toRGBString;
 
@@ -48,8 +50,8 @@ public class Tile extends Entity {
      * @see #init()
      * @see #deleteOccupyingPiece()
      */
-    private final StackPane node;
-    private final Circle kingStatus = new Circle(25, Color.rgb(0, 0, 0, 0));
+    private final transient StackPane node;
+    private final transient Circle kingStatus = new Circle(25, Color.rgb(0, 0, 0, 0));
     /**
      * The Color of this Tile.
      *

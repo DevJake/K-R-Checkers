@@ -16,12 +16,28 @@ package ent;
  * @see ent.Player.HomeSide
  */
 public enum Direction {
-    FORWARD_LEFT,
-    FORWARD_RIGHT,
-    BACKWARD_LEFT,
-    BACKWARD_RIGHT,
-    FORWARD_LEFT_CAPTURE,
-    FORWARD_RIGHT_CAPTURE,
-    BACKWARD_LEFT_CAPTURE,
-    BACKWARD_RIGHT_CAPTURE
+    FORWARD_LEFT(-1, 1),
+    FORWARD_RIGHT(1, 1),
+    BACKWARD_LEFT(-1, -1),
+    BACKWARD_RIGHT(1, -1),
+    FORWARD_LEFT_CAPTURE(-2, 2),
+    FORWARD_RIGHT_CAPTURE(2, 2),
+    BACKWARD_LEFT_CAPTURE(-2, -2),
+    BACKWARD_RIGHT_CAPTURE(2, -2);
+
+    private final int xChange;
+    private final int yChange;
+
+    Direction(int xChange, int yChange) {
+        this.xChange = xChange;
+        this.yChange = yChange;
+    }
+
+    public int getxChange() {
+        return xChange;
+    }
+
+    public int getyChange() {
+        return yChange;
+    }
 }

@@ -4,28 +4,14 @@
 #  This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
 #  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
 #  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
-#
-<<<<<<< HEAD
-=======
 
-#
-#
-#  This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
-#  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
-#  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
-#
+import re
 from abc import ABC, abstractmethod
->>>>>>> dev
 
-from Entity import Message, Piece, Player
-#
-#
-#  This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
-#  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
-#  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
-#
-from abc import ABC, abstractmethod
-from event.Events import BridgeMessageReceiveEvent, BridgeMessageSendEvent, Event, OpponentMovePieceEvent
+from Entity import Board, Message, Piece, Player
+from event.Events import BoardUpdateStateEvent, BoardValidMovesEvent, BridgeMessageReceiveEvent, BridgeMessageSendEvent, \
+    Event, \
+    OpponentMovePieceEvent
 
 
 class Protocol(ABC):
@@ -49,6 +35,14 @@ class Protocol(ABC):
     @staticmethod
     def is_type(expected: [Event], received: Event):
         return expected is type(received)
+
+    def strip_message(self, message: Message):
+        m = Message(message.message.replace(self.header, '', 1).replace('://', '', 1))
+
+        m = Message(re.sub('//:$', '', m.message))
+        m = Message(re.sub(f'{self.footer}$', '', m.message))
+
+        return m
 
 
 class EventProtocolMismatchException(Exception):
@@ -113,6 +107,72 @@ class BridgeMessageSendProtocol(Protocol):
         return event.message.set_header(self.header).set_footer(self.footer)
 
 
+def decode_board(board: str) -> Board:
+    p = re.compile('Tile:\[{player_name:(HUMAN|A\.I\.)},{x_pos:([0-9]{1,2})},{y_pos:([0-9]{1,2})}]')
+
+    b = Board()
+
+    for match in p.findall(board):
+        player_type = match[0]
+        pos_x = match[1]
+        pos_y = match[2]
+
+        b.set_piece_at(int(pos_x), int(pos_y), Player.HUMAN if player_type == 'HUMAN' else Player.COMPUTER)
+
+    return b
+
+
+class BoardUpdateStateProtocol(Protocol):
+    def __init__(self, footer: str = "") -> None:
+        header = 'BoardUpdateEvent'
+        super().__init__(BoardUpdateStateEvent, header, 'boardupdateevent')
+
+    def decode(self, message: Message) -> Event:
+        message = self.strip_message(message)
+        print("Matching against... " + message.message)
+        p = re.compile('(\[.+])-(\[.+])')
+        m = p.match(message.message)
+
+        before_board = m.group(1)
+        after_board = m.group(2)
+
+        before_board = None if (before_board.__contains__('NULL')) else decode_board(before_board)
+        after_board = None if (after_board.__contains__('NULL')) else decode_board(after_board)
+
+        return BoardUpdateStateEvent(before_board, after_board)
+
+    def encode(self, event: Event) -> Message:
+        if not Protocol.is_type(BoardUpdateStateEvent, event):
+            raise EventProtocolMismatchException(self, event)
+
+        event: BoardUpdateStateEvent
+        return event.message.set_header(self.header).set_footer(self.footer)
+
+
+class BoardValidMovesProtocol(Protocol):
+    def __init__(self, footer: str = "") -> None:
+        header = 'boardvalidmovesevent'
+        super().__init__(BoardValidMovesEvent, header, 'boardvalidmovesevent')
+
+    def decode(self, message: Message) -> Event:
+        message = self.strip_message(message)
+
+        return BoardValidMovesEvent()
+
+    def encode(self, event: Event) -> Message:
+        print("BoardValidMovesProtocol just got called!")
+        if not Protocol.is_type(BoardValidMovesEvent, event):
+            raise EventProtocolMismatchException(self, event)
+
+        # The board is the encoded format of the board we want to check for validity. This will need to be
+        # 'reassembled' on the receiving (Java) end. We input just the board and receive back a list of valid pieces
+        # to move and their valid directions.
+
+        event: BoardValidMovesEvent
+
+        return Message(f"board: [{event.board.as_string()}]").set_header(self.header).set_footer(self.footer)
+
+
 class ProtocolManager:
     __protocols = set()
 
@@ -130,5 +190,5 @@ class ProtocolManager:
     @staticmethod
     def encodeFor(event: Event) -> Message:
         for protocol in ProtocolManager.__protocols:
-            if protocol.match_event is type(event):
+            if protocol.match_event == event.__class__:
                 return protocol.encode(event)

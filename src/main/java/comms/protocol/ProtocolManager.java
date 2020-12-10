@@ -78,7 +78,13 @@ public class ProtocolManager {
      */
     public static <E extends Event> void decodeFor(MessageContainer.Message message) {
         for (Protocol protocol : protocols) {
+            System.out.println(protocol.isMatchFor(message));
+            System.out.println(protocol.getEventClass());
             if (protocol.isMatchFor(message)) {
+                message = new MessageContainer.Message(message.getMessage().replaceFirst(".+://", ""));
+                message = new MessageContainer.Message(message.getMessage().replaceFirst(".//:", ""));
+
+                System.out.println("Matching protocol:" + protocol);
                 Event decode = protocol.decode(message);
                 Event.Manager.fire(decode);
             }
@@ -105,6 +111,9 @@ public class ProtocolManager {
      * @see comms.Bridge#send(MessageContainer.Message)
      */
     public static <E extends Event> MessageContainer.Message encodeFor(E event) throws EventProtocolMismatchException {
-        return getProtocolFor(event.getClass()).encode(event);
+        System.out.println(getProtocolFor(event.getClass()).getHeader().toLowerCase());
+        return new MessageContainer.Message(getProtocolFor(event.getClass()).getHeader().toLowerCase() + "://" +
+                getProtocolFor(event.getClass()).encode(event).getMessage() +
+                getProtocolFor(event.getClass()).getFooter().toLowerCase() + "//:");
     }
 }

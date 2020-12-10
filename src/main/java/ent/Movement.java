@@ -100,7 +100,7 @@ class Movement {
 
             Piece clickedPiece = board.getTileAtIndex((int) tileX, (int) tileY).getPiece();
             Movement.doRender =
-                    Main.gameManager.getMoveablePieces().contains(clickedPiece) && Main.gameManager.lastPlayer == clickedPiece.getPlayer();
+                    Main.gameManager.getMoveablePieces().contains(clickedPiece) && Main.gameManager.lastPlayer == clickedPiece.getPlayer() && clickedPiece.getPlayer() == Player.Defaults.HUMAN.getPlayer();
 
             line.setStartX(beginX);
             line.setStartY(beginY);
@@ -158,7 +158,7 @@ class Movement {
 
 
             if (Movement.doRender) {
-                System.out.println("Doddodoodo render");
+                //System.out.println("Doddodoodo render");
 
 
                 canvas.getChildren().remove(line);
@@ -169,7 +169,7 @@ class Movement {
                         Math.abs(tileOrigin.getPiece().getX() - tileDest.getPiece().getX()) == 2 &&
                                 Math.abs(tileOrigin.getPiece().getY() - tileDest.getPiece().getY()) == 2;
 
-                System.out.println("Capturing=" + capturing);
+                //System.out.println("Capturing=" + capturing);
 
                 if (!Main.gameManager.getCapturesFor().isEmpty() && !capturing) {
                     return; //They are required to make a capturing move, and yet they are attempting not to...
@@ -179,12 +179,13 @@ class Movement {
                     board.getManager().makeMove(tileOrigin.getPiece(), tileDest.getPiece().getX(),
                             tileDest.getPiece().getY());
 
+
                     Main.gameManager.setLastLockedPiece(tileDest.getPiece());
 
-                    System.out.println(tileOrigin.getPiece().getX());
-                    System.out.println(tileDest.getPiece().getX());
-                    System.out.println(tileOrigin.getPiece().getY());
-                    System.out.println(tileDest.getPiece().getY());
+                    //System.out.println(tileOrigin.getPiece().getX());
+                    //System.out.println(tileDest.getPiece().getX());
+                    //System.out.println(tileOrigin.getPiece().getY());
+                    //System.out.println(tileDest.getPiece().getY());
 
                     Main.gameManager.setExhaustedSingleMove(!capturing);
                 } catch (Exception e) {

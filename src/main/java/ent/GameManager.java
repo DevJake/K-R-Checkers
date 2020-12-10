@@ -8,11 +8,18 @@
 
 package ent;
 
+import comms.Bridge;
+import comms.protocol.ProtocolManager;
+import err.EventProtocolMismatchException;
+import event.BoardUpdateEvent;
 import event.Event;
 import event.GameCompletedEvent;
+import fx.controllers.Main;
 import fx.controllers.Menu;
+import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,14 +29,25 @@ public class GameManager {
     private final List<Piece> moveablePieces = new ArrayList<>();
     public Piece lastLockedPiece;
     public Player lastPlayer;
+    private int destX = 0;
+    private int destY = 0;
     private int round = 0;
     private boolean allCapturesEvalDone = false;
     private boolean endMove = false;
     private boolean exhaustedSingleMove = false;
+    private boolean aiHandled = false;
 
     public GameManager(Board board, List<Player> playerQueue, Pane canvas) {
         this.board = board;
         this.playerQueue.addAll(playerQueue);
+    }
+
+    public boolean isAiHandled() {
+        return aiHandled;
+    }
+
+    public void setAiHandled(boolean aiHandled) {
+        this.aiHandled = aiHandled;
     }
 
     public boolean isAllCapturesEvalDone() {
@@ -91,9 +109,10 @@ public class GameManager {
         new Thread(() -> {
             lastPlayer = nextInQueue();
             while (!isGameFinished()) {
-                System.out.println(lastPlayer.getName());
-                System.out.println(lastLockedPiece);
-                System.out.println("Single move exhausted? " + hasExhaustedSingleMove());
+                if (lastPlayer == Player.Defaults.COMPUTER.getPlayer()) {
+//                    if (!isAiHandled())
+                    handleMachineMove();
+                }
 
                 playRound();
 
@@ -149,7 +168,7 @@ public class GameManager {
         //We're determining if the given piece is on the opposition's King's Row
     }
 
-    private List<Direction> getRemainingMoveDirections(Piece piece) {
+    List<Direction> getRemainingMoveDirections(Piece piece) {
         return Arrays.stream(Direction.values()).filter(dir -> board.getManager().moveIsValid(piece, dir)).collect(Collectors.toList());
     }
 
@@ -168,8 +187,67 @@ public class GameManager {
         });
     }
 
+    private void handleMachineMove() {
+        doMachineRound();
+        try {
+            Bridge.send(ProtocolManager.encodeFor(new BoardUpdateEvent(null, board)));
+        } catch (IOException | EventProtocolMismatchException e) {
+            e.printStackTrace();
+        }
+
+        /*
+        Set the last piece to that that the AI chooses, then call playRound. It should be a valid move already...
+
+        Next, call setAiHandled and set it true. Also, call endMove() to reset and prep for next player, the human
+         */
+//        setAiHandled(true);
+        setEndMove(true);
+    }
+
+    public int getDestX() {
+        return destX;
+    }
+
+    public void setDestX(int destX) {
+        this.destX = destX;
+    }
+
+    public int getDestY() {
+        return destY;
+    }
+
+    public void setDestY(int destY) {
+        this.destY = destY;
+    }
+
+    private void doMachineRound() {
+        Random rand = new Random();
+//        Piece piece = Main.gameManager.getWithAnyMove().get(rand.nextInt(Main.gameManager.getWithAnyMove().size()));
+
+        List<Piece> directions = Main.gameManager.getHopsFor();
+
+        if (getCapturesFor().size() > 0)
+            directions = getCapturesFor();
+        Piece piece = directions.get(rand.nextInt(directions.size()));
+        Direction direction =
+                getRemainingMoveDirections(piece).get(rand.nextInt(getRemainingMoveDirections(piece).size()));
+
+        setDestX(piece.getX() + direction.getxChange());
+        setDestY(piece.getY() + direction.getyChange());
+
+//        Main.mainBoard.getManager().makeMove(piece, piece.getX() + direction.getxChange(),
+//                piece.getY() + direction.getyChange());
+
+//        System.out.println("Direction=" + direction);
+//        System.out.println("CoordsX=" + piece.getX());
+//        System.out.println("CoordsY=" + piece.getY());
+
+        Platform.runLater(() -> Main.mainBoard.getManager().makeMove(piece, Main.gameManager.getDestX(),
+                Main.gameManager.getDestY()));
+
+    }
+
     private void playRound() {
-        //TODO if a move must be capturing, it can only make a capturing move
         /*
         1. Lock player
             i. force auto-capturing
@@ -180,11 +258,6 @@ public class GameManager {
             i. if piece cannot be moved, terminate move
             ii. When their single move is exhausted, terminate move
          */
-
-        System.out.println("Remaining moves=" + getRemainingMoveDirections(lastLockedPiece).isEmpty());
-        System.out.println("Remaining moves=" + getRemainingMoveDirections(lastLockedPiece));
-        System.out.println("ExhaustedSingleMove=" + exhaustedSingleMove);
-        System.out.println("getCapturesFor=" + getCapturesFor());
 
         if (exhaustedSingleMove)
             setEndMove(true);

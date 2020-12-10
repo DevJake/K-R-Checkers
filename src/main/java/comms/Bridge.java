@@ -193,6 +193,7 @@ public class Bridge {
             PrintWriter writer = new PrintWriter(out.getOutputStream(), true);
 
             for (MessageContainer.Message message : queue) {
+                System.out.println("Sending Message: [" + message.getId() + "] " + message.getMessage());
                 writer.write(message.getMessage());
                 writer.flush();
 

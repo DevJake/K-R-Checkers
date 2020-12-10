@@ -12,6 +12,10 @@ version '1.0-SNAPSHOT'
 javafx {
     modules = ['javafx.fxml', 'javafx.controls']
 }
+task copyPy(type: Copy){
+    from '/src/python/src/.'
+    into 'build/libs/python/'
+}
 
 repositories {
     mavenCentral()

@@ -20,6 +20,10 @@ public class PlayerMakeMoveProtocol extends Protocol {
         super(header, footer, PlayerMakeMoveEvent.class);
     }
 
+    public PlayerMakeMoveProtocol() {
+        super(PlayerMakeMoveEvent.class);
+    }
+
     @Override
     public MessageContainer.Message encode(Event event) {
         return null;
