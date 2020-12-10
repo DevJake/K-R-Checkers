@@ -27,7 +27,7 @@ public class BridgeListener extends EventListener {
      */
     @Override
     public void onBridgeMessageReceived(BridgeMessageReceiveEvent event) {
-        System.out.println("Received new message via The Bridge!! :: " + event.getMessage().getMessage());
+//        System.out.println("Received new message via The Bridge!! :: " + event.getMessage().getMessage());
     }
 
     /**

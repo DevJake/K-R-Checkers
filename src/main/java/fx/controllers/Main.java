@@ -123,7 +123,7 @@
 //         System.out.println(jarPath);
 
          ProcessBuilder builder = new ProcessBuilder("cmd", "/k", "Start", "cmd", "/k", "python", jarPath + "/python" +
-                 "/Server.py");
+                 "/Boot.py");
 //
          Process process = builder.start();
          System.out.println("Booted the python server!");

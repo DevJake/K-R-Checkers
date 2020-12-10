@@ -6,6 +6,8 @@
 #  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 #
 import Entity as ent
+import Server as serv
+from event.Events import BoardValidMovesEvent
 
 
 class Manager:
@@ -32,5 +34,10 @@ class Manager:
     def predict(self, board: ent.Board) -> list:  # Returns a list of moves to be executed.
         pass
 
-    # def get_moves_for(self, board: ent.Board):
-    #     print(serv.Bridge.send(ev.BoardValidMovesEvent(board, None)))
+    @staticmethod
+    def begin_game():
+        print(Manager.get_moves_for(Manager.root))
+
+    @staticmethod
+    def get_moves_for(board: ent.Board):
+        print(serv.Bridge.send(BoardValidMovesEvent(board, None)))

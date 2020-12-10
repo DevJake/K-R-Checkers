@@ -6,6 +6,7 @@
 #  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 #
 from Entity import Player
+from GameManager import Manager
 from event.Events import BoardUpdateStateEvent, EventListener
 
 
@@ -17,8 +18,8 @@ class BoardStatusListener(EventListener):
         event.new_state.delete_piece_at(6, 2)
         event.new_state.set_piece_at(7, 3, Player.HUMAN)
 
-        # serv.gm.root = event.new_state
-
+        Manager.root = event.new_state
+        Manager.begin_game()
         # We don't need to send the state back to the board at any point, we instead only need to:
         # 1. request a list of pieces this board state can move
         # 2. request the directions a piece at pos (x,y) is able to move

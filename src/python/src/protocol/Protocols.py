@@ -152,7 +152,7 @@ class BoardUpdateStateProtocol(Protocol):
 class BoardValidMovesProtocol(Protocol):
     def __init__(self, footer: str = "") -> None:
         header = 'boardvalidmovesevent'
-        super().__init__(BoardUpdateStateEvent, header, 'boardvalidmovesevent')
+        super().__init__(BoardValidMovesEvent, header, 'boardvalidmovesevent')
 
     def decode(self, message: Message) -> Event:
         message = self.strip_message(message)
@@ -160,6 +160,7 @@ class BoardValidMovesProtocol(Protocol):
         return BoardValidMovesEvent()
 
     def encode(self, event: Event) -> Message:
+        print("BoardValidMovesProtocol just got called!")
         if not Protocol.is_type(BoardValidMovesEvent, event):
             raise EventProtocolMismatchException(self, event)
 
@@ -169,9 +170,7 @@ class BoardValidMovesProtocol(Protocol):
 
         event: BoardValidMovesEvent
 
-        event.board.as_string()
-
-        return Message(f"board: [{event.board.as_string()}]")
+        return Message(f"board: [{event.board.as_string()}]").set_header(self.header).set_footer(self.footer)
 
 
 class ProtocolManager:
@@ -191,5 +190,5 @@ class ProtocolManager:
     @staticmethod
     def encodeFor(event: Event) -> Message:
         for protocol in ProtocolManager.__protocols:
-            if protocol.match_event is type(event):
+            if protocol.match_event == event.__class__:
                 return protocol.encode(event)
