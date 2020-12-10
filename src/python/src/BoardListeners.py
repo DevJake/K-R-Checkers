@@ -5,23 +5,19 @@
 #  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to
 #  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 #
+from Entity import Player
+from event.Events import BoardUpdateStateEvent, EventListener
 
-import event.Events as ev
-import Entity as ent
 
-
-class BoardStatusListener(ev.EventListener):
-    def __init__(self):
-        pass
-
-    def on_board_update_status(self, event: ev.BoardUpdateStateEvent):
+class BoardStatusListener(EventListener):
+    def on_board_update_status(self, event: BoardUpdateStateEvent):
         print(event.old_state)
         print(event.new_state)
 
         event.new_state.delete_piece_at(6, 2)
-        event.new_state.set_piece_at(7, 3, ent.Player.HUMAN)
+        event.new_state.set_piece_at(7, 3, Player.HUMAN)
 
-        # Server.gm.root = event.new_state
+        # serv.gm.root = event.new_state
 
         # We don't need to send the state back to the board at any point, we instead only need to:
         # 1. request a list of pieces this board state can move

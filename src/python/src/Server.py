@@ -9,12 +9,11 @@ import socket
 import time
 from threading import Timer
 
-import BoardListeners
-import BoardListeners as bl
 import Entity as ent
 import GameManager as gm
 import event.Events as ev
 import protocol.Protocols as prot
+from BoardListeners import BoardStatusListener
 
 
 class Bridge:
@@ -91,10 +90,10 @@ prot.ProtocolManager.register_protocol(prot.BridgeMessageSendProtocol())
 prot.ProtocolManager.register_protocol(prot.BoardUpdateStateProtocol())
 prot.ProtocolManager.register_protocol(prot.BoardValidMovesProtocol())
 
-ev.EventManager.register_listener(BoardListeners.BoardStatusListener())
+ev.EventManager.register_listener(BoardStatusListener())
 
 Bridge.boot()
 
 Bridge.send(ev.BridgeMessageSendEvent(ent.Message("Hello World!")))
 
-gm = gm.GameManager()
+gm = gm.Manager()

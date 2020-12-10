@@ -163,8 +163,15 @@ class BoardValidMovesProtocol(Protocol):
         if not Protocol.is_type(BoardValidMovesEvent, event):
             raise EventProtocolMismatchException(self, event)
 
+        # The board is the encoded format of the board we want to check for validity. This will need to be
+        # 'reassembled' on the receiving (Java) end. We input just the board and receive back a list of valid pieces
+        # to move and their valid directions.
+
         event: BoardValidMovesEvent
-        return event.message.set_header(self.header).set_footer(self.footer)
+
+        event.board.as_string()
+
+        return Message(f"board: [{event.board.as_string()}]")
 
 
 class ProtocolManager:

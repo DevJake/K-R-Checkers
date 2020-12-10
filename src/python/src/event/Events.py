@@ -55,7 +55,8 @@ class OpponentConvertToKingEvent(Event):
 
 
 class BoardValidMovesEvent(Event):
-    def __init__(self, moveable_pieces: list):  # [(x,y, [Directions])] list(tuple(x, y, list()))
+    def __init__(self, board:Board, moveable_pieces: list):  # [(x,y, [Directions])] list(tuple(x, y, list()))
+        self.board = board
         self.moveable_pieces = moveable_pieces
 
 
