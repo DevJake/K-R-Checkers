@@ -57,7 +57,7 @@ class Board:
     def set_piece_at(self, x: int, y: int, type: Player):
         self.board[7 - x][y] = type.value  # Indexes flipped to match the GUI board
 
-    def delete_piece_at(self, x: int, y: int, type: Player):
+    def delete_piece_at(self, x: int, y: int):
         self.board[7 - x][y] = None  # Indexes flipped to match the GUI board
 
     # def make_move(self, from_x, from_y, to_x, to_y):

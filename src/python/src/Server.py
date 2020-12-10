@@ -9,10 +9,11 @@ import socket
 import time
 from threading import Timer
 
-from BoardStatusListener import BoardStatusListener
+from GameManager import BoardStatusListener
 from Entity import Message
 from event.Events import BridgeMessageSendEvent, Event, EventManager
-from protocol.Protocols import BoardUpdateStateProtocol, BridgeMessageReceiveProtocol, BridgeMessageSendProtocol, \
+from protocol.Protocols import BoardUpdateStateProtocol, BoardValidMovesProtocol, BridgeMessageReceiveProtocol, \
+    BridgeMessageSendProtocol, \
     OpponentMovePieceProtocol, \
     ProtocolManager
 
@@ -89,6 +90,7 @@ ProtocolManager.register_protocol(OpponentMovePieceProtocol())
 ProtocolManager.register_protocol(BridgeMessageReceiveProtocol())
 ProtocolManager.register_protocol(BridgeMessageSendProtocol())
 ProtocolManager.register_protocol(BoardUpdateStateProtocol())
+ProtocolManager.register_protocol(BoardValidMovesProtocol())
 
 EventManager.register_listener(BoardStatusListener())
 
