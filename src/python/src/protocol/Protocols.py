@@ -147,6 +147,24 @@ class BoardUpdateStateProtocol(Protocol):
         return event.message.set_header(self.header).set_footer(self.footer)
 
 
+class BoardValidMovesProtocol(Protocol):
+    def __init__(self, footer: str = "") -> None:
+        header = 'boardvalidmovesevent'
+        super().__init__(BoardUpdateStateEvent, header, 'boardvalidmovesevent')
+
+    def decode(self, message: Message) -> Event:
+        message = self.strip_message(message)
+
+        return BoardValidMovesEvent()
+
+    def encode(self, event: Event) -> Message:
+        if not Protocol.is_type(BoardValidMovesEvent, event):
+            raise EventProtocolMismatchException(self, event)
+
+        event: BoardValidMovesEvent
+        return event.message.set_header(self.header).set_footer(self.footer)
+
+
 class ProtocolManager:
     __protocols = set()
 
